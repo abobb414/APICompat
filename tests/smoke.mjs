@@ -125,10 +125,18 @@ await cell.click();
 await page.waitForTimeout(350);
 const modal = await page.evaluate(() => {
   const m = document.querySelector('#modal');
-  return { vis: !!m && m.classList.contains('on'), txt: m ? m.innerText.replace(/\s+/g, ' ') : '' };
+  return {
+    vis: !!m && m.classList.contains('on'),
+    txt: m ? m.innerText.replace(/\s+/g, ' ') : '',
+    // 只看「行标签」，不能拿全文 includes('总耗时') 去判 ——
+    // 「计时口径」那行的说明文字里本来就写着「故不统计总耗时」。
+    dts: m ? [...m.querySelectorAll('dt')].map(e => e.textContent.trim()) : []
+  };
 });
-check('点格子弹出明细（含首块延迟与总耗时）',
-  modal.vis && modal.txt.includes('首块延迟') && modal.txt.includes('总耗时'), modal.txt.slice(0, 90));
+check('点格子弹出明细（含首块延迟与计时口径）',
+  modal.vis && modal.txt.includes('首块延迟') && modal.txt.includes('计时口径'), modal.txt.slice(0, 90));
+check('明细弹窗不再把首块延迟谎报成「总耗时」',
+  !modal.dts.includes('总耗时'), modal.dts.join(' / '));
 await page.click('#modalClose');
 await page.waitForTimeout(250);
 
@@ -159,7 +167,64 @@ for (const [id, label] of [['#expHtml', 'HTML'], ['#expMd', 'Markdown'], ['#expJ
   check(`导出 ${label} 非空`, n > 200, `${n} 字节`);
 }
 
-// ---- 6. 响应式 ----
+// ---- 6. 重试代价可见 ----
+// mock 里有两个「隔一次就 500」的组合。这一轮把重试次数设为 1，它们会在第一次尝试
+// 收到 500、重试才通过。重点不是「重试能成功」，而是工具必须把重试前付出的代价也摆出来，
+// 而不是只显示重试成功那一次的漂亮延迟（那正是中转站看板吞掉失败率的做法）。
+await fetch(BASE + '/__reset');
+await page.evaluate(() => { const d = document.querySelector('details.adv'); if (d) d.open = true; });
+await page.fill('#retries', '1');
+await page.click('#runBtn');
+let ran2 = true;
+try {
+  await page.waitForFunction(
+    () => { const a = document.querySelector('#resultActions');
+            return a && getComputedStyle(a).display !== 'none'; }, null, { timeout: 180000 });
+} catch { ran2 = false; }
+await page.waitForTimeout(600);
+check('第二轮（重试=1）跑完', ran2);
+
+const RT = await page.evaluate(() => {
+  const marked = [...document.querySelectorAll('#tableWrap .mcell .rt')];
+  return {
+    n: marked.length,
+    title: marked[0] ? (marked[0].getAttribute('title') || '') : '',
+    banner: document.querySelector('#panel-conn').innerText.replace(/\s+/g, ' '),
+  };
+});
+check('重试通过的格子带 ↻ 标记', RT.n >= 2, `带标记 ${RT.n} 个`);
+check('↻ 的悬停说明交代了首次尝试的代价',
+  /第 1 次为/.test(RT.title) && /ms/.test(RT.title), RT.title.slice(0, 90));
+check('完成横幅报出「重试之后才通过」的组合数',
+  /重试之后才通过/.test(RT.banner), RT.banner.slice(0, 140));
+
+await page.locator('#tableWrap .mcell:has(.rt)').first().click();
+await page.waitForTimeout(350);
+const modal2 = await page.evaluate(() => {
+  const m = document.querySelector('#modal');
+  return { vis: !!m && m.classList.contains('on'), txt: m ? m.innerText.replace(/\s+/g, ' ') : '' };
+});
+check('明细弹窗里有「尝试次数」与「首次尝试」',
+  modal2.vis && modal2.txt.includes('尝试次数') && modal2.txt.includes('首次尝试'), modal2.txt.slice(0, 110));
+await page.click('#modalClose');
+await page.waitForTimeout(250);
+
+// 报告是拿给别人看的，重试信息必须跟着数据走，否则读报告的人还以为一格 = 一次请求
+const J = await page.evaluate(async () => {
+  window.__cap = null;
+  document.querySelector('#expJson').click();
+  await new Promise(r => setTimeout(r, 300));
+  const t = window.__cap ? await window.__cap.text() : '';
+  return {
+    attempts: /"attempts"/.test(t), retried: /"retried":\s*true/.test(t),
+    elapsed: /"elapsedMs"/.test(t), scope: /"timingScope"/.test(t), total: /"totalMs"/.test(t),
+  };
+});
+check('JSON 导出含 attempts / retried / timingScope',
+  J.attempts && J.retried && J.elapsed && J.scope, JSON.stringify(J));
+check('JSON 导出不再出现误导性的 totalMs 字段', !J.total, JSON.stringify(J));
+
+// ---- 7. 响应式 ----
 for (const w of [390, 768, 1024]) {
   const p = await browser.newPage({ viewport: { width: w, height: 900 } });
   await p.goto(BASE, { waitUntil: 'load' });
@@ -168,7 +233,7 @@ for (const w of [390, 768, 1024]) {
   await p.close();
 }
 
-// ---- 7. file:// 直开 ----
+// ---- 8. file:// 直开 ----
 {
   const p = await browser.newPage();
   const ferr = [];

@@ -13,14 +13,14 @@
 
 Not "guess which model works", and not "paste one curl and see if it goes through" —
 it pulls down the model list the site exposes, then runs a cross matrix over **10 protocols × every model**,
-giving a status, first-chunk latency and total time per cell, and finally exports a diagnostic report you can send to someone.
+giving a status and a first-chunk latency per cell, and finally exports a diagnostic report you can send to someone.
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-apicompat.abobb.site-2f80ed?style=flat-square&logo=icloud&logoColor=white)](https://apicompat.abobb.site)
 [![No Build](https://img.shields.io/badge/build-none_required-3fb950?style=flat-square&logo=html5&logoColor=white)](#quick-start)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-3fb950?style=flat-square&logo=javascript&logoColor=white)](#project-structure)
 [![Protocols](https://img.shields.io/badge/protocols-10-8b5cf6?style=flat-square)](#protocol-matrix)
 [![States](https://img.shields.io/badge/states-11_attributions-f59e0b?style=flat-square)](#the-eleven-states)
-[![Single File](https://img.shields.io/badge/single_file-140_KB_%C2%B7_2649_lines-64748b?style=flat-square)](#project-structure)
+[![Single File](https://img.shields.io/badge/single_file-146_KB_%C2%B7_2731_lines-64748b?style=flat-square)](#project-structure)
 
 [Live Demo](https://apicompat.abobb.site) · [Preview](#preview) · [Protocol Matrix](#protocol-matrix) · [Test Flow](#test-flow) · [Quick Start](#quick-start) · [Engineering Notes](#engineering-notes-the-pitfalls)
 
@@ -48,7 +48,7 @@ giving a status, first-chunk latency and total time per cell, and finally export
   <tr>
     <td width="50%" valign="top">
       <img src="docs/screenshots/detail.jpg" alt="Cell detail">
-      <br><sub><b>Cell detail</b> · click any cell to see the actual request URL, the response mode, first-chunk latency and total time</sub>
+      <br><sub><b>Cell detail</b> · click any cell to see the actual request URL, the response mode, the first-chunk latency, and whether that cell needed a retry</sub>
     </td>
     <td width="50%" valign="top">
       <img src="docs/screenshots/report.jpg" alt="Diagnostic report">
@@ -77,6 +77,7 @@ giving a status, first-chunk latency and total time per cell, and finally export
 - [Features](#features)
   - [Fetch the list first, then test](#fetch-the-list-first-then-test)
   - [First-Chunk Latency: The Bar for "Usable"](#first-chunk-latency-the-bar-for-usable)
+  - [Timing Scope and Retries: Two Numbers That Have to Be Stated Plainly](#timing-scope-and-retries-two-numbers-that-have-to-be-stated-plainly)
   - [Declared ≠ Observed](#declared--observed)
   - [Base URL Normalization: Whatever You Paste Works](#base-url-normalization-whatever-you-paste-works)
   - [Four Export Formats](#four-export-formats)
@@ -212,10 +213,11 @@ flowchart LR
 |---|---|---|
 | 🔎 | **List first, test second** | Pull the visible models from the site, then verify them protocol by protocol, instead of typing model names by hand |
 | 🧩 | **Ten protocols, ten independent request shapes** | Paths, auth headers and body shapes all follow each protocol's own rules, instead of an OpenAI template |
-| ⏱ | **First-chunk latency and total time tracked separately** | For streaming, "how soon it starts talking" is closer to what you feel than "how soon it ends" |
+| ⏱ | **First-chunk latency only, never a faked total time** | Streaming aborts on the first chunk so it burns no tokens — no total time for streaming; non-streaming gets response time |
 | 🎯 | **Eleven-state attribution** | Tell "your key is broken" apart from "this model has no channel" |
 | ⚖️ | **Declared vs. observed, side by side** | Put `supported_endpoint_types` next to what actually got through; flag mismatches in yellow |
 | 🚀 | **Tunable concurrency / timeout / retries** | 6 concurrent by default; measured to be an order of magnitude faster than serial |
+| ↻ | **Retry cost on display** | Cells that only passed after a retry carry ↻, with the first attempt's duration and backoff spelled out |
 | 🔁 | **Retest failures only** | A flaky upstream doesn't force a full rerun |
 | 📊 | **Four export formats** | HTML (send it straight to someone) / Markdown (paste into an issue) / JSON (feed to scripts) / CSV |
 
@@ -241,6 +243,28 @@ The probe sends streaming requests (`stream: true`), but **"we got the first byt
 Reasoning models have a trap: with too small a `max_tokens`, they spend it all on thinking and return an empty string as the content.
 Checking "content is non-empty" would misjudge them as failures, so the bar stops at **whether the chunk is valid**,
 and `max_tokens` is set to 512 to leave headroom.
+
+### Timing Scope and Retries: Two Numbers That Have to Be Stated Plainly
+
+**Streaming only reports first-chunk latency.** The probe calls `abort()` the moment it parses the first valid chunk
+(otherwise every test quietly burns 512 tokens), which means that instant is both "the first chunk arrived"
+and "the request ended". Printing it as "total time" is a lie — the same number cannot be both the start and the end. So:
+
+- a streaming cell reports first-chunk latency only, and the detail popup says
+  "streaming: aborts on the first data chunk, so total time is not measured";
+- non-streaming responses (which arrive in one piece) get "response time", labelled as such.
+
+**A retry has to be reported together with what it cost.** The default retry count is 1, and after a successful retry
+the tool holds the result of the **last** attempt: if the first one hit a timeout (possibly a full 30 seconds)
+and the retry succeeded in 200 ms, the cell would show nothing but a pretty 200 ms.
+That is the same trick as "retry until success and only display the successes", so now:
+
+- a cell that only passed on retry carries a **↻** marker, and hovering shows the first attempt's status and duration;
+- the detail popup lists "attempts", "first attempt" and "backoff wait";
+- the completion banner separately reports "N usable combinations only passed after a retry";
+- the JSON export carries `attempts` / `retried` / `retryWaitMs` / `firstAttemptMs`.
+
+> In one line: the latency in a cell comes from the attempt that succeeded, but **the cost paid before the retry is never hidden**.
 
 ### Declared ≠ Observed
 
@@ -324,7 +348,7 @@ vercel deploy --prod
 
 ```
 .
-├── index.html              # everything — styles, logic, vector icons and favicon all inlined, 140 KB / 2649 lines
+├── index.html              # everything — styles, logic, vector icons and favicon all inlined, 146 KB / 2731 lines
 ├── robots.txt
 ├── docs/
 │   ├── images/
@@ -378,10 +402,11 @@ BASE=https://apicompat.abobb.site node tests/smoke.mjs
 ```
 
 Coverage falls into these buckets: hero rendering and icon mounting, list fetching, matrix dimensions and stats consistency,
-the cell-detail popup, the "only usable protocols" filter, the four exports being non-empty,
-no horizontal overflow at the 390 / 768 / 1024 breakpoints, and double-click opening over `file://`.
+the cell-detail popup and its timing scope, **retry cost made visible**, the "only usable protocols" filter,
+the four exports being non-empty, no horizontal overflow at the 390 / 768 / 1024 breakpoints,
+and double-click opening over `file://`.
 
-**24 assertions in total; against `tests/mock.py` it's 24 passed / 0 failed.**
+**32 assertions in total; against `tests/mock.py` it's 32 passed / 0 failed.**
 
 ```
 PASS  page loads with no console errors
@@ -398,23 +423,33 @@ PASS  stats bar "total combinations" is self-consistent
 PASS  usable combinations exist and match the stats
 PASS  legend has all four colors
 PASS  diagnostic report generated (with protocol pass rate and conclusion analysis)
-PASS  clicking a cell opens the detail popup (with first-chunk latency and total time)
+PASS  clicking a cell opens the detail popup (with first-chunk latency and timing scope)
+PASS  the detail popup no longer mislabels first-chunk latency as "total time"
 PASS  "only usable protocols" filter applies and can be undone
 PASS  HTML export is non-empty
 PASS  Markdown export is non-empty
 PASS  JSON export is non-empty
 PASS  CSV export is non-empty
+PASS  the second round (retries=1) finishes
+PASS  a cell that only passed on retry carries the ↻ marker
+PASS  the ↻ tooltip spells out what the first attempt cost
+PASS  the completion banner reports how many combinations needed a retry
+PASS  the detail popup shows "attempts" and "first attempt"
+PASS  JSON export contains attempts / retried / timingScope
+PASS  JSON export no longer contains the misleading totalMs field
 PASS  no horizontal overflow at 390px
 PASS  no horizontal overflow at 768px
 PASS  no horizontal overflow at 1024px
 PASS  file:// double-click works (protocol cards and scripts are both there)
 
 ====================================================
-  24 passed, 0 failed
+  32 passed, 0 failed
 ====================================================
 ```
 
-> Playwright is required: `npm i -D playwright && npx playwright install chromium`.
+> The last 7 are triggered by two combinations in the mock relay that return 500 on every other hit
+> (`GET /__reset` clears the counters). In other words the "only passed on retry" path is **actually tested**,
+> not just written. Playwright is required: `npm i -D playwright && npx playwright install chromium`.
 
 ## Engineering Notes: The Pitfalls
 

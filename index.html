@@ -63,7 +63,12 @@
     font-size:var(--fs-sm);
     line-height:var(--lh-base);
     -webkit-font-smoothing:antialiased;
+    /* 纵向 flex 只为了一件事：正文不足一屏时，把页脚压到视口底部。
+       不这么做 body 虽然 min-height:100vh，页脚仍会悬在半空、下面留一条白。 */
+    display:flex;
+    flex-direction:column;
     min-height:100vh;
+    min-height:100dvh;
     position:relative;
   }
 
@@ -137,9 +142,16 @@
   .wrap{
     max-width:1020px;
     margin:0 auto;
-    padding:0 24px 72px;
+    /* 底部内边距只留一点点：页脚已经吸底，留 72px 会在页脚下方又撑出一条白 */
+    padding:0 24px 24px;
     position:relative;
     z-index:1;
+    /* 作为 flex 项撑满剩余高度，footer 的 margin-top:auto 才有东西可推 */
+    flex:1 0 auto;
+    width:100%;
+    align-self:center;
+    display:flex;
+    flex-direction:column;
   }
 
   /* ── 页头：只留一行标题，就此打住 ── */
@@ -638,6 +650,8 @@
   .mcell.err{background:var(--err-bg);color:var(--err)}
   .mcell.neutral{background:var(--neutral-bg);color:var(--neutral)}
   .mcell .ms{font-weight:400;opacity:.8;font-variant-numeric:tabular-nums}
+  /* 重试标记：提示这一格的延迟是「重试之后」才拿到的，鼠标悬停看首次尝试的代价 */
+  .mcell .rt{margin-left:3px;font-weight:700;opacity:.7;cursor:help}
 
   .declared{
     font-size:var(--fs-xs);
@@ -812,11 +826,19 @@
 
   /* ── 页脚：免责声明 + 版权 ── */
   footer{
-    margin-top:40px;
-    padding-top:16px;
-    border-top:1px solid var(--border);
+    /* auto = 内容不足一屏时把页脚顶到视口底部（这就是「吸底」）；
+       代价是内容超过一屏时 auto 解析成 0，原本那 40px 间距会消失，
+       所以间距与分隔线改由 ::before 承担，两种情况都在。 */
+    margin-top:auto;
     text-align:center;
     line-height:1.65;
+  }
+  footer::before{
+    content:"";
+    display:block;
+    margin-top:40px;     /* 与上一区块的最小间距（原 footer 的 margin-top） */
+    margin-bottom:16px;  /* 分隔线与正文的间距（原 footer 的 padding-top） */
+    border-top:1px solid var(--border);
   }
   .foot-disc{
     max-width:680px;
@@ -832,7 +854,7 @@
   }
 
   @media(max-width:768px){
-    .wrap{padding:0 15px 56px}
+    .wrap{padding:0 15px 18px}
     .nav-inner{padding:10px 15px}
     .row{flex-direction:column;gap:0}
     .stat-grid{grid-template-columns:repeat(2,1fr)}
@@ -984,7 +1006,7 @@
       <div class="feat-icon feat-emerald"><span class="ic ic-pulse" aria-hidden="true"></span></div>
       <div class="feat-content">
         <div class="feat-title">流式与非流式双测</div>
-        <div class="feat-desc">同时探测连通性、SSE 事件分块与 NDJSON，度量首包延迟 (TTFT) 与总耗时，失败项可一键重测。</div>
+        <div class="feat-desc">同时探测连通性、SSE 事件分块与 NDJSON，度量首块延迟 (TTFT)。流式命中首块即断开、不烧 token，所以只给首块延迟、不给总耗时；失败项可一键重测并保留重试记录。</div>
       </div>
     </div>
     <div class="feat-card">
@@ -1692,13 +1714,23 @@
   }
 
   async function probeWithRetry(nb, p, model, key, timeoutMs, retries) {
-    var attempt = 0, last = null;
+    var attempt = 0, probes = 0, last = null, first = null, waitMs = 0;
     while (attempt <= retries) {
       last = await probeProtocol(nb, p, model, key, timeoutMs);
-      if (!last.retryable) return last;
+      probes++;
+      if (probes === 1) first = last;
+      if (!last.retryable) break;
       attempt++;
-      if (attempt <= retries) await sleep(400 * attempt);
+      if (attempt <= retries) { var w = 400 * attempt; await sleep(w); waitMs += w; }
     }
+    /* 重试成功后返回的是「最后一次」的结果，首次失败那段代价（往往是一整个超时）
+       连同退避等待都不在 last.totalMs 里。全部显式带出来：
+       别让「首次超时 30s、重试 200ms 成功」在格子里显示成 200ms。 */
+    last.attempts = probes;
+    last.retried = probes > 1;
+    last.retryWaitMs = waitMs;
+    last.firstAttemptMs = first ? first.totalMs : null;
+    last.firstAttemptLabel = first ? first.status.label : null;
     return last;
   }
 
@@ -1762,8 +1794,16 @@
   function cellOf(r) {
     if (!r) return '<span class="mcell plain">—</span>';
     var ms = r.firstTokenMs != null ? '<span class="ms">' + r.firstTokenMs + 'ms</span>' : '';
+    /* 这一格是重试之后才通的：标个 ↻，并在 title 里交代首次尝试的真实代价。
+       否则「首次超时 30s、重试 200ms 成功」会显示成一个漂亮的 200ms。 */
+    var rt = r.retried
+      ? '<span class="rt" title="重试 ' + (r.attempts - 1) + ' 次后才通过；第 1 次为「'
+          + esc(r.firstAttemptLabel || "失败") + '」耗时 '
+          + (r.firstAttemptMs == null ? "—" : r.firstAttemptMs + "ms")
+          + '，另有退避等待 ' + r.retryWaitMs + 'ms 不计入本格延迟">↻</span>'
+      : '';
     return '<span class="mcell ' + r.status.cls + '" data-m="' + esc(r.model) + '" data-p="' + esc(r.protoId) + '">'
-         + esc(r.status.label) + ms + '</span>';
+         + esc(r.status.label) + rt + ms + '</span>';
   }
 
   function renderMatrix() {
@@ -1823,12 +1863,28 @@
         var rows = [
           ["状态", statusBadge(r.status)],
           ["请求地址", '<code class="mono">' + esc(r.url || "—") + '</code>'],
-          ["响应方式", esc(r.mode || "—")],
-          ["首块延迟", r.firstTokenMs == null ? "—" : r.firstTokenMs + " ms"],
-          ["总耗时", r.totalMs == null ? "—" : r.totalMs + " ms"],
-          ["输出样例", r.sample ? '<code class="mono">' + esc(r.sample) + '</code>' : "—"],
-          ["备注", esc(r.note || "—")]
+          ["响应方式", esc(r.mode || "—")]
         ];
+        /* 计时口径必须跟实现一致：流式命中首个数据块就 abort，那个 totalMs 与首块延迟
+           是同一瞬间，拿它当「总耗时」就是虚报。所以流式只报首块延迟，非流式才报总耗时。 */
+        if (r.status.ok && r.mode === "流式") {
+          rows.push(["首块延迟", r.firstTokenMs == null ? "—" : r.firstTokenMs + " ms"]);
+          rows.push(["计时口径", "流式：首块延迟即 TTFT；命中首个数据块即断开，故不统计总耗时"]);
+        } else if (r.status.ok) {
+          rows.push(["响应耗时", r.totalMs == null ? "—" : r.totalMs + " ms"]);
+          rows.push(["计时口径", "非流式：完整响应返回的用时"]);
+        } else {
+          rows.push(["判定用时", r.totalMs == null ? "—" : r.totalMs + " ms"]);
+        }
+        if (r.retried) {
+          rows.push(["尝试次数", r.attempts + " 次（重试 " + (r.attempts - 1) + " 次后才通过）"]);
+          rows.push(["首次尝试", "「" + esc(r.firstAttemptLabel || "失败") + "」· "
+            + (r.firstAttemptMs == null ? "—" : r.firstAttemptMs + " ms")
+            + "，另有退避等待 " + r.retryWaitMs + " ms"]);
+          rows.push(["说明", "本格延迟取自重试成功的那一次；上面两行是重试前被吞掉的真实代价"]);
+        }
+        rows.push(["输出样例", r.sample ? '<code class="mono">' + esc(r.sample) + '</code>' : "—"]);
+        rows.push(["备注", esc(r.note || "—")]);
         modalBody.innerHTML = rows.map(function (x) {
           return "<dt>" + x[0] + "</dt><dd>" + x[1] + "</dd>";
         }).join("");
@@ -2194,13 +2250,21 @@
       renderMatrix();
       resultActions.style.display = "flex";
 
-      var okCount = 0;
+      var okCount = 0, retryCount = 0, retryOnly = 0;
       Object.keys(state.matrix).forEach(function (m) {
-        Object.keys(state.matrix[m]).forEach(function (p) { if (state.matrix[m][p].status.ok) okCount++; });
+        Object.keys(state.matrix[m]).forEach(function (p) {
+          var r = state.matrix[m][p];
+          if (r.status.ok) okCount++;
+          if (r.retried) { retryCount++; if (r.status.ok) retryOnly++; }
+        });
       });
       var msg = '<div class="banner ' + (okCount === tasks.length ? "ok" : (okCount ? "warn" : "err")) + '">'
               + '<span class="ic ic-' + (okCount === tasks.length ? "ok" : (okCount ? "warn" : "err")) + '"></span><div>'
               + '<b>实测完成：' + tasks.length + ' 个「模型 × 协议」组合中 ' + okCount + ' 个可用。</b>'
+              + (retryCount
+                  ? '<br>其中 <b>' + retryOnly + ' 个可用组合是重试之后才通过的</b>（矩阵里带 ↻ 标记），'
+                    + '首次尝试的耗时没有计入格子里的延迟，点开可看真实代价。'
+                  : '')
               + (skipped ? '<br>已按服务端声明过滤掉 ' + skipped + ' 个组合。' : '')
               + (okCount < tasks.length ? '<br>失败项多为上游偶发，建议先点「重测失败项」再下结论。' : '')
               + '</div></div>';
@@ -2290,18 +2354,20 @@
 
   function expCsv() {
     var protos = state.protocols;
-    var rows = [["模型", "服务端声明"].concat(protos.map(function (p) { return p.id; })).concat(["可用协议数", "最快延迟ms"])];
+    var rows = [["模型", "服务端声明"].concat(protos.map(function (p) { return p.id; })).concat(["可用协议数", "需重试数", "最快延迟ms"])];
     state.order.forEach(function (id) {
       var m = null;
       for (var i = 0; i < state.models.length; i++) if (state.models[i].id === id) m = state.models[i];
       var cells = [id, (m && m.declared ? m.declared.join("|") : "")];
-      var okN = 0, best = null;
+      var okN = 0, retriedN = 0, best = null;
       protos.forEach(function (p) {
         var r = state.matrix[id] && state.matrix[id][p.id];
-        cells.push(r ? (r.status.label + (r.firstTokenMs != null ? " " + r.firstTokenMs + "ms" : "")) : "");
+        /* ↻ = 这一格是重试之后才通的（降级信号，别当成一次就过） */
+        cells.push(r ? (r.status.label + (r.retried ? "↻" : "") + (r.firstTokenMs != null ? " " + r.firstTokenMs + "ms" : "")) : "");
         if (r && r.status.ok) { okN++; if (r.firstTokenMs != null && (best == null || r.firstTokenMs < best)) best = r.firstTokenMs; }
+        if (r && r.retried) retriedN++;
       });
-      cells.push(okN, best == null ? "" : best);
+      cells.push(okN, retriedN, best == null ? "" : best);
       rows.push(cells);
     });
     var csv = rows.map(function (r) {
@@ -2323,8 +2389,20 @@
         state.protocols.forEach(function (p) {
           var r = state.matrix[id] && state.matrix[id][p.id];
           row[p.id] = r ? {
-            status: r.status.key, label: r.status.label, firstTokenMs: r.firstTokenMs,
-            totalMs: r.totalMs, url: r.url, note: r.note, sample: r.sample || null
+            status: r.status.key, label: r.status.label,
+            firstTokenMs: r.firstTokenMs,
+            /* elapsedMs = 最后一次尝试「从发出到判定」的用时。
+               流式成功时它等于 firstTokenMs（命中首个数据块就断开），不是总耗时；
+               具体口径看 timingScope。原来这个字段叫 totalMs，名不副实，已改名。 */
+            elapsedMs: r.totalMs,
+            timingScope: (r.status.ok && r.mode === "流式") ? "stream-first-chunk"
+                       : (r.status.ok ? "non-stream-full" : "until-failure"),
+            attempts: r.attempts || 1,
+            retried: !!r.retried,
+            retryWaitMs: r.retryWaitMs || 0,
+            firstAttemptMs: r.firstAttemptMs == null ? null : r.firstAttemptMs,
+            firstAttemptLabel: r.firstAttemptLabel || null,
+            url: r.url, note: r.note, sample: r.sample || null
           } : null;
         });
         return row;
@@ -2368,7 +2446,8 @@
       var cells = state.protocols.map(function (p) {
         var r = state.matrix[id] && state.matrix[id][p.id];
         if (!r) return "—";
-        return r.status.ok ? ("✅ " + (r.firstTokenMs != null ? r.firstTokenMs + "ms" : "")) : ("❌ " + r.status.label);
+        var mark = r.retried ? " ↻" : "";
+        return r.status.ok ? ("✅ " + (r.firstTokenMs != null ? r.firstTokenMs + "ms" : "") + mark) : ("❌ " + r.status.label + mark);
       });
       L.push("| `" + id + "` | " + ((m && m.declared) ? m.declared.join(",") : "—") + " | " + cells.join(" | ") + " |");
     });
@@ -2483,10 +2562,13 @@
       state.protocols.forEach(function (p) {
         var r = state.matrix[id] && state.matrix[id][p.id];
         if (!r) { h += "<td class=\"na\">—</td>"; return; }
-        if (r.status.ok) h += "<td class=\"ok\">✅ " + (r.firstTokenMs != null ? r.firstTokenMs + "ms" : "可用") + "</td>";
+        var mark = r.retried ? " <span title=\"重试 " + (r.attempts - 1) + " 次后才通过；第 1 次为「"
+          + esc(r.firstAttemptLabel || "失败") + "」耗时 " + (r.firstAttemptMs == null ? "—" : r.firstAttemptMs + "ms")
+          + "\">↻</span>" : "";
+        if (r.status.ok) h += "<td class=\"ok\">✅ " + (r.firstTokenMs != null ? r.firstTokenMs + "ms" : "可用") + mark + "</td>";
         else {
           var cls = r.status.key === "UNSUPPORTED" ? "na" : (r.status.cls === "warn" ? "warn" : "bad");
-          h += "<td class=\"" + cls + "\">❌ " + esc(r.status.label) + "</td>";
+          h += "<td class=\"" + cls + "\">❌ " + esc(r.status.label) + mark + "</td>";
         }
       });
       h += "</tr>";

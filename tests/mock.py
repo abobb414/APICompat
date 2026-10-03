@@ -74,6 +74,17 @@ PATHS = {
     "/api/chat": "ollama",
 }
 
+# 故意做得「隔一次就 500」的组合：专供测试「重试了才通过」这条路径。
+# 工具只对 5xx / 超时 / 网络错误重试（503 被归为「无可用渠道」，不重试，所以这里用 500）。
+# 用奇偶计数而非「只失败第一次」，配合 GET /__reset 就能在任何一轮里稳定复现。
+#
+# ⚠️ 必须挑 anthropic 侧的组合：假站按「路径 → 协议」判归属，
+# 而工具的「自定义协议」也打 /v1/chat/completions（即 openai 路径），
+# 若把 flaky 放在 openai 侧，一次测试里两种协议会共用同一个计数器，重试结果就不可复现
+# （实测过：glm-5.3 的 openai 列会变成「重试后仍失败」，全是串扰导致的）。
+FLAKY = {("claude-sonnet-4.5", "anthropic"), ("claude-opus-4.1", "anthropic")}
+HITS = {}
+
 
 def sse(objs, delay=0.04):
     for o in objs:
@@ -140,6 +151,9 @@ class Handler(BaseHTTPRequestHandler):
         if p == "/v1beta/models":
             data = [{"name": "models/" + m, "displayName": m} for m in DECLARED]
             return self._send(200, json.dumps({"models": data}).encode())
+        if p == "/__reset":
+            HITS.clear()
+            return self._send(200, json.dumps({"ok": True, "reset": True}).encode())
         self._send(404, json.dumps({"error": {"message": "not found"}}).encode())
 
     def do_POST(self):
@@ -172,6 +186,12 @@ class Handler(BaseHTTPRequestHandler):
                 return self._send(404, json.dumps({"error": {"message": "no such route"}}).encode())
             return self._send(400, json.dumps(
                 {"error": {"message": "unsupported_endpoint", "code": "unsupported_endpoint"}}).encode())
+
+        key = (model, proto)
+        HITS[key] = HITS.get(key, 0) + 1
+        if key in FLAKY and HITS[key] % 2 == 1:
+            return self._send(500, json.dumps(
+                {"error": {"message": "upstream read timeout, please retry", "code": "server_error"}}).encode())
 
         if proto == "ollama":
             body = json.dumps({"model": model, "message": {"role": "assistant", "content": "OK"},

@@ -13,14 +13,14 @@
 
 不是「猜哪个模型能用」，也不是「贴一次 curl 看通不通」——
 它先把站点可见的模型清单拉下来，再用 **10 种协议 × 全部模型**跑一遍交叉矩阵，
-逐格给出状态、首块延迟与总耗时，最后导出成一份能发出去的诊断报告。
+逐格给出状态与首块延迟，最后导出成一份能发出去的诊断报告。
 
 [![Live Demo](https://img.shields.io/badge/Live_Demo-apicompat.abobb.site-2f80ed?style=flat-square&logo=icloud&logoColor=white)](https://apicompat.abobb.site)
 [![No Build](https://img.shields.io/badge/build-none_required-3fb950?style=flat-square&logo=html5&logoColor=white)](#快速开始)
 [![Dependencies](https://img.shields.io/badge/dependencies-0-3fb950?style=flat-square&logo=javascript&logoColor=white)](#项目结构)
 [![Protocols](https://img.shields.io/badge/protocols-10-8b5cf6?style=flat-square)](#协议矩阵)
 [![States](https://img.shields.io/badge/states-11_种归因-f59e0b?style=flat-square)](#十一种状态)
-[![Single File](https://img.shields.io/badge/single_file-140_KB_·_2649_行-64748b?style=flat-square)](#项目结构)
+[![Single File](https://img.shields.io/badge/single_file-146_KB_·_2731_行-64748b?style=flat-square)](#项目结构)
 
 [在线体验](https://apicompat.abobb.site) · [预览](#预览) · [协议矩阵](#协议矩阵) · [实测流程](#实测流程) · [快速开始](#快速开始) · [工程笔记](#工程笔记那些踩过的坑)
 
@@ -48,7 +48,7 @@
   <tr>
     <td width="50%" valign="top">
       <img src="docs/screenshots/detail.jpg" alt="单格明细">
-      <br><sub><b>单格明细</b> · 点任意一格看到实际请求地址、响应方式、首块延迟与总耗时</sub>
+      <br><sub><b>单格明细</b> · 点任意一格看到实际请求地址、响应方式、首块延迟，以及这一格是否需要重试</sub>
     </td>
     <td width="50%" valign="top">
       <img src="docs/screenshots/report.jpg" alt="诊断报告">
@@ -77,6 +77,7 @@
 - [特性](#特性)
   - [先拿清单，再谈实测](#先拿清单再谈实测)
   - [首块延迟：判定「能用」的口径](#首块延迟判定能用的口径)
+  - [计时口径与重试：两个数必须说清](#计时口径与重试两个数必须说清)
   - [声明 ≠ 实测](#声明--实测)
   - [地址归一化：贴什么进来都能认](#地址归一化贴什么进来都能认)
   - [四种导出](#四种导出)
@@ -212,10 +213,11 @@ flowchart LR
 |---|---|---|
 | 🔎 | **先清单后实测** | 从站点拉可见模型，再用它去逐协议验证，而不是手输模型名 |
 | 🧩 | **十种协议各自成请求** | 路径、鉴权头、body 形态都按协议自己的规矩来，不是套 OpenAI 模板 |
-| ⏱ | **首块延迟与总耗时分开记** | 流式场景下「多久开始吐字」比「多久结束」更接近体感 |
+| ⏱ | **只报首块延迟，不虚报总耗时** | 流式命中首块即断开、不烧 token，所以流式不给总耗时；非流式才给响应耗时 |
 | 🎯 | **十一种状态归因** | 分清「你的 Key 坏了」和「这个模型没渠道」 |
 | ⚖️ | **声明 vs 实测对拍** | 把 `supported_endpoint_types` 与实际跑通结果并列，不一致就标黄 |
 | 🚀 | **可调并发 / 超时 / 重试** | 默认 6 并发；实测 6 比串行快一个数量级 |
+| ↻ | **重试的代价摆出来** | 重试才通过的格子带 ↻，首次尝试耗时与退避等待一并写明 |
 | 🔁 | **只重测失败项** | 上游偶发失败不用整轮重跑 |
 | 📊 | **四种导出** | HTML（可直接发人）/ Markdown（贴 Issue）/ JSON（喂脚本）/ CSV |
 
@@ -241,6 +243,26 @@ flowchart LR
 推理模型有个坑：给的 `max_tokens` 太小，它会全部用在思考上，正文返回空字符串。
 只看「正文非空」会把它误判成失败，所以判定收在**分块是否合法**这一步，
 `max_tokens` 给到 512 留出余量。
+
+### 计时口径与重试：两个数必须说清
+
+**流式只报首块延迟。** 探针拿到第一个合法数据块就 `abort()`（不这么做，每测一次就白烧 512 token），
+于是那一刻的耗时既等于「首块延迟」也等于「请求结束」。把它印成「总耗时」就是虚报 ——
+同一个数字怎么可能既是开始也是结束。所以现在：
+
+- 流式格子只给首块延迟，明细里写明「命中首个数据块即断开，故不统计总耗时」；
+- 非流式（响应一次性返回）才给「响应耗时」，并注明口径。
+
+**重试要连代价一起报。** 重试次数默认为 1，而重试成功后工具拿到的是**最后一次尝试**的结果：
+如果第一次撞上超时（可能整整 30 秒）、重试 200ms 成功，格子里就只剩一个漂亮的 200ms。
+这和「重试到成功为止、只显示成功结果」是同一类做法，所以现在：
+
+- 重试才通过的格子带 **↻** 标记，悬停能看到首次尝试的状态与耗时；
+- 明细弹窗给出「尝试次数」「首次尝试」「退避等待」三行；
+- 完成横幅单独报出「N 个可用组合是重试之后才通过的」；
+- JSON 导出的字段是 `attempts` / `retried` / `retryWaitMs` / `firstAttemptMs`。
+
+> 一句话：格子里的延迟取自重试成功的那一次，但**重试前付出的代价不会被藏起来**。
 
 ### 声明 ≠ 实测
 
@@ -324,7 +346,7 @@ vercel deploy --prod
 
 ```
 .
-├── index.html              # 全部内容 —— 样式、逻辑、矢量图标、favicon 全内联，140 KB / 2649 行
+├── index.html              # 全部内容 —— 样式、逻辑、矢量图标、favicon 全内联，146 KB / 2731 行
 ├── robots.txt
 ├── docs/
 │   ├── images/
@@ -378,10 +400,10 @@ BASE=https://apicompat.abobb.site node tests/smoke.mjs
 ```
 
 覆盖的是这几类：首屏渲染与图标挂载、拉清单、矩阵尺寸与统计自洽、
-单格明细弹窗、只看可用协议筛选、四种导出非空、
+单格明细弹窗与计时口径、**重试代价可见**、只看可用协议筛选、四种导出非空、
 390 / 768 / 1024 三个断点无横向溢出、`file://` 双击直开。
 
-**共 24 条断言，对着 `tests/mock.py` 跑是 24 passed / 0 failed。**
+**共 32 条断言，对着 `tests/mock.py` 跑是 32 passed / 0 failed。**
 
 ```
 PASS  页面载入无控制台报错
@@ -398,22 +420,32 @@ PASS  统计条「组合总数」自洽
 PASS  存在可用组合且与统计一致
 PASS  图例四色齐全
 PASS  诊断报告生成（含协议通过率与结论分析）
-PASS  点格子弹出明细（含首块延迟与总耗时）
+PASS  点格子弹出明细（含首块延迟与计时口径）
+PASS  明细弹窗不再把首块延迟谎报成「总耗时」
 PASS  「只看可用协议」筛选生效且可撤销
 PASS  导出 HTML 非空
 PASS  导出 Markdown 非空
 PASS  导出 JSON 非空
 PASS  导出 CSV 非空
+PASS  第二轮（重试=1）跑完
+PASS  重试通过的格子带 ↻ 标记
+PASS  ↻ 的悬停说明交代了首次尝试的代价
+PASS  完成横幅报出「重试之后才通过」的组合数
+PASS  明细弹窗里有「尝试次数」与「首次尝试」
+PASS  JSON 导出含 attempts / retried / timingScope
+PASS  JSON 导出不再出现误导性的 totalMs 字段
 PASS  390px 宽无横向溢出
 PASS  768px 宽无横向溢出
 PASS  1024px 宽无横向溢出
 PASS  file:// 双击直开可用（协议卡与脚本都在）
 
 ====================================================
-  24 passed, 0 failed
+  32 passed, 0 failed
 ====================================================
 ```
 
+> 最后 7 条靠假中转站里两个「隔一次就 500」的组合来触发（`GET /__reset` 可重置计数）。
+> 换句话说，「重试了才通过」这条路径是**测过的**，不是写完就算。
 > 需要 Playwright：`npm i -D playwright && npx playwright install chromium`。
 
 ## 工程笔记：那些踩过的坑
