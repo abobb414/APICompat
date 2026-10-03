@@ -186,9 +186,11 @@ check('第二轮（重试=1）跑完', ran2);
 
 const RT = await page.evaluate(() => {
   const marked = [...document.querySelectorAll('#tableWrap .mcell .rt')];
+  // 悬停说明挂在外层格子上（↻ 只是格内的一个记号），所以从记号往上找宿主
+  const host = marked[0] ? marked[0].closest('.mcell') : null;
   return {
     n: marked.length,
-    title: marked[0] ? (marked[0].getAttribute('title') || '') : '',
+    title: host ? (host.getAttribute('title') || '') : '',
     banner: document.querySelector('#panel-conn').innerText.replace(/\s+/g, ' '),
   };
 });
@@ -233,7 +235,138 @@ for (const w of [390, 768, 1024]) {
   await p.close();
 }
 
-// ---- 8. file:// 直开 ----
+// ---- 8. 深色主题 ----
+const btnTheme = await page.evaluate(() => {
+  const b = document.getElementById('themeBtn');
+  return {
+    has: !!b,
+    w: b ? Math.round(b.getBoundingClientRect().width) : 0,
+    // 三个图标同时躺在按钮里，同一时刻只该露出一个
+    shown: b ? [...b.querySelectorAll('.ic')].filter(e => getComputedStyle(e).display !== 'none').length : 0,
+    mode: document.documentElement.getAttribute('data-theme-mode'),
+  };
+});
+check('顶栏有主题切换按钮', btnTheme.has && btnTheme.w > 20, `宽 ${btnTheme.w}`);
+check('主题按钮同一时刻只露一个图标', btnTheme.shown === 1, `露出 ${btnTheme.shown} 个`);
+
+await page.click('#themeBtn');   // auto → light
+await page.click('#themeBtn');   // light → dark
+/* 先等过渡跑完再量。按钮/卡片上挂着 transition:background .15s，
+   点完立刻量会采到「白 → 深蓝」的第一帧（曾在这里误报出 .theme-btn 的
+   rgb(253,254,254)、.key-toggle 的 rgb(247,249,252)、.link-btn 的纯白
+   —— 三个都是中间帧，等 150ms 后终态一律收敛到 #151c26 / #0d1117）。 */
+await page.waitForTimeout(400);
+const dark = await page.evaluate(() => {
+  const root = document.documentElement;
+  /* 深色下还亮着的「面」＝漏改的硬编码色。逐个量真正参与渲染的那些元素，
+     而不是只看 body —— 白块通常出现在卡片、表头、输入框这些内层。 */
+  const sel = '.panel,.stat,.matrix-scroll,.btn-ghost,.proto,.link-btn,input[type=text],' +
+              'table.matrix thead th,.modal .box,.theme-btn,.key-toggle';
+  const whites = [];
+  document.querySelectorAll(sel).forEach(el => {
+    const bg = getComputedStyle(el).backgroundColor;
+    const m = bg.match(/^rgb\((\d+), (\d+), (\d+)\)$/);
+    if (m && +m[1] > 235 && +m[2] > 235 && +m[3] > 235) whites.push(el.className + ' → ' + bg);
+  });
+  const body = getComputedStyle(document.body);
+  return {
+    theme: root.getAttribute('data-theme'), mode: root.getAttribute('data-theme-mode'),
+    bg: body.backgroundColor, fg: body.color, whites,
+    meta: (document.querySelector('meta[name="theme-color"]') || {}).content || '',
+  };
+});
+check('切到深色档后 html[data-theme=dark]', dark.theme === 'dark' && dark.mode === 'dark', `${dark.theme}/${dark.mode}`);
+check('深色下页面底色确实是深的', dark.bg === 'rgb(13, 17, 23)', dark.bg);
+check('深色下正文是浅色字', (dark.fg.match(/\d+/) || [0])[0] > 180, dark.fg);
+check('深色下没有残留白底元素', dark.whites.length === 0, dark.whites.slice(0, 3).join(' | '));
+check('地址栏染色跟着主题走', dark.meta === '#0d1117', dark.meta);
+
+await page.click('#themeBtn');   // dark → auto
+const modeBack = await page.evaluate(() => document.documentElement.getAttribute('data-theme-mode'));
+check('主题按钮循环回「跟随系统」', modeBack === 'auto', String(modeBack));
+
+// ---- 9. 采样次数与测速档 ----
+// 压到单协议 × 全部模型的 16 格，并把两件事分两轮跑，各自只花几秒
+await page.evaluate(() => { const d = document.querySelector('details.adv'); if (d) d.open = true; });
+await page.click('#pNone');
+await page.evaluate(() => {
+  const c = [...document.querySelectorAll('#protoGrid .proto')].find(e => e.getAttribute('data-id') === 'openai');
+  if (c && !c.classList.contains('on')) c.click();
+});
+const waitDone = () => page.waitForFunction(
+  () => { const b = document.getElementById('runBtn'); return b && !b.disabled; }, null, { timeout: 180000 });
+
+await page.fill('#samples', '3');
+await page.selectOption('#probeMode', 'fast');
+await page.waitForTimeout(120);
+await page.click('#runBtn');
+await waitDone();
+
+const S = await page.evaluate(() => {
+  const cells = [...document.querySelectorAll('#tableWrap .mcell:not(.plain)')];
+  cells[0].click();
+  const m = document.querySelector('#modal');
+  return {
+    cells: cells.length,
+    title: cells[0].getAttribute('title') || '',
+    modal: m ? m.innerText.replace(/\s+/g, ' ') : '',
+    banner: document.querySelector('#panel-conn').innerText.replace(/\s+/g, ' '),
+  };
+});
+check('采样 3 次后矩阵仍是 16 格', S.cells === 16, `实际 ${S.cells}`);
+check('格子悬停交代了采样次数与各次延迟',
+  /采样 3 次/.test(S.title) && /各次首块/.test(S.title), S.title.slice(0, 120));
+check('明细弹窗给出采样次数与「格内取中位」',
+  S.modal.includes('采样次数') && S.modal.includes('格内取中位'), S.modal.slice(0, 140));
+check('完成横幅说明这轮每格采样了几次', /每格采样 3 次/.test(S.banner), S.banner.slice(0, 140));
+await page.click('#modalClose');
+await page.waitForTimeout(200);
+
+await page.fill('#samples', '1');
+await page.selectOption('#probeMode', 'meter');
+await page.waitForTimeout(120);
+await page.click('#runBtn');
+await waitDone();
+
+const M = await page.evaluate(() => {
+  const cells = [...document.querySelectorAll('#tableWrap .mcell:not(.plain)')];
+  const withCps = cells.filter(c => c.querySelector('.cps'));
+  const raw = withCps[0] ? withCps[0].querySelector('.cps').textContent : '';
+  if (withCps[0]) withCps[0].click();
+  const m = document.querySelector('#modal');
+  return {
+    cells: cells.length, cps: withCps.length,
+    spd: +String(raw).replace(/[^\d]/g, ''),
+    title: withCps[0] ? (withCps[0].getAttribute('title') || '') : '',
+    modal: m ? m.innerText.replace(/\s+/g, ' ') : '',
+    stats: document.querySelector('#stats').innerText.replace(/\s+/g, ' '),
+  };
+});
+check('测速档每个可用格子都带出速度', M.cps === M.cells && M.cells > 0, `${M.cps} / ${M.cells}`);
+check('输出速度落在 mock 的量级里（≈40 字/秒）', M.spd >= 20 && M.spd <= 90, `${M.spd} 字/秒`);
+check('悬停写清了速度是怎么算的',
+  /吐字速度/.test(M.title) && /首块之后/.test(M.title), M.title.slice(0, 130));
+check('明细弹窗解释了测速口径',
+  M.modal.includes('输出速度') && M.modal.includes('测速口径'), M.modal.slice(0, 150));
+check('统计条多了「中位输出速度」', M.stats.includes('中位输出速度'), M.stats.slice(0, 150));
+await page.click('#modalClose');
+await page.waitForTimeout(200);
+
+const EX = await page.evaluate(async () => {
+  window.__cap = null;
+  document.querySelector('#expJson').click();
+  await new Promise(r => setTimeout(r, 350));
+  const t = window.__cap ? await window.__cap.text() : '';
+  return {
+    setup: /"setup"/.test(t), cps: /"cps"/.test(t),
+    samples: /"samples"/.test(t), jitter: /"jitterMs"/.test(t),
+    scope: /"timingScope"/.test(t),
+  };
+});
+check('JSON 导出带上了测量口径与新指标',
+  EX.setup && EX.cps && EX.samples && EX.jitter && EX.scope, JSON.stringify(EX));
+
+// ---- 10. file:// 直开 ----
 {
   const p = await browser.newPage();
   const ferr = [];

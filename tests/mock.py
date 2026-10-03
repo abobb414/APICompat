@@ -86,7 +86,22 @@ FLAKY = {("claude-sonnet-4.5", "anthropic"), ("claude-opus-4.1", "anthropic")}
 HITS = {}
 
 
-def sse(objs, delay=0.04):
+# ── 流式输出的形态 ──
+# 早先这里是「2~3 个块、一次性写完」，工具命中首块即断开，看不出区别；
+# 但「测速档」要收满采样窗口才算得出吐字速度，所以假站得真的逐字吐：
+# 每个内容块 2 个汉字、间隔 50ms、共 24 块 ≈ 1.2s / 48 字，输出速度 ≈ 40 字/秒。
+# 这个量级与真实 LLM 的流式输出接近，测试断言因此有个稳定可预期的靶子。
+STREAM_BLOCKS = 24
+STREAM_DELAY = 0.05
+STREAM_TEXT = "模型接口兼容性测试正在逐字输出为的是量出真实的吐字速度"
+
+
+def word(i):
+    p = (i * 2) % len(STREAM_TEXT)
+    return STREAM_TEXT[p:p + 2]
+
+
+def sse(objs, delay=STREAM_DELAY):
     for o in objs:
         yield ("data: " + json.dumps(o, ensure_ascii=False) + "\n\n").encode()
         time.sleep(delay)
@@ -94,31 +109,38 @@ def sse(objs, delay=0.04):
 
 
 def openai_chunks(m):
-    return [
-        {"id": "cc-1", "object": "chat.completion.chunk", "model": m,
-         "choices": [{"index": 0, "delta": {"role": "assistant", "content": ""}}]},
-        {"id": "cc-1", "object": "chat.completion.chunk", "model": m,
-         "choices": [{"index": 0, "delta": {"content": "OK"}, "finish_reason": None}]},
-    ]
+    out = [{"id": "cc-1", "object": "chat.completion.chunk", "model": m,
+            "choices": [{"index": 0, "delta": {"role": "assistant", "content": ""}}]}]
+    for i in range(STREAM_BLOCKS):
+        out.append({"id": "cc-1", "object": "chat.completion.chunk", "model": m,
+                    "choices": [{"index": 0, "delta": {"content": word(i)}, "finish_reason": None}]})
+    out.append({"id": "cc-1", "object": "chat.completion.chunk", "model": m,
+                "choices": [{"index": 0, "delta": {}, "finish_reason": "stop"}]})
+    return out
 
 
 def anthropic_chunks(m):
-    return [
+    out = [
         {"type": "message_start", "message": {"id": "msg_1", "role": "assistant", "content": [], "model": m}},
         {"type": "content_block_start", "index": 0, "content_block": {"type": "text", "text": ""}},
-        {"type": "content_block_delta", "index": 0, "delta": {"type": "text_delta", "text": "OK"}},
     ]
+    for i in range(STREAM_BLOCKS):
+        out.append({"type": "content_block_delta", "index": 0,
+                    "delta": {"type": "text_delta", "text": word(i)}})
+    out.append({"type": "content_block_stop", "index": 0})
+    return out
 
 
 def responses_chunks(m):
-    return [
-        {"type": "response.created", "response": {"id": "resp_1", "object": "response", "model": m}},
-        {"type": "response.output_text.delta", "delta": "OK"},
-    ]
+    out = [{"type": "response.created", "response": {"id": "resp_1", "object": "response", "model": m}}]
+    for i in range(STREAM_BLOCKS):
+        out.append({"type": "response.output_text.delta", "delta": word(i)})
+    return out
 
 
 def google_chunks(m):
-    return [{"candidates": [{"content": {"parts": [{"text": "OK"}], "role": "model"}}]}]
+    return [{"candidates": [{"content": {"parts": [{"text": word(i)}], "role": "model"}}]}
+            for i in range(STREAM_BLOCKS)]
 
 
 class Handler(BaseHTTPRequestHandler):
@@ -214,9 +236,15 @@ class Handler(BaseHTTPRequestHandler):
         self.send_header("Access-Control-Allow-Origin", "*")
         self.send_header("Transfer-Encoding", "chunked")
         self.end_headers()
-        for b in sse(chunks):
-            self.wfile.write(b"%X\r\n%s\r\n" % (len(b), b))
-        self.wfile.write(b"0\r\n\r\n")
+        # 工具命中首块（快速档）或收满窗口（测速档）就会主动断开，
+        # 这是预期行为 —— 这里静默收场，别把 BrokenPipe 刷满日志。
+        try:
+            for b in sse(chunks):
+                self.wfile.write(b"%X\r\n%s\r\n" % (len(b), b))
+                self.wfile.flush()
+            self.wfile.write(b"0\r\n\r\n")
+        except (BrokenPipeError, ConnectionResetError):
+            pass
 
 
 def main():
