@@ -1,0 +1,2649 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="theme-color" content="#2563eb">
+<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%232f6bf0%22%20d%3D%22M66.6%20239.8C65.8%20232.1%2062%20178.5%2062%20175.9C62%20174.2%2061.2%20174%2054%20174L45.9%20174%2046.2%20121.8C46.5%2062.4%2046.1%2065.3%2055.2%2057.6C61.5%2052.1%2066.7%2051%2085.5%2051L101.7%2051%20102.3%2045.8C103.9%2032.5%20107.5%2031%20138.6%2031L164%2031%20164%2043.5L164%2056%20183.8%2056C209.5%2056.1%20215%2058.4%20215%2069.7C215%2079.8%20209.4%2082%20184%2082L164%2082%20164%20110L164%20138%20184.3%20138C209.3%20138%20215%20140.4%20215%20151C215%20161.6%20209.4%20164%20184.3%20164L164%20164%20164%20176.5L164%20189%20138.9%20189C122.4%20189%20113.1%20188.6%20111.7%20187.9C107.6%20185.8%20104%20181.6%20102.9%20177.8C101.1%20170.9%2097.3%20172.4%2096.6%20180.2C95.8%20187.9%2092%20241.5%2092%20244.1C92%20245.9%2091.1%20246%2079.6%20246L67.2%20246%2066.6%20239.8ZM82.4%20231.8C82.7%20229.4%2083.7%20216.9%2084.5%20204C85.3%20191.1%2086.2%20179%2086.4%20177.2L86.9%20174%2079.3%20174L71.8%20174%2072.4%20179.2C72.7%20182.1%2073.7%20195.5%2074.6%20209C76.4%20237.2%2076.2%20236%2079.4%20236C81.6%20236%2081.9%20235.5%2082.4%20231.8ZM154%20110L154%2041%20134.7%2041C121%2041%20115.1%2041.3%20114.2%2042.2C112.5%2043.9%20112.5%20176.1%20114.2%20177.8C115.1%20178.7%20121%20179%20134.7%20179L154%20179%20154%20110ZM102%20112.4L102%2060.8%2084.8%2061.2C54.8%2061.7%2056.1%2059.2%2056%20119.2L56%20164%2079%20164L102%20164%20102%20112.4ZM204.1%20152.4C207%20148.8%20203%20148%20182.8%20148L164%20148%20164%20151L164%20154%20183.4%20154C200%20154%20202.9%20153.8%20204.1%20152.4ZM204%2070.5C206.5%2067.4%20204%2067%20183.9%2067L164%2067%20164%2069.5L164%2072%20183.4%2072C199.1%2072%20203%2071.7%20204%2070.5Z%22%2F%3E%3C%2Fsvg%3E">
+<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAADGElEQVRYhe2XTWhcVRiGn/fcaRMMSSadURFdaRFFyIiiYNzoUoi4kK7ElSszFpeCKO1GcOFCsbaiOwU36UbqQmjcVBAUoiU1WCytjRsV7eQODU5nknteF2lKqvfO3KSj3fjBXZz5/p77Hs53z8D/dpNNu008cMDJ2Xp7Yu/eON7rhco21+qZY9XVsnXCzltbjWZ6/Mfb2pdDoLWxEVZC4PzWkyR+eSfVKoNDrrfpFy/fCzwrq5nZn2/3hcAnO63XF2C6mT4UxFM2U8A4AMruxCKab88cq17YHt9opp2hATw4154zftuRReQ/QB1gDWMAnK3l5dk61Gimh64uI9AGVmzeWDpaPV4KYP9Bjzi237R4dem96lvXgb20+oTNrJJKLx/dn0k6sbWK1qjwc0G8DpQDmAyrt2/EMB6CPs1vAokd8z2atZm9troqGNY7edG5AOtdJpRAZ633axHAeiGAPw5BHwHYoZNl8cp6CBfPHp24VBogqYTRaMjG6gUyFysgceG7d6sLRXl/t9w5EKUAcFeNrChRyZa2N2a5AI6bE/LW5eIm644FWzAEgIRNBebnKWwyske7HuMDAeytb4QKFci62sUYLwvAxsDisTIcBXJPgROkATscVaSenp+eSx/fWiu4iznvzB8uvb/v+3IAUQNfr6KiLfAvkha3/TBmNEOiGeCRUgCJCB5wyLKoJN+jO2weBpAIQpPAPaAv86ILFEAIGs30lX/4zN0AcrwlH2CbAiYFMsnn4uiVk6UBSEidsSB4AbHf5gvEmOAxw88CCHEsL1Vi4fSR6uF8uJz4fs7GwfajRH89GrLJXtzzQCR+FRXuD46ngJ+AFaM/hbub1fy04IPTR6ZKA/Q9bklGC6DjpObofUC877fxc5A9aXPScPFacwDrRIxeLKqXZ31vRN0RWpUeJFBziHVQOj+vDFgGXttJoyLrq8Dy5EQKZBHVgCnYVGSY1n/iHVY0pIKaofZvAAy8Fcu0ItRl1QW5l4obsTIflEsi1hA14/8ewKIFegaYQZT+xzM0AMEpm99tfkDhm2ED3HT7CzObN3JAka7GAAAAAElFTkSuQmCC">
+<title>模型接口兼容性测试 · API Compat</title>
+<style>
+  :root{
+    /* ── 表面 ── */
+    --bg:#f7f9fc;
+    --bg-card:#ffffff;
+    --border:#e4e9f0;
+    --border-hover:#cfd8e3;
+
+    /* ── 文字（三级） ── */
+    --text-primary:#0f172a;
+    --text-secondary:#4a586e;
+    --text-tertiary:#93a1b5;
+
+    /* ── 强调色（全站唯一） ── */
+    --accent:#2563eb;
+    --accent-hover:#1d4ed8;
+    --accent-subtle:#eef4ff;
+    --accent-ring:rgba(37,99,235,.14);
+
+    /* ── 语义色 ── */
+    --ok:#0f9d6e;      --ok-bg:#eafaf4;
+    --warn:#b7791f;    --warn-bg:#fdf6e7;
+    --err:#dc3545;     --err-bg:#fdf0f1;
+    --neutral:#5b6b80; --neutral-bg:#f1f5f9;
+
+    /* ── 排印：全站只用 4 档字号，任何地方都不准写死 px ── */
+    --fs-xs:11px;   /* 标签 / 表头 / 脚注 / 版权行 */
+    --fs-sm:13px;   /* 正文 / 说明 / 输入 / 按钮 / 表格 / 代码 */
+    --fs-md:15px;   /* 面板标题 / 品牌名 */
+    --fs-lg:20px;   /* 页面标题 / 统计数值 */
+
+    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,"Helvetica Neue",Arial,sans-serif;
+    --font-mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Courier New",monospace;
+
+    --lh-tight:1.25;
+    --lh-base:1.6;
+
+    --radius-sm:6px;
+    --radius-md:9px;
+    --radius-lg:14px;
+    --radius-full:9999px;
+
+    --shadow-1:0 1px 2px rgba(15,23,42,.04);
+    --shadow-2:0 1px 2px rgba(15,23,42,.04), 0 10px 24px -12px rgba(15,23,42,.14);
+    --shadow-3:0 10px 34px -12px rgba(15,23,42,.2);
+  }
+
+  *{box-sizing:border-box}
+  html,body{margin:0;padding:0}
+  body{
+    background:var(--bg);
+    color:var(--text-primary);
+    font-family:var(--font-sans);
+    font-size:var(--fs-sm);
+    line-height:var(--lh-base);
+    -webkit-font-smoothing:antialiased;
+    min-height:100vh;
+    position:relative;
+  }
+
+  /* 顶部一层极淡的氛围光，只做气氛、不抢视线 */
+  body::before{
+    content:"";
+    position:fixed;
+    top:0;left:0;right:0;
+    height:320px;
+    background:radial-gradient(62% 210px at 50% 0, rgba(37,99,235,.055), rgba(247,249,252,0) 72%);
+    pointer-events:none;
+    z-index:0;
+  }
+
+  /* ── 图标：icons8 ios 线性图标矢量化后作 mask，颜色一律跟随 currentColor ── */
+  .ic{
+    display:inline-block;
+    flex:0 0 auto;
+    background-color:currentColor;
+    -webkit-mask-size:contain;         mask-size:contain;
+    -webkit-mask-repeat:no-repeat;     mask-repeat:no-repeat;
+    -webkit-mask-position:center;      mask-position:center;
+  }
+  /* 上下文配色 */
+  .panel-title .ic{color:var(--text-tertiary)}
+  .ic-play{color:currentColor}
+
+  /* ── 顶部导航：只留品牌 + 状态，让首屏尽快到表单 ── */
+  .top-nav{
+    position:sticky;
+    top:0;
+    z-index:40;
+    background:rgba(255,255,255,.86);
+    backdrop-filter:blur(14px) saturate(180%);
+    -webkit-backdrop-filter:blur(14px) saturate(180%);
+    border-bottom:1px solid var(--border);
+  }
+  .nav-inner{
+    max-width:1020px;
+    margin:0 auto;
+    padding:11px 24px;
+    display:flex;
+    align-items:center;
+  }
+  .nav-brand{
+    display:flex;
+    align-items:center;
+    gap:9px;
+    min-width:0;
+    text-decoration:none;
+    color:inherit;
+  }
+  .nav-title{
+    font-size:var(--fs-md);
+    font-weight:700;
+    letter-spacing:-.015em;
+    white-space:nowrap;
+  }
+  .nav-sep{
+    color:var(--border-hover);
+    font-weight:400;
+  }
+  .nav-sub{
+    font-size:var(--fs-sm);
+    color:var(--text-tertiary);
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  /* ── 主内容区 ── */
+  .wrap{
+    max-width:1020px;
+    margin:0 auto;
+    padding:0 24px 72px;
+    position:relative;
+    z-index:1;
+  }
+
+  /* ── 页头：只留一行标题，就此打住 ── */
+  .page-head{padding:32px 2px 4px}
+  .page-title{
+    font-size:var(--fs-lg);
+    font-weight:700;
+    letter-spacing:-.02em;
+    line-height:var(--lh-tight);
+    margin:0;
+  }
+
+  /* ── 面板 ── */
+  .panel{
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-1);
+    padding:22px 24px;
+    margin-top:16px;
+  }
+  .panel-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:12px;
+    flex-wrap:wrap;
+    margin-bottom:16px;
+  }
+  .panel-title{
+    display:flex;
+    align-items:center;
+    gap:8px;
+    font-size:var(--fs-md);
+    font-weight:700;
+    letter-spacing:-.01em;
+    color:var(--text-primary);
+    margin:0 0 16px;
+  }
+  .panel-head .panel-title{margin-bottom:0}
+  .panel-note{
+    font-size:var(--fs-xs);
+    color:var(--text-tertiary);
+    font-weight:500;
+  }
+
+  /* ── 表单 ── */
+  label.fld{display:block;margin-bottom:15px}
+  label.fld > span{
+    display:block;
+    font-size:var(--fs-xs);
+    font-weight:600;
+    color:var(--text-secondary);
+    margin-bottom:6px;
+    letter-spacing:.02em;
+  }
+  input[type=text],input[type=password],input[type=number],textarea,select{
+    width:100%;
+    padding:10px 13px;
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+    background:#ffffff;
+    color:var(--text-primary);
+    font-size:var(--fs-sm);
+    font-family:inherit;
+    line-height:1.4;
+    transition:border-color .15s ease, box-shadow .15s ease;
+  }
+  input:focus,textarea:focus,select:focus{
+    outline:none;
+    border-color:var(--accent);
+    box-shadow:0 0 0 3px var(--accent-ring);
+  }
+  textarea{
+    font-family:var(--font-mono);
+    font-size:var(--fs-sm);
+    resize:vertical;
+    min-height:78px;
+    line-height:1.5;
+  }
+  .mono{font-family:var(--font-mono)}
+
+  .row{display:flex;gap:14px}
+  .row > *{flex:1;min-width:0}
+
+  .key-wrap{position:relative}
+  .key-wrap input{padding-right:62px}
+  .key-toggle{
+    position:absolute;
+    right:8px;
+    top:50%;
+    transform:translateY(-50%);
+    border:1px solid var(--border);
+    background:var(--bg);
+    color:var(--text-secondary);
+    font-size:var(--fs-xs);
+    font-weight:600;
+    cursor:pointer;
+    padding:4px 10px;
+    border-radius:var(--radius-full);
+    font-family:inherit;
+    transition:all .15s;
+  }
+  .key-toggle:hover{background:#fff;color:var(--text-primary);border-color:var(--border-hover)}
+
+  /* ── 协议选择 ── */
+  .proto-head{
+    display:flex;
+    align-items:center;
+    justify-content:space-between;
+    gap:8px;
+    margin:2px 0 10px;
+  }
+  .proto-head .lbl{
+    font-size:var(--fs-xs);
+    font-weight:600;
+    color:var(--text-secondary);
+    letter-spacing:.02em;
+  }
+  .proto-tools{display:flex;gap:6px}
+  .link-btn{
+    border:1px solid var(--border);
+    background:#ffffff;
+    color:var(--text-secondary);
+    font-size:var(--fs-xs);
+    font-weight:500;
+    padding:3px 10px;
+    border-radius:var(--radius-full);
+    cursor:pointer;
+    font-family:inherit;
+    transition:all .15s;
+  }
+  .link-btn:hover{background:var(--neutral-bg);color:var(--text-primary);border-color:var(--border-hover)}
+
+  .proto-grid{
+    display:grid;
+    /* 268px 是量出来的下限：再窄，「协议名 + 标签」同一行就装不下
+       （900px 视口下 3 列会把「Anthropic Messages」截成「Anthropic Messag…」），
+       长路径也要多折一行；再宽则 1024px 以上会从 3 列掉到 2 列、白白变高 */
+    grid-template-columns:repeat(auto-fill,minmax(268px,1fr));
+    gap:9px;
+  }
+  .proto{
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+    padding:10px 12px;
+    cursor:pointer;
+    user-select:none;
+    background:#ffffff;
+    min-width:0;               /* 关键：让网格项不被内部 nowrap 路径撑破 */
+    transition:border-color .16s, box-shadow .16s, background .16s;
+  }
+  .proto:hover{border-color:var(--border-hover);box-shadow:var(--shadow-1)}
+  .proto.on{
+    border-color:var(--accent);
+    background:var(--accent-subtle);
+    box-shadow:0 0 0 1px var(--accent);
+  }
+  .proto .p-top{display:flex;align-items:center;gap:8px}
+  .proto .p-box{
+    width:15px;height:15px;
+    border-radius:4px;
+    border:1.5px solid #cbd5e1;
+    flex:0 0 auto;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    color:#ffffff;
+    transition:all .15s;
+    background:#ffffff;
+  }
+  .proto.on .p-box{background:var(--accent);border-color:var(--accent)}
+  .proto .p-name{
+    font-size:var(--fs-sm);
+    font-weight:600;
+    color:var(--text-primary);
+    flex:1;
+    min-width:0;
+    white-space:nowrap;
+    overflow:hidden;
+    text-overflow:ellipsis;
+  }
+  /* 协议名与标签同占第一行（标签靠右），路径独占第二行并可按 / : 折行。
+     列宽够时这样最省高度；列窄下来时名字会先省略号，标签不会被挤掉。 */
+  .proto .p-tag{
+    font-size:var(--fs-xs);
+    line-height:1;
+    padding:3px 7px;
+    border-radius:var(--radius-full);
+    background:var(--neutral-bg);
+    color:var(--neutral);
+    font-weight:500;
+    flex:0 0 auto;
+    white-space:nowrap;
+  }
+  .proto.on .p-tag{
+    background:#ffffff;
+    color:var(--accent);
+    font-weight:600;
+    border:1px solid rgba(37,99,235,.22);
+  }
+  .proto .p-path{
+    font-family:var(--font-mono);
+    font-size:var(--fs-xs);
+    color:var(--text-tertiary);
+    min-width:0;
+    margin-top:5px;
+    /* 长路径（/v1beta/models/{model}:streamGenerateContent）必须能折行，
+       但不能拦腰断在「:streamGen / erateContent」上 —— 渲染时已在每个 / 和 : 后
+       插入 <wbr>，浏览器优先在这些位置断。break-word 只作最后的兜底。 */
+    overflow-wrap:break-word;
+  }
+  .proto.on .p-path{color:#4a6cc4}
+
+  /* ── 按钮 ── */
+  .btn{
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    gap:8px;
+    padding:9px 16px;
+    border-radius:var(--radius-md);
+    border:1px solid transparent;
+    font-size:var(--fs-sm);
+    font-weight:600;
+    font-family:inherit;
+    cursor:pointer;
+    transition:background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+  }
+  .btn-primary{
+    width:100%;
+    margin-top:14px;
+    padding:12px 22px;
+    font-size:var(--fs-md);
+    background:var(--accent);
+    color:#ffffff;
+    box-shadow:0 1px 2px rgba(37,99,235,.2), 0 10px 22px -12px rgba(37,99,235,.5);
+  }
+  .btn-primary:hover:not(:disabled){
+    background:var(--accent-hover);
+    transform:translateY(-1px);
+    box-shadow:0 2px 5px rgba(37,99,235,.22), 0 14px 28px -14px rgba(37,99,235,.55);
+  }
+  .btn-primary:active:not(:disabled){transform:translateY(0)}
+  .btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+  .btn-ghost{
+    background:#ffffff;
+    border-color:var(--border);
+    color:var(--text-secondary);
+    padding:6px 13px;
+    font-size:var(--fs-sm);
+    border-radius:var(--radius-full);
+    font-weight:500;
+  }
+  .btn-ghost:hover{background:var(--neutral-bg);color:var(--text-primary);border-color:var(--border-hover)}
+
+  /* ── 复选框 ── */
+  .chk-group{display:flex;gap:20px;flex-wrap:wrap;margin:12px 0 4px}
+  .chk{
+    display:flex;
+    align-items:center;
+    gap:7px;
+    font-size:var(--fs-sm);
+    color:var(--text-secondary);
+    cursor:pointer;
+    user-select:none;
+  }
+  .chk input{width:auto;margin:0;accent-color:var(--accent);cursor:pointer}
+
+  /* ── 高级选项 ── */
+  details.adv{
+    margin:10px 0 14px;
+    border-top:1px dashed var(--border);
+    padding-top:12px;
+  }
+  details.adv summary{
+    cursor:pointer;
+    font-size:var(--fs-xs);
+    font-weight:600;
+    color:var(--text-secondary);
+    list-style:none;
+    display:flex;
+    align-items:center;
+    gap:6px;
+    user-select:none;
+  }
+  details.adv summary::-webkit-details-marker{display:none}
+  details.adv summary::before{
+    content:"▸";
+    transition:transform .15s;
+    display:inline-block;
+    font-size:var(--fs-xs);
+    color:var(--text-tertiary);
+  }
+  details.adv[open] summary::before{transform:rotate(90deg)}
+  details.adv .inner{padding-top:14px}
+
+  /* ── 能力说明（空态时填充页面，开始测试后自动收起） ── */
+  .features-grid{
+    display:grid;
+    grid-template-columns:repeat(2,1fr);
+    gap:12px;
+    margin-top:16px;
+  }
+  .feat-card{
+    background:var(--bg-card);
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    box-shadow:var(--shadow-1);
+    padding:18px 20px;
+    display:flex;
+    gap:14px;
+    align-items:flex-start;
+    transition:border-color .18s ease, box-shadow .18s ease;
+  }
+  .feat-card:hover{border-color:var(--border-hover);box-shadow:var(--shadow-2)}
+  /* 只留裸字形，不要浅色圆角底块 */
+  .feat-icon{
+    width:20px;height:20px;
+    display:flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 auto;
+    margin-top:1px;
+  }
+  .feat-blue{color:#2563eb}
+  .feat-emerald{color:#0f9d6e}
+  .feat-purple{color:#7c3aed}
+  .feat-amber{color:#c2801a}
+  .feat-content{flex:1;min-width:0}
+  .feat-title{
+    font-size:var(--fs-sm);
+    font-weight:700;
+    letter-spacing:-.01em;
+    color:var(--text-primary);
+    margin-bottom:3px;
+  }
+  .feat-desc{font-size:var(--fs-sm);color:var(--text-secondary);line-height:1.55}
+
+  /* ── 状态横幅 ── */
+  .banner{
+    padding:11px 14px;
+    border-radius:var(--radius-md);
+    font-size:var(--fs-sm);
+    line-height:1.55;
+    margin-bottom:14px;
+    border:1px solid transparent;
+    display:flex;
+    gap:9px;
+    align-items:flex-start;
+  }
+  .banner .ic{margin-top:2px}
+  .banner.info{background:var(--accent-subtle);border-color:#d6e3ff;color:#1e40af}
+  .banner.ok{background:var(--ok-bg);border-color:#c2ebda;color:#0a6b4b}
+  .banner.warn{background:var(--warn-bg);border-color:#f0e0b8;color:#8a5b10}
+  .banner.err{background:var(--err-bg);border-color:#f7ccd1;color:#a3222f}
+  .banner code{
+    font-family:var(--font-mono);
+    font-size:var(--fs-xs);
+    background:rgba(15,23,42,.06);
+    padding:2px 6px;
+    border-radius:4px;
+  }
+
+  /* ── 统计卡片 ── */
+  .stat-grid{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(116px,1fr));
+    gap:9px;
+    margin-bottom:15px;
+  }
+  .stat{
+    background:#ffffff;
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+    padding:11px 14px;
+    box-shadow:var(--shadow-1);
+  }
+  .stat .k{
+    font-size:var(--fs-xs);
+    color:var(--text-tertiary);
+    font-weight:600;
+    margin-bottom:2px;
+    letter-spacing:.03em;
+  }
+  .stat .v{
+    font-size:var(--fs-lg);
+    font-weight:700;
+    color:var(--text-primary);
+    letter-spacing:-.02em;
+    line-height:1.2;
+    font-variant-numeric:tabular-nums;
+  }
+  .stat.ok .v{color:var(--ok)}
+  .stat.err .v{color:var(--err)}
+
+  /* ── 进度条 ── */
+  .bar{
+    height:5px;
+    border-radius:var(--radius-full);
+    background:#e4e9f0;
+    overflow:hidden;
+    margin:10px 0 8px;
+  }
+  .bar > i{
+    display:block;
+    height:100%;
+    background:var(--accent);
+    width:0;
+    border-radius:var(--radius-full);
+    transition:width .25s ease;
+  }
+  .prog-text{
+    font-size:var(--fs-xs);
+    color:var(--text-secondary);
+    display:flex;
+    justify-content:space-between;
+    font-variant-numeric:tabular-nums;
+  }
+
+  /* ── 矩阵表 ── */
+  .matrix-scroll{
+    overflow-x:auto;
+    border:1px solid var(--border);
+    border-radius:var(--radius-md);
+    background:#ffffff;
+  }
+  table.matrix{
+    border-collapse:separate;
+    border-spacing:0;
+    font-size:var(--fs-sm);
+    width:100%;
+  }
+  table.matrix th,table.matrix td{
+    padding:9px 12px;
+    border-bottom:1px solid #f1f5f9;
+    text-align:left;
+    vertical-align:middle;
+  }
+  table.matrix thead th{
+    position:sticky;
+    top:0;
+    background:#f8fafc;
+    z-index:2;
+    font-size:var(--fs-xs);
+    font-weight:600;
+    color:var(--text-tertiary);
+    border-bottom:1px solid var(--border);
+    letter-spacing:.02em;
+  }
+  /* 协议表头横排：允许折行，底部对齐，别转 90° */
+  table.matrix thead th.ph{
+    white-space:normal;
+    vertical-align:bottom;
+    line-height:var(--lh-tight);
+    min-width:98px;
+  }
+  table.matrix tbody tr:last-child td{border-bottom:none}
+  table.matrix tbody tr:hover{background:#f8fafc}
+  table.matrix td.mh{
+    position:sticky;
+    left:0;
+    background:#ffffff;
+    z-index:1;
+    font-family:var(--font-mono);
+    font-size:var(--fs-sm);
+    font-weight:500;
+    word-break:break-all;
+    min-width:168px;
+    border-right:1px solid var(--border);
+  }
+  table.matrix tbody tr:hover td.mh{background:#f8fafc}
+  table.matrix thead th.mh{
+    position:sticky;
+    left:0;
+    z-index:3;
+    background:#f8fafc;
+    border-right:1px solid var(--border);
+  }
+
+  .mcell{
+    display:inline-flex;
+    align-items:center;
+    gap:4px;
+    padding:3px 8px;
+    border-radius:var(--radius-full);
+    font-size:var(--fs-xs);
+    font-weight:600;
+    white-space:nowrap;
+    cursor:pointer;
+    border:1px solid transparent;
+  }
+  .mcell.plain{background:transparent;color:var(--text-tertiary);cursor:default}
+  .mcell.ok{background:var(--ok-bg);color:var(--ok)}
+  .mcell.warn{background:var(--warn-bg);color:var(--warn)}
+  .mcell.err{background:var(--err-bg);color:var(--err)}
+  .mcell.neutral{background:var(--neutral-bg);color:var(--neutral)}
+  .mcell .ms{font-weight:400;opacity:.8;font-variant-numeric:tabular-nums}
+
+  .declared{
+    font-size:var(--fs-xs);
+    color:var(--text-tertiary);
+    font-family:var(--font-mono);
+    white-space:nowrap;
+  }
+  .declared.mismatch{color:var(--warn);font-weight:600}
+
+  .legend{
+    display:flex;
+    gap:12px;
+    flex-wrap:wrap;
+    font-size:var(--fs-xs);
+    color:var(--text-secondary);
+  }
+  .legend span{display:inline-flex;align-items:center;gap:5px}
+  .legend i{width:7px;height:7px;border-radius:50%;display:inline-block;flex:0 0 auto}
+
+  /* ── 报告 ── */
+  .report h3{
+    font-size:var(--fs-sm);
+    font-weight:700;
+    margin:18px 0 8px;
+    letter-spacing:-.01em;
+    color:var(--text-primary);
+  }
+  .report h3:first-child{margin-top:0}
+  .report ul{margin:4px 0;padding-left:18px}
+  .report li{
+    margin-bottom:6px;
+    font-size:var(--fs-sm);
+    color:var(--text-secondary);
+    line-height:var(--lh-base);
+  }
+  .report li b{color:var(--text-primary)}
+  .report code{
+    font-family:var(--font-mono);
+    font-size:var(--fs-xs);
+    background:var(--neutral-bg);
+    color:var(--text-primary);
+    padding:2px 6px;
+    border-radius:4px;
+  }
+
+  .rate-list{display:flex;flex-direction:column;gap:8px;margin:6px 0 0}
+  .rate-row{display:flex;align-items:center;gap:10px;font-size:var(--fs-sm)}
+  .rate-row .rn{
+    width:152px;
+    flex:0 0 auto;
+    font-family:var(--font-mono);
+    font-size:var(--fs-xs);
+    overflow:hidden;
+    text-overflow:ellipsis;
+    white-space:nowrap;
+  }
+  .rate-row .rb{
+    flex:1;
+    height:5px;
+    border-radius:var(--radius-full);
+    background:#e4e9f0;
+    overflow:hidden;
+    min-width:60px;
+  }
+  .rate-row .rb > i{display:block;height:100%;border-radius:var(--radius-full)}
+  .rate-row .rv{
+    width:74px;
+    text-align:right;
+    flex:0 0 auto;
+    font-variant-numeric:tabular-nums;
+    color:var(--text-secondary);
+    font-size:var(--fs-xs);
+    font-weight:600;
+    white-space:nowrap;
+  }
+
+  table.plain{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+  table.plain th{
+    text-align:left;
+    font-size:var(--fs-xs);
+    font-weight:600;
+    color:var(--text-tertiary);
+    padding:8px 12px;
+    border-bottom:1px solid var(--border);
+    white-space:nowrap;
+    background:#f8fafc;
+    letter-spacing:.02em;
+  }
+  table.plain td{padding:9px 12px;border-bottom:1px solid #f1f5f9;vertical-align:top}
+  table.plain tr:last-child td{border-bottom:none}
+  table.plain td.num{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--text-secondary)}
+
+  .badge{
+    display:inline-flex;
+    align-items:center;
+    gap:3px;
+    padding:2px 8px;
+    border-radius:var(--radius-full);
+    font-size:var(--fs-xs);
+    font-weight:600;
+    white-space:nowrap;
+  }
+  .badge.ok{background:var(--ok-bg);color:var(--ok)}
+  .badge.err{background:var(--err-bg);color:var(--err)}
+  .badge.warn{background:var(--warn-bg);color:var(--warn)}
+  .badge.neutral{background:var(--neutral-bg);color:var(--neutral)}
+  .badge.info{background:var(--accent-subtle);color:var(--accent)}
+
+  .model-name{
+    font-family:var(--font-mono);
+    font-size:var(--fs-sm);
+    font-weight:500;
+    word-break:break-all;
+  }
+  .note{font-size:var(--fs-sm);color:var(--text-tertiary);word-break:break-word}
+  .note.bad{color:var(--err)}
+
+  .actions{
+    display:flex;
+    gap:8px;
+    flex-wrap:wrap;
+    margin-top:16px;
+    padding-top:14px;
+    border-top:1px solid var(--border);
+  }
+
+  /* ── 弹窗 ── */
+  .modal{
+    position:fixed;
+    inset:0;
+    background:rgba(15,23,42,.38);
+    display:none;
+    align-items:center;
+    justify-content:center;
+    padding:20px;
+    z-index:50;
+    backdrop-filter:blur(6px);
+    -webkit-backdrop-filter:blur(6px);
+  }
+  .modal.on{display:flex}
+  .modal .box{
+    background:#ffffff;
+    border:1px solid var(--border);
+    border-radius:var(--radius-lg);
+    padding:22px 24px;
+    max-width:540px;
+    width:100%;
+    box-shadow:var(--shadow-3);
+    max-height:80vh;
+    overflow:auto;
+  }
+  .modal h4{
+    margin:0 0 14px;
+    font-size:var(--fs-md);
+    font-weight:700;
+    letter-spacing:-.01em;
+    color:var(--text-primary);
+  }
+  .kv{
+    display:grid;
+    grid-template-columns:84px 1fr;
+    gap:8px 12px;
+    font-size:var(--fs-sm);
+  }
+  .kv dt{color:var(--text-tertiary);font-weight:600}
+  .kv dd{margin:0;word-break:break-word}
+
+  .dots::after{content:"";animation:dots 1.2s steps(4,end) infinite}
+  @keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
+
+  .hint{font-size:var(--fs-sm);color:var(--text-tertiary);text-align:center;padding:20px}
+
+  /* ── 页脚：免责声明 + 版权 ── */
+  footer{
+    margin-top:40px;
+    padding-top:16px;
+    border-top:1px solid var(--border);
+    text-align:center;
+    line-height:1.65;
+  }
+  .foot-disc{
+    max-width:680px;
+    margin:0 auto 11px;
+    font-size:var(--fs-sm);
+    color:var(--text-tertiary);
+  }
+  .foot-disc b{color:var(--text-secondary);font-weight:600;white-space:nowrap}
+  .foot-copy{
+    margin:0;
+    font-size:var(--fs-xs);
+    color:var(--text-tertiary);
+  }
+
+  @media(max-width:768px){
+    .wrap{padding:0 15px 56px}
+    .nav-inner{padding:10px 15px}
+    .row{flex-direction:column;gap:0}
+    .stat-grid{grid-template-columns:repeat(2,1fr)}
+    .page-head{padding-top:22px}
+    .panel{padding:18px 16px}
+  }
+  @media(max-width:700px){
+    .features-grid{grid-template-columns:1fr}
+  }
+  @media(max-width:620px){
+    .nav-sub,.nav-sep{display:none}
+  }
+  @media print{
+    body{background:#fff}
+    body::before,.top-nav,.page-head{display:none}
+    .panel{box-shadow:none;break-inside:avoid}
+    #panel-config,#featuresOverview,.actions,.link-btn{display:none !important}
+  }
+
+  /* ── 图标资产：icons8 ios 线性图标 → 矢量化 mask（尺寸与主色在此统一） ── */
+.ic-brand{width:18px;height:18px;color:var(--accent);-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M66.6%20239.8C65.8%20232.1%2062%20178.5%2062%20175.9C62%20174.2%2061.2%20174%2054%20174L45.9%20174%2046.2%20121.8C46.5%2062.4%2046.1%2065.3%2055.2%2057.6C61.5%2052.1%2066.7%2051%2085.5%2051L101.7%2051%20102.3%2045.8C103.9%2032.5%20107.5%2031%20138.6%2031L164%2031%20164%2043.5L164%2056%20183.8%2056C209.5%2056.1%20215%2058.4%20215%2069.7C215%2079.8%20209.4%2082%20184%2082L164%2082%20164%20110L164%20138%20184.3%20138C209.3%20138%20215%20140.4%20215%20151C215%20161.6%20209.4%20164%20184.3%20164L164%20164%20164%20176.5L164%20189%20138.9%20189C122.4%20189%20113.1%20188.6%20111.7%20187.9C107.6%20185.8%20104%20181.6%20102.9%20177.8C101.1%20170.9%2097.3%20172.4%2096.6%20180.2C95.8%20187.9%2092%20241.5%2092%20244.1C92%20245.9%2091.1%20246%2079.6%20246L67.2%20246%2066.6%20239.8ZM82.4%20231.8C82.7%20229.4%2083.7%20216.9%2084.5%20204C85.3%20191.1%2086.2%20179%2086.4%20177.2L86.9%20174%2079.3%20174L71.8%20174%2072.4%20179.2C72.7%20182.1%2073.7%20195.5%2074.6%20209C76.4%20237.2%2076.2%20236%2079.4%20236C81.6%20236%2081.9%20235.5%2082.4%20231.8ZM154%20110L154%2041%20134.7%2041C121%2041%20115.1%2041.3%20114.2%2042.2C112.5%2043.9%20112.5%20176.1%20114.2%20177.8C115.1%20178.7%20121%20179%20134.7%20179L154%20179%20154%20110ZM102%20112.4L102%2060.8%2084.8%2061.2C54.8%2061.7%2056.1%2059.2%2056%20119.2L56%20164%2079%20164L102%20164%20102%20112.4ZM204.1%20152.4C207%20148.8%20203%20148%20182.8%20148L164%20148%20164%20151L164%20154%20183.4%20154C200%20154%20202.9%20153.8%20204.1%20152.4ZM204%2070.5C206.5%2067.4%20204%2067%20183.9%2067L164%2067%20164%2069.5L164%2072%20183.4%2072C199.1%2072%20203%2071.7%20204%2070.5Z%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M66.6%20239.8C65.8%20232.1%2062%20178.5%2062%20175.9C62%20174.2%2061.2%20174%2054%20174L45.9%20174%2046.2%20121.8C46.5%2062.4%2046.1%2065.3%2055.2%2057.6C61.5%2052.1%2066.7%2051%2085.5%2051L101.7%2051%20102.3%2045.8C103.9%2032.5%20107.5%2031%20138.6%2031L164%2031%20164%2043.5L164%2056%20183.8%2056C209.5%2056.1%20215%2058.4%20215%2069.7C215%2079.8%20209.4%2082%20184%2082L164%2082%20164%20110L164%20138%20184.3%20138C209.3%20138%20215%20140.4%20215%20151C215%20161.6%20209.4%20164%20184.3%20164L164%20164%20164%20176.5L164%20189%20138.9%20189C122.4%20189%20113.1%20188.6%20111.7%20187.9C107.6%20185.8%20104%20181.6%20102.9%20177.8C101.1%20170.9%2097.3%20172.4%2096.6%20180.2C95.8%20187.9%2092%20241.5%2092%20244.1C92%20245.9%2091.1%20246%2079.6%20246L67.2%20246%2066.6%20239.8ZM82.4%20231.8C82.7%20229.4%2083.7%20216.9%2084.5%20204C85.3%20191.1%2086.2%20179%2086.4%20177.2L86.9%20174%2079.3%20174L71.8%20174%2072.4%20179.2C72.7%20182.1%2073.7%20195.5%2074.6%20209C76.4%20237.2%2076.2%20236%2079.4%20236C81.6%20236%2081.9%20235.5%2082.4%20231.8ZM154%20110L154%2041%20134.7%2041C121%2041%20115.1%2041.3%20114.2%2042.2C112.5%2043.9%20112.5%20176.1%20114.2%20177.8C115.1%20178.7%20121%20179%20134.7%20179L154%20179%20154%20110ZM102%20112.4L102%2060.8%2084.8%2061.2C54.8%2061.7%2056.1%2059.2%2056%20119.2L56%20164%2079%20164L102%20164%20102%20112.4ZM204.1%20152.4C207%20148.8%20203%20148%20182.8%20148L164%20148%20164%20151L164%20154%20183.4%20154C200%20154%20202.9%20153.8%20204.1%20152.4ZM204%2070.5C206.5%2067.4%20204%2067%20183.9%2067L164%2067%20164%2069.5L164%2072%20183.4%2072C199.1%2072%20203%2071.7%20204%2070.5Z%22%2F%3E%3C%2Fsvg%3E")}
+.ic-globe{width:20px;height:20px;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M110.5%20244.9C35.1%20234%20-10.8%20151.8%2019.4%2081.8C60.6%20-13.5%20195.4%20-13.5%20236.6%2081.8C272.8%20165.6%20201.4%20258%20110.5%20244.9ZM123%20209.9L123%20184.7%20112.2%20185.3C84%20186.8%2084%20186.8%2091.5%20202.7C98.6%20217.9%20106.7%20227.7%20115.9%20232.5C123.4%20236.4%20123%20237.8%20123%20209.9ZM140.1%20232.4C149.3%20227.8%20157.2%20218.2%20164.6%20202.6C171.9%20187.2%20171.5%20187%20144.8%20185.4L133%20184.7%20133%20209.8C133%20226.5%20133.3%20235%20134%20235C134.6%20235%20137.3%20233.8%20140.1%20232.4ZM92.4%20224.8C87.2%20217.7%2081.4%20206.6%2078%20197.2C76.8%20193.8%2075.6%20191%2075.5%20191C74.4%20191%2059.2%20196.4%2054.5%20198.4L48.7%20201%2051.1%20203.7C58.7%20211.9%2073.3%20221.7%2087%20227.7C97.2%20232.2%2097.7%20231.9%2092.4%20224.8ZM174.5%20225.1C184.5%20220.3%20197.5%20211.3%20203.9%20204.6L207.3%20201%20201.9%20198.7C197.6%20196.7%20181.5%20191%20180.5%20191C180.4%20191%20179.2%20193.8%20178%20197.2C174.6%20206.6%20168.8%20217.7%20163.5%20224.9C157.8%20232.7%20158.6%20232.7%20174.5%20225.1ZM64.8%20183.6C69.3%20182.1%2072.8%20180.5%2072.5%20180.1C71.4%20178.1%2067.8%20154.9%2067.2%20144.8L66.5%20133.5%2043.2%20133.2L19.9%20133%2020.6%20139.2C22.3%20155.1%2030.4%20177.1%2038.9%20188.7L41.9%20192.9%2049.2%20189.6C53.2%20187.8%2060.2%20185.1%2064.8%20183.6ZM223.3%20178.3C230%20165.4%20236%20144.8%20236%20134.2C236%20133.2%20231%20133%20212.8%20133.2L189.5%20133.5%20188.8%20144.8C188.2%20153.6%20185.5%20172.8%20183.7%20180.1C183.6%20180.6%20187.4%20182.3%20192.1%20184C196.9%20185.6%20203.6%20188.2%20207.1%20189.8L213.5%20192.8%20216.1%20189.9C217.5%20188.3%20220.7%20183.1%20223.3%20178.3ZM108.8%20175C115.3%20174.5%20121.1%20174%20121.8%20174C122.7%20174%20123%20169.2%20123%20153.5L123%20133%2099.8%20133L76.7%20133%2077.3%20143.2C78%20154%2080%20167.6%2081.9%20174.6L83%20178.8%2090.1%20177.4C94%20176.7%20102.4%20175.6%20108.8%20175ZM174.5%20172.8C176.3%20165.9%20179%20145.4%20179%20138.4L179%20133%20156%20133L133%20133%20133%20153.4L133%20173.7%20137.6%20174.4C140.2%20174.7%20144.4%20175%20146.9%20175.1C149.4%20175.1%20156.2%20175.9%20162%20176.9C174.4%20178.9%20172.8%20179.4%20174.5%20172.8ZM67.2%20111.2C67.8%20102.4%2070.3%2084.5%2072.3%2075.9C72.4%2075.3%2068.6%2073.6%2063.9%2072C59.2%2070.5%2052.3%2067.8%2048.6%2066.1L41.9%2063.1%2038.9%2067.3C30.4%2078.9%2022.3%20100.9%2020.6%20116.8L19.9%20123%2043.2%20122.8L66.5%20122.5%2067.2%20111.2ZM123%20102.5C123%2091.2%20122.7%2082%20122.2%2082C118%2081.9%2096.6%2079.6%2090.6%2078.6L83%2077.3%2081.9%2081.4C80%2088.4%2078%20102.1%2077.3%20112.8L76.7%20123%2099.8%20123L123%20123%20123%20102.5ZM178.7%20112.8C178%20102%20176%2088.4%20174.1%2081.4L173%2077.2%20169.2%2078C165.3%2078.9%20151%2080.6%20139.8%2081.6L133%2082.2%20133%20102.6L133%20123%20156.2%20123L179.3%20123%20178.7%20112.8ZM236%20121.8C235.9%20107.4%20226.5%2080.3%20216.9%2067L214.1%2063.1%20206.8%2066.4C202.8%2068.2%20195.9%2070.9%20191.4%2072.4L183.4%2075%20185.1%2083.6C187.4%2094.8%20189%20108%20189%20115.6C189%20118.9%20189.3%20122%20189.7%20122.3C191%20123.7%20236%20123.1%20236%20121.8ZM123%2045.9L123%2020.8%20120.4%2021.4C108.9%2024.3%2088.4%2050.9%2086.8%2065C86.4%2068.2%2097.9%2070.6%20115.2%2070.9L123%2071%20123%2045.9ZM162.3%2068.9C171.6%2067.4%20171.5%2068%20164.5%2053.3C156.2%2035.7%20142.3%2021%20134%2021C133.3%2021%20133%2029.5%20133%2046.1L133%2071.3%20143.8%2070.7C149.7%2070.4%20158%2069.6%20162.3%2068.9ZM78%2058.8C81.4%2049.4%2087.2%2038.3%2092.5%2031.1C97.2%2024.8%2097.2%2024.7%2094.3%2025.4C84.3%2027.8%2060.9%2042.2%2052.1%2051.4L48.6%2055%2053.6%2057.1C58.2%2059.2%2073.7%2064.8%2075.1%2064.9C75.5%2065%2076.8%2062.2%2078%2058.8ZM195.7%2059.8C201.4%2057.6%20206.2%2055.5%20206.5%2055C208%2052.5%20187%2036.8%20173.9%2030.6C158.6%2023.4%20157.8%2023.4%20163.5%2031.1C168.8%2038.3%20174.6%2049.4%20178%2058.7C180.7%2066.1%20179.7%2066%20195.7%2059.8Z%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M110.5%20244.9C35.1%20234%20-10.8%20151.8%2019.4%2081.8C60.6%20-13.5%20195.4%20-13.5%20236.6%2081.8C272.8%20165.6%20201.4%20258%20110.5%20244.9ZM123%20209.9L123%20184.7%20112.2%20185.3C84%20186.8%2084%20186.8%2091.5%20202.7C98.6%20217.9%20106.7%20227.7%20115.9%20232.5C123.4%20236.4%20123%20237.8%20123%20209.9ZM140.1%20232.4C149.3%20227.8%20157.2%20218.2%20164.6%20202.6C171.9%20187.2%20171.5%20187%20144.8%20185.4L133%20184.7%20133%20209.8C133%20226.5%20133.3%20235%20134%20235C134.6%20235%20137.3%20233.8%20140.1%20232.4ZM92.4%20224.8C87.2%20217.7%2081.4%20206.6%2078%20197.2C76.8%20193.8%2075.6%20191%2075.5%20191C74.4%20191%2059.2%20196.4%2054.5%20198.4L48.7%20201%2051.1%20203.7C58.7%20211.9%2073.3%20221.7%2087%20227.7C97.2%20232.2%2097.7%20231.9%2092.4%20224.8ZM174.5%20225.1C184.5%20220.3%20197.5%20211.3%20203.9%20204.6L207.3%20201%20201.9%20198.7C197.6%20196.7%20181.5%20191%20180.5%20191C180.4%20191%20179.2%20193.8%20178%20197.2C174.6%20206.6%20168.8%20217.7%20163.5%20224.9C157.8%20232.7%20158.6%20232.7%20174.5%20225.1ZM64.8%20183.6C69.3%20182.1%2072.8%20180.5%2072.5%20180.1C71.4%20178.1%2067.8%20154.9%2067.2%20144.8L66.5%20133.5%2043.2%20133.2L19.9%20133%2020.6%20139.2C22.3%20155.1%2030.4%20177.1%2038.9%20188.7L41.9%20192.9%2049.2%20189.6C53.2%20187.8%2060.2%20185.1%2064.8%20183.6ZM223.3%20178.3C230%20165.4%20236%20144.8%20236%20134.2C236%20133.2%20231%20133%20212.8%20133.2L189.5%20133.5%20188.8%20144.8C188.2%20153.6%20185.5%20172.8%20183.7%20180.1C183.6%20180.6%20187.4%20182.3%20192.1%20184C196.9%20185.6%20203.6%20188.2%20207.1%20189.8L213.5%20192.8%20216.1%20189.9C217.5%20188.3%20220.7%20183.1%20223.3%20178.3ZM108.8%20175C115.3%20174.5%20121.1%20174%20121.8%20174C122.7%20174%20123%20169.2%20123%20153.5L123%20133%2099.8%20133L76.7%20133%2077.3%20143.2C78%20154%2080%20167.6%2081.9%20174.6L83%20178.8%2090.1%20177.4C94%20176.7%20102.4%20175.6%20108.8%20175ZM174.5%20172.8C176.3%20165.9%20179%20145.4%20179%20138.4L179%20133%20156%20133L133%20133%20133%20153.4L133%20173.7%20137.6%20174.4C140.2%20174.7%20144.4%20175%20146.9%20175.1C149.4%20175.1%20156.2%20175.9%20162%20176.9C174.4%20178.9%20172.8%20179.4%20174.5%20172.8ZM67.2%20111.2C67.8%20102.4%2070.3%2084.5%2072.3%2075.9C72.4%2075.3%2068.6%2073.6%2063.9%2072C59.2%2070.5%2052.3%2067.8%2048.6%2066.1L41.9%2063.1%2038.9%2067.3C30.4%2078.9%2022.3%20100.9%2020.6%20116.8L19.9%20123%2043.2%20122.8L66.5%20122.5%2067.2%20111.2ZM123%20102.5C123%2091.2%20122.7%2082%20122.2%2082C118%2081.9%2096.6%2079.6%2090.6%2078.6L83%2077.3%2081.9%2081.4C80%2088.4%2078%20102.1%2077.3%20112.8L76.7%20123%2099.8%20123L123%20123%20123%20102.5ZM178.7%20112.8C178%20102%20176%2088.4%20174.1%2081.4L173%2077.2%20169.2%2078C165.3%2078.9%20151%2080.6%20139.8%2081.6L133%2082.2%20133%20102.6L133%20123%20156.2%20123L179.3%20123%20178.7%20112.8ZM236%20121.8C235.9%20107.4%20226.5%2080.3%20216.9%2067L214.1%2063.1%20206.8%2066.4C202.8%2068.2%20195.9%2070.9%20191.4%2072.4L183.4%2075%20185.1%2083.6C187.4%2094.8%20189%20108%20189%20115.6C189%20118.9%20189.3%20122%20189.7%20122.3C191%20123.7%20236%20123.1%20236%20121.8ZM123%2045.9L123%2020.8%20120.4%2021.4C108.9%2024.3%2088.4%2050.9%2086.8%2065C86.4%2068.2%2097.9%2070.6%20115.2%2070.9L123%2071%20123%2045.9ZM162.3%2068.9C171.6%2067.4%20171.5%2068%20164.5%2053.3C156.2%2035.7%20142.3%2021%20134%2021C133.3%2021%20133%2029.5%20133%2046.1L133%2071.3%20143.8%2070.7C149.7%2070.4%20158%2069.6%20162.3%2068.9ZM78%2058.8C81.4%2049.4%2087.2%2038.3%2092.5%2031.1C97.2%2024.8%2097.2%2024.7%2094.3%2025.4C84.3%2027.8%2060.9%2042.2%2052.1%2051.4L48.6%2055%2053.6%2057.1C58.2%2059.2%2073.7%2064.8%2075.1%2064.9C75.5%2065%2076.8%2062.2%2078%2058.8ZM195.7%2059.8C201.4%2057.6%20206.2%2055.5%20206.5%2055C208%2052.5%20187%2036.8%20173.9%2030.6C158.6%2023.4%20157.8%2023.4%20163.5%2031.1C168.8%2038.3%20174.6%2049.4%20178%2058.7C180.7%2066.1%20179.7%2066%20195.7%2059.8Z%22%2F%3E%3C%2Fsvg%3E")}
+.ic-pulse{width:20px;height:20px;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M127%20182.5C126.3%20181.6%20122.2%20161.8%20118%20138.4C113.7%20115.1%20110.1%2095.7%20109.8%2095.5C109.6%2095.3%20106.8%20108%20103.5%20123.8C96.9%20156.3%2096.9%20156.5%2094%20158C90%20160.1%2088.1%20157.4%2082%20141L76.3%20125.6%2074%20130C70%20138%2070.1%20138%2057.2%20138C46.5%20138%2045.6%20138.2%2042.8%20140.5C32.9%20148.9%2019.7%20135.1%2028.9%20125.9C32.9%20122%2044%20122.8%2044%20127C44%20127.6%2048.1%20128%2053.8%20128L63.5%20128%2068.5%20118.2C76.6%20102.5%2078.8%20103.2%2086.5%20123.9C89.3%20131.5%2090.5%20133.8%2091%20132.4C91.4%20131.3%2094.8%20115.7%2098.4%2097.5C105.1%2064.7%20106.3%2061%20110%2061C114.1%2061%20114.8%2063.7%20123.5%20111.4C128.1%20137.2%20132.2%20158.5%20132.4%20158.7C132.6%20158.9%20134.5%20154.6%20136.6%20149C150.8%20111.7%20152.3%20108.5%20155.6%20108.2C159.7%20107.8%20160%20108.2%20166.7%20126.3L172.6%20142.1%20177.1%20135.3L181.5%20128.5%20196.8%20128.2C205.5%20128.1%20212%20127.5%20212%20127C212%20122.8%20223.1%20122%20227.1%20125.9C236.3%20135.1%20223.1%20148.9%20213.2%20140.5C210.4%20138.2%20209.5%20138%20198.7%20138L187.2%20138%20181%20148C171.4%20163.5%20169.5%20163%20162%20142.6C159%20134.6%20156.3%20128.3%20156%20128.5C155.6%20128.7%20150.9%20140.5%20145.5%20154.7C134%20184.8%20131.7%20188.2%20127%20182.5Z%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M127%20182.5C126.3%20181.6%20122.2%20161.8%20118%20138.4C113.7%20115.1%20110.1%2095.7%20109.8%2095.5C109.6%2095.3%20106.8%20108%20103.5%20123.8C96.9%20156.3%2096.9%20156.5%2094%20158C90%20160.1%2088.1%20157.4%2082%20141L76.3%20125.6%2074%20130C70%20138%2070.1%20138%2057.2%20138C46.5%20138%2045.6%20138.2%2042.8%20140.5C32.9%20148.9%2019.7%20135.1%2028.9%20125.9C32.9%20122%2044%20122.8%2044%20127C44%20127.6%2048.1%20128%2053.8%20128L63.5%20128%2068.5%20118.2C76.6%20102.5%2078.8%20103.2%2086.5%20123.9C89.3%20131.5%2090.5%20133.8%2091%20132.4C91.4%20131.3%2094.8%20115.7%2098.4%2097.5C105.1%2064.7%20106.3%2061%20110%2061C114.1%2061%20114.8%2063.7%20123.5%20111.4C128.1%20137.2%20132.2%20158.5%20132.4%20158.7C132.6%20158.9%20134.5%20154.6%20136.6%20149C150.8%20111.7%20152.3%20108.5%20155.6%20108.2C159.7%20107.8%20160%20108.2%20166.7%20126.3L172.6%20142.1%20177.1%20135.3L181.5%20128.5%20196.8%20128.2C205.5%20128.1%20212%20127.5%20212%20127C212%20122.8%20223.1%20122%20227.1%20125.9C236.3%20135.1%20223.1%20148.9%20213.2%20140.5C210.4%20138.2%20209.5%20138%20198.7%20138L187.2%20138%20181%20148C171.4%20163.5%20169.5%20163%20162%20142.6C159%20134.6%20156.3%20128.3%20156%20128.5C155.6%20128.7%20150.9%20140.5%20145.5%20154.7C134%20184.8%20131.7%20188.2%20127%20182.5Z%22%2F%3E%3C%2Fsvg%3E")}
+.ic-shield{width:20px;height:20px;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M120.9%20251.2C59.5%20215.3%2021.3%20147%2016%2063.5C14.4%2038.7%2013.5%2041.6%2023.7%2039.1C50.3%2032.5%2065.3%2026.9%2092.5%2013.2C127.6%20-4.4%20128.2%20-4.4%20165%2013.9C189.6%2026.1%20205.2%2032.2%20226.2%2037.5L241%2041.3%20241%2044.9C240.6%20131.8%20198.8%20212.9%20134.6%20251.4C127.4%20255.7%20128.8%20255.8%20120.9%20251.2ZM136.1%20238.2C190.3%20202.8%20225.4%20136.5%20229.6%2061.3L230.3%2049.2%20225.9%2048C203.1%2042.1%20181.9%2034%20157.3%2021.7C128.2%207.1%20128.1%207.1%2099.7%2021.2C73.6%2034.1%2052.1%2042.4%2030.1%2048L25.7%2049.2%2026.4%2061.8C30.6%20138.3%2064.6%20203.4%20118.6%20237.9C128.2%20244.1%20127.1%20244.1%20136.1%20238.2Z%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M120.9%20251.2C59.5%20215.3%2021.3%20147%2016%2063.5C14.4%2038.7%2013.5%2041.6%2023.7%2039.1C50.3%2032.5%2065.3%2026.9%2092.5%2013.2C127.6%20-4.4%20128.2%20-4.4%20165%2013.9C189.6%2026.1%20205.2%2032.2%20226.2%2037.5L241%2041.3%20241%2044.9C240.6%20131.8%20198.8%20212.9%20134.6%20251.4C127.4%20255.7%20128.8%20255.8%20120.9%20251.2ZM136.1%20238.2C190.3%20202.8%20225.4%20136.5%20229.6%2061.3L230.3%2049.2%20225.9%2048C203.1%2042.1%20181.9%2034%20157.3%2021.7C128.2%207.1%20128.1%207.1%2099.7%2021.2C73.6%2034.1%2052.1%2042.4%2030.1%2048L25.7%2049.2%2026.4%2061.8C30.6%20138.3%2064.6%20203.4%20118.6%20237.9C128.2%20244.1%20127.1%20244.1%20136.1%20238.2Z%22%2F%3E%3C%2Fsvg%3E")}
+.ic-chart{width:20px;height:20px;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M10%20171.5L10%2087%2046%2087L82%2087%2082%20171.5L82%20256%2046%20256L10%20256%2010%20171.5ZM92%20199.5L92%20143%20128%20143L164%20143%20164%20199.5L164%20256%20128%20256L92%20256%2092%20199.5ZM174.2%20138.2L174.5%2020.5%20210%2020.5L245.5%2020.5%20245.8%20138.2L246%20256%20210%20256L174%20256%20174.2%20138.2ZM71.8%20171.8L71.5%2097.5%2046%2097.5L20.5%2097.5%2020.2%20170.5C20.1%20210.7%2020.2%20244.1%2020.5%20244.8C20.8%20245.7%2027%20246%2046.5%20246L72%20246%2071.8%20171.8ZM153.8%20199.8L154%20154%20128%20154L102%20154%20102%20199.3C102%20224.3%20102.3%20245%20102.7%20245.4C103.1%20245.7%20114.6%20245.9%20128.4%20245.8L153.5%20245.5%20153.8%20199.8ZM235.8%20138.2L236%2031%20210%2031L184%2031%20184%20138.5L184%20246%20209.8%20245.8L235.5%20245.5%20235.8%20138.2Z%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M10%20171.5L10%2087%2046%2087L82%2087%2082%20171.5L82%20256%2046%20256L10%20256%2010%20171.5ZM92%20199.5L92%20143%20128%20143L164%20143%20164%20199.5L164%20256%20128%20256L92%20256%2092%20199.5ZM174.2%20138.2L174.5%2020.5%20210%2020.5L245.5%2020.5%20245.8%20138.2L246%20256%20210%20256L174%20256%20174.2%20138.2ZM71.8%20171.8L71.5%2097.5%2046%2097.5L20.5%2097.5%2020.2%20170.5C20.1%20210.7%2020.2%20244.1%2020.5%20244.8C20.8%20245.7%2027%20246%2046.5%20246L72%20246%2071.8%20171.8ZM153.8%20199.8L154%20154%20128%20154L102%20154%20102%20199.3C102%20224.3%20102.3%20245%20102.7%20245.4C103.1%20245.7%20114.6%20245.9%20128.4%20245.8L153.5%20245.5%20153.8%20199.8ZM235.8%20138.2L236%2031%20210%2031L184%2031%20184%20138.5L184%20246%20209.8%20245.8L235.5%20245.5%20235.8%20138.2Z%22%2F%3E%3C%2Fsvg%3E")}
+.ic-connected{width:17px;height:17px;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M31%20240.5L27.6%20237%2051.8%20212.7C78.5%20186%2077.3%20187.7%2072.7%20183.2C68.2%20178.8%2070.1%20177.4%2043.3%20204.2L19%20228.4%2015.5%20225L12%20221.6%2036.7%20196.8L61.4%20172.1%2053.7%20164.1C34.7%20144.7%2036.1%20130.6%2059.2%20107.7L72.2%2094.9%2068.1%2090.5C62.8%2084.7%2063.4%2079%2069.2%2079C71.8%2079%20177%20184.7%20177%20187.4C177%20193.3%20171.2%20193.6%20165.4%20187.9L161.2%20183.8%20148.3%20196.7C125.4%20219.9%20111.4%20221.3%2091.9%20202.3L83.9%20194.6%2059.2%20219.3L34.4%20244%2031%20240.5ZM126.4%20202.5C128.1%20201.7%20135%20195.5%20141.8%20188.7L154%20176.5%20116.7%20139.2L79.4%20101.9%2066.3%20115.2C43.4%20138.5%2043.5%20138.8%2079.9%20175.3C111.3%20206.8%20114%20208.4%20126.4%20202.5ZM132%20123.5L78.5%2070%2080%2067.2C82.4%2063%2085.2%2063.3%2090.4%2068L94.9%2072.2%20107.7%2059.2C130.6%2036.1%20144.7%2034.7%20164.1%2053.7L172.1%2061.4%20196.8%2036.7L221.6%2012%20225%2015.5L228.4%2019%20204.2%2043.3C177.5%2070%20178.7%2068.3%20183.3%2072.8C187.8%2077.2%20185.9%2078.6%20212.7%2051.8L237%2027.6%20240.5%2031L244%2034.4%20219.3%2059.2L194.6%2083.9%20202.3%2091.9C221.3%20111.4%20219.9%20125.4%20196.7%20148.3L183.8%20161.2%20187.9%20165.4C193.5%20171.1%20193.3%20177%20187.5%20177C186.2%20177%20167.9%20159.4%20132%20123.5ZM204%20122C206.4%20111.2%20206.2%20110.9%20176.7%2081.2C149.8%2054.1%20148.1%2052.7%20141.7%2051.5C133.6%2050%20129.7%2052.2%20115.2%2066.4L101.9%2079.4%20139.2%20116.7L176.5%20154.1%20189.6%20140.8C201.9%20128.3%20202.8%20127.1%20204%20122Z%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M31%20240.5L27.6%20237%2051.8%20212.7C78.5%20186%2077.3%20187.7%2072.7%20183.2C68.2%20178.8%2070.1%20177.4%2043.3%20204.2L19%20228.4%2015.5%20225L12%20221.6%2036.7%20196.8L61.4%20172.1%2053.7%20164.1C34.7%20144.7%2036.1%20130.6%2059.2%20107.7L72.2%2094.9%2068.1%2090.5C62.8%2084.7%2063.4%2079%2069.2%2079C71.8%2079%20177%20184.7%20177%20187.4C177%20193.3%20171.2%20193.6%20165.4%20187.9L161.2%20183.8%20148.3%20196.7C125.4%20219.9%20111.4%20221.3%2091.9%20202.3L83.9%20194.6%2059.2%20219.3L34.4%20244%2031%20240.5ZM126.4%20202.5C128.1%20201.7%20135%20195.5%20141.8%20188.7L154%20176.5%20116.7%20139.2L79.4%20101.9%2066.3%20115.2C43.4%20138.5%2043.5%20138.8%2079.9%20175.3C111.3%20206.8%20114%20208.4%20126.4%20202.5ZM132%20123.5L78.5%2070%2080%2067.2C82.4%2063%2085.2%2063.3%2090.4%2068L94.9%2072.2%20107.7%2059.2C130.6%2036.1%20144.7%2034.7%20164.1%2053.7L172.1%2061.4%20196.8%2036.7L221.6%2012%20225%2015.5L228.4%2019%20204.2%2043.3C177.5%2070%20178.7%2068.3%20183.3%2072.8C187.8%2077.2%20185.9%2078.6%20212.7%2051.8L237%2027.6%20240.5%2031L244%2034.4%20219.3%2059.2L194.6%2083.9%20202.3%2091.9C221.3%20111.4%20219.9%20125.4%20196.7%20148.3L183.8%20161.2%20187.9%20165.4C193.5%20171.1%20193.3%20177%20187.5%20177C186.2%20177%20167.9%20159.4%20132%20123.5ZM204%20122C206.4%20111.2%20206.2%20110.9%20176.7%2081.2C149.8%2054.1%20148.1%2052.7%20141.7%2051.5C133.6%2050%20129.7%2052.2%20115.2%2066.4L101.9%2079.4%20139.2%20116.7L176.5%20154.1%20189.6%20140.8C201.9%20128.3%20202.8%20127.1%20204%20122Z%22%2F%3E%3C%2Fsvg%3E")}
+.ic-grid{width:17px;height:17px;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M16.6%20222.8C14.2%20219.4%2014.2%2036.6%2016.6%2033.2L18.1%2031%20128%2031L237.9%2031%20239.4%2033.2C241.8%2036.6%20241.8%20219.4%20239.4%20222.8L237.9%20225%20128%20225L18.1%20225%2016.6%20222.8ZM87%20174L87%20133%2056.5%20133L26%20133%2026%20174L26%20215%2056.5%20215L87%20215%2087%20174ZM159%20174L159%20133%20128%20133L97%20133%2097%20174L97%20215%20128%20215L159%20215%20159%20174ZM230%20174L230%20133%20199.5%20133L169%20133%20169%20174L169%20215%20199.5%20215L230%20215%20230%20174ZM87%2082L87%2041%2056.5%2041L26%2041%2026%2082L26%20123%2056.5%20123L87%20123%2087%2082ZM159%2082L159%2041%20128%2041L97%2041%2097%2082L97%20123%20128%20123L159%20123%20159%2082ZM230%2082L230%2041%20199.5%2041L169%2041%20169%2082L169%20123%20199.5%20123L230%20123%20230%2082Z%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M16.6%20222.8C14.2%20219.4%2014.2%2036.6%2016.6%2033.2L18.1%2031%20128%2031L237.9%2031%20239.4%2033.2C241.8%2036.6%20241.8%20219.4%20239.4%20222.8L237.9%20225%20128%20225L18.1%20225%2016.6%20222.8ZM87%20174L87%20133%2056.5%20133L26%20133%2026%20174L26%20215%2056.5%20215L87%20215%2087%20174ZM159%20174L159%20133%20128%20133L97%20133%2097%20174L97%20215%20128%20215L159%20215%20159%20174ZM230%20174L230%20133%20199.5%20133L169%20133%20169%20174L169%20215%20199.5%20215L230%20215%20230%20174ZM87%2082L87%2041%2056.5%2041L26%2041%2026%2082L26%20123%2056.5%20123L87%20123%2087%2082ZM159%2082L159%2041%20128%2041L97%2041%2097%2082L97%20123%20128%20123L159%20123%20159%2082ZM230%2082L230%2041%20199.5%2041L169%2041%20169%2082L169%20123%20199.5%20123L230%20123%20230%2082Z%22%2F%3E%3C%2Fsvg%3E")}
+.ic-document{width:17px;height:17px;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M36%20128L36%2010%2095.8%2010L155.5%2010%20187.8%2042.3L220%2074.5%20220%20160.3L220%20246%20128%20246L36%20246%2036%20128ZM209.8%20158.8L210%2082%20179.3%2081.8L148.5%2081.5%20148.2%2050.7L148%2020%2097.2%2020.2L46.5%2020.5%2046.2%20127C46.1%20185.6%2046.2%20234.1%2046.5%20234.8C46.8%20235.8%2063.7%20236%20128.2%20235.8L209.5%20235.5%20209.8%20158.8ZM77%20179L77%20174%20128%20174L179%20174%20179%20179L179%20184%20128%20184L77%20184%2077%20179ZM77%20148.5L77%20143%20117.8%20143.2L158.5%20143.5%20158.5%20148.5L158.5%20153.5%20117.8%20153.8L77%20154%2077%20148.5ZM77%20118L77%20113%20128%20113L179%20113%20179%20118L179%20123%20128%20123L77%20123%2077%20118ZM202%2071.7C202%2071.6%20192.3%2061.8%20180.5%2050L159%2028.5%20159%2050.3L159%2072%20180.5%2072C192.3%2072%20202%2071.9%20202%2071.7Z%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M36%20128L36%2010%2095.8%2010L155.5%2010%20187.8%2042.3L220%2074.5%20220%20160.3L220%20246%20128%20246L36%20246%2036%20128ZM209.8%20158.8L210%2082%20179.3%2081.8L148.5%2081.5%20148.2%2050.7L148%2020%2097.2%2020.2L46.5%2020.5%2046.2%20127C46.1%20185.6%2046.2%20234.1%2046.5%20234.8C46.8%20235.8%2063.7%20236%20128.2%20235.8L209.5%20235.5%20209.8%20158.8ZM77%20179L77%20174%20128%20174L179%20174%20179%20179L179%20184%20128%20184L77%20184%2077%20179ZM77%20148.5L77%20143%20117.8%20143.2L158.5%20143.5%20158.5%20148.5L158.5%20153.5%20117.8%20153.8L77%20154%2077%20148.5ZM77%20118L77%20113%20128%20113L179%20113%20179%20118L179%20123%20128%20123L77%20123%2077%20118ZM202%2071.7C202%2071.6%20192.3%2061.8%20180.5%2050L159%2028.5%20159%2050.3L159%2072%20180.5%2072C192.3%2072%20202%2071.9%20202%2071.7Z%22%2F%3E%3C%2Fsvg%3E")}
+.ic-play{width:17px;height:17px;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M51%20128L51%2026.9%2056.3%2029.9C90.4%2049.4%20221.5%20127.3%20221.5%20128C221.5%20128.7%2089.8%20206.9%2056.3%20226.1L51%20229.1%2051%20128ZM132.4%20169.5C170.7%20146.9%20202%20128.3%20202%20128C202%20127.5%2064%2045.9%2061.9%2045.2C61.4%2045%2061%2079.1%2061%20128C61%20176.9%2061.4%20211%2061.9%20210.8C62.4%20210.7%2094.1%20192.1%20132.4%20169.5Z%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M51%20128L51%2026.9%2056.3%2029.9C90.4%2049.4%20221.5%20127.3%20221.5%20128C221.5%20128.7%2089.8%20206.9%2056.3%20226.1L51%20229.1%2051%20128ZM132.4%20169.5C170.7%20146.9%20202%20128.3%20202%20128C202%20127.5%2064%2045.9%2061.9%2045.2C61.4%2045%2061%2079.1%2061%20128C61%20176.9%2061.4%20211%2061.9%20210.8C62.4%20210.7%2094.1%20192.1%20132.4%20169.5Z%22%2F%3E%3C%2Fsvg%3E")}
+.ic-info{width:15px;height:15px;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M114.1%20244.9C34.1%20235.6%20-13.5%20147.6%2022.6%2075.7C67%20-12.3%20192.4%20-10.7%20234.6%2078.4C273.7%20160.9%20205.2%20255.4%20114.1%20244.9ZM140.1%20234.6C220%20228.7%20263.1%20129.5%20214.3%2064.1C152.4%20-18.7%2020.9%2024.8%2020.9%20128C20.9%20187.9%2074.4%20240.3%20130.5%20235.3C132.2%20235.2%20136.5%20234.9%20140.1%20234.6ZM108%20189.5L108%20184%20113%20184L118%20184%20118%20151L118%20118%20113%20118L108%20118%20108%20113L108%20108%20123%20108L138%20108%20138%20146L138%20184%20143%20184L148%20184%20148%20189.5L148%20195%20128%20195L108%20195%20108%20189.5ZM121%2085.1C108.9%2078.8%20111%2060.5%20124.2%2056.9C133.8%2054.4%20143%2061.9%20143%2072.3C143%2083.3%20130.8%2090.4%20121%2085.1Z%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M114.1%20244.9C34.1%20235.6%20-13.5%20147.6%2022.6%2075.7C67%20-12.3%20192.4%20-10.7%20234.6%2078.4C273.7%20160.9%20205.2%20255.4%20114.1%20244.9ZM140.1%20234.6C220%20228.7%20263.1%20129.5%20214.3%2064.1C152.4%20-18.7%2020.9%2024.8%2020.9%20128C20.9%20187.9%2074.4%20240.3%20130.5%20235.3C132.2%20235.2%20136.5%20234.9%20140.1%20234.6ZM108%20189.5L108%20184%20113%20184L118%20184%20118%20151L118%20118%20113%20118L108%20118%20108%20113L108%20108%20123%20108L138%20108%20138%20146L138%20184%20143%20184L148%20184%20148%20189.5L148%20195%20128%20195L108%20195%20108%20189.5ZM121%2085.1C108.9%2078.8%20111%2060.5%20124.2%2056.9C133.8%2054.4%20143%2061.9%20143%2072.3C143%2083.3%20130.8%2090.4%20121%2085.1Z%22%2F%3E%3C%2Fsvg%3E")}
+.ic-ok{width:15px;height:15px;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M70.9%20186.4C29.7%20149.1%2028.1%20147.4%2031.8%20143.8C35.2%20140.4%2036.2%20141.1%2074%20175.3C93.3%20192.8%20109.7%20207.3%20110.4%20207.6C111.3%20207.9%20129.4%20180.7%20164.1%20126.9C195%2079.1%20217.4%2045.3%20218.6%2044.8C222.1%2043.2%20225.3%2045.5%20224.8%2049.3C224.4%2052.4%20117.3%20219.6%20114.7%20221.2C111.9%20223%20108.3%20220.2%2070.9%20186.4Z%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M70.9%20186.4C29.7%20149.1%2028.1%20147.4%2031.8%20143.8C35.2%20140.4%2036.2%20141.1%2074%20175.3C93.3%20192.8%20109.7%20207.3%20110.4%20207.6C111.3%20207.9%20129.4%20180.7%20164.1%20126.9C195%2079.1%20217.4%2045.3%20218.6%2044.8C222.1%2043.2%20225.3%2045.5%20224.8%2049.3C224.4%2052.4%20117.3%20219.6%20114.7%20221.2C111.9%20223%20108.3%20220.2%2070.9%20186.4Z%22%2F%3E%3C%2Fsvg%3E")}
+.ic-warn{width:15px;height:15px;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M2.2%20239.4C-1.6%20236.8%20-1.5%20236.7%2061.6%20127.3C131.1%207%20124.4%2018%20128%2018C131.6%2018%20124.9%207%20194.4%20127.3C257.5%20236.8%20257.6%20236.8%20253.8%20239.4C250.4%20241.8%205.6%20241.8%202.2%20239.4ZM241%20229.4C241%20228.3%20128.6%2034%20128%2034C127.4%2034%2015%20228.3%2015%20229.4C15%20229.7%2065.8%20230%20128%20230C190.2%20230%20241%20229.7%20241%20229.4ZM120.2%20197.8L120.5%20189.5%20128%20189.5L135.5%20189.5%20135.8%20197.8L136.1%20206%20128%20206L119.9%20206%20120.2%20197.8ZM121.1%20173.6C120.3%20172.7%20120%20161.6%20120.2%20134.9L120.5%2097.5%20128%2097.5L135.5%2097.5%20135.8%20134.9C136.1%20177.3%20136.5%20175%20128%20175C124.4%20175%20121.8%20174.5%20121.1%20173.6Z%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M2.2%20239.4C-1.6%20236.8%20-1.5%20236.7%2061.6%20127.3C131.1%207%20124.4%2018%20128%2018C131.6%2018%20124.9%207%20194.4%20127.3C257.5%20236.8%20257.6%20236.8%20253.8%20239.4C250.4%20241.8%205.6%20241.8%202.2%20239.4ZM241%20229.4C241%20228.3%20128.6%2034%20128%2034C127.4%2034%2015%20228.3%2015%20229.4C15%20229.7%2065.8%20230%20128%20230C190.2%20230%20241%20229.7%20241%20229.4ZM120.2%20197.8L120.5%20189.5%20128%20189.5L135.5%20189.5%20135.8%20197.8L136.1%20206%20128%20206L119.9%20206%20120.2%20197.8ZM121.1%20173.6C120.3%20172.7%20120%20161.6%20120.2%20134.9L120.5%2097.5%20128%2097.5L135.5%2097.5%20135.8%20134.9C136.1%20177.3%20136.5%20175%20128%20175C124.4%20175%20121.8%20174.5%20121.1%20173.6Z%22%2F%3E%3C%2Fsvg%3E")}
+.ic-err{width:15px;height:15px;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M114.1%20244.9C34.1%20235.6%20-13.5%20147.5%2022.6%2075.7C66.9%20-12.2%20192.4%20-10.7%20234.5%2078.3C273.7%20160.9%20205.3%20255.5%20114.1%20244.9ZM140.1%20234.6C220%20228.7%20263.1%20129.5%20214.3%2064.1C152.4%20-18.7%2020.9%2024.8%2020.9%20128C20.9%20187.9%2074.4%20240.3%20130.5%20235.3C132.2%20235.2%20136.5%20234.9%20140.1%20234.6ZM83.6%20172.4C80.2%20169%2081.7%20167%20101.2%20147.3L120.4%20128%20101.2%20108.7C81.7%2089%2080.2%2087%2083.6%2083.6C87%2080.2%2089%2081.7%20108.7%20101.2L128%20120.4%20147.3%20101.2C167%2081.7%20169%2080.2%20172.4%2083.6C175.8%2087%20174.3%2089%20154.8%20108.7L135.6%20128%20154.8%20147.3C174.3%20167%20175.8%20169%20172.4%20172.4C169%20175.8%20167%20174.3%20147.3%20154.8L128%20135.6%20108.7%20154.8C89%20174.3%2087%20175.8%2083.6%20172.4Z%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M114.1%20244.9C34.1%20235.6%20-13.5%20147.5%2022.6%2075.7C66.9%20-12.2%20192.4%20-10.7%20234.5%2078.3C273.7%20160.9%20205.3%20255.5%20114.1%20244.9ZM140.1%20234.6C220%20228.7%20263.1%20129.5%20214.3%2064.1C152.4%20-18.7%2020.9%2024.8%2020.9%20128C20.9%20187.9%2074.4%20240.3%20130.5%20235.3C132.2%20235.2%20136.5%20234.9%20140.1%20234.6ZM83.6%20172.4C80.2%20169%2081.7%20167%20101.2%20147.3L120.4%20128%20101.2%20108.7C81.7%2089%2080.2%2087%2083.6%2083.6C87%2080.2%2089%2081.7%20108.7%20101.2L128%20120.4%20147.3%20101.2C167%2081.7%20169%2080.2%20172.4%2083.6C175.8%2087%20174.3%2089%20154.8%20108.7L135.6%20128%20154.8%20147.3C174.3%20167%20175.8%20169%20172.4%20172.4C169%20175.8%20167%20174.3%20147.3%20154.8L128%20135.6%20108.7%20154.8C89%20174.3%2087%20175.8%2083.6%20172.4Z%22%2F%3E%3C%2Fsvg%3E")}
+.ic-check{width:10px;height:10px;-webkit-mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M70.9%20186.4C29.7%20149.1%2028.1%20147.4%2031.8%20143.8C35.2%20140.4%2036.2%20141.1%2074%20175.3C93.3%20192.8%20109.7%20207.3%20110.4%20207.6C111.3%20207.9%20129.4%20180.7%20164.1%20126.9C195%2079.1%20217.4%2045.3%20218.6%2044.8C222.1%2043.2%20225.3%2045.5%20224.8%2049.3C224.4%2052.4%20117.3%20219.6%20114.7%20221.2C111.9%20223%20108.3%20220.2%2070.9%20186.4Z%22%2F%3E%3C%2Fsvg%3E");mask-image:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M70.9%20186.4C29.7%20149.1%2028.1%20147.4%2031.8%20143.8C35.2%20140.4%2036.2%20141.1%2074%20175.3C93.3%20192.8%20109.7%20207.3%20110.4%20207.6C111.3%20207.9%20129.4%20180.7%20164.1%20126.9C195%2079.1%20217.4%2045.3%20218.6%2044.8C222.1%2043.2%20225.3%2045.5%20224.8%2049.3C224.4%2052.4%20117.3%20219.6%20114.7%20221.2C111.9%20223%20108.3%20220.2%2070.9%20186.4Z%22%2F%3E%3C%2Fsvg%3E")}
+.ic-info,.ic-ok,.ic-warn,.ic-err{margin-top:2px}
+
+</style>
+</head>
+<body>
+
+<!-- ── 顶部导航 ── -->
+<nav class="top-nav">
+  <div class="nav-inner">
+    <a class="nav-brand" href="#">
+      <span class="ic ic-brand" aria-hidden="true"></span>
+      <span class="nav-title">API Compat</span>
+      <span class="nav-sep nav-sub">/</span>
+      <span class="nav-sub">模型接口兼容性测试</span>
+    </a>
+  </div>
+</nav>
+
+<div class="wrap">
+
+  <!-- ── 页头 ── -->
+  <header class="page-head">
+    <h1 class="page-title">模型接口兼容性测试</h1>
+  </header>
+
+  <!-- ============ 1. 配置 ============ -->
+  <section class="panel" id="panel-config">
+    <div class="panel-head">
+      <h2 class="panel-title">连接配置</h2>
+      <span class="panel-note">共 10 种协议，按需勾选</span>
+    </div>
+    <div class="row">
+      <label class="fld">
+        <span>接口地址 (Base URL)</span>
+        <input type="text" id="baseUrl" class="mono" placeholder="https://api.example.com" autocomplete="off" spellcheck="false">
+      </label>
+      <label class="fld">
+        <span>API Key (密钥)</span>
+        <div class="key-wrap">
+          <input type="password" id="apiKey" class="mono" placeholder="sk-..." autocomplete="off" spellcheck="false">
+          <button class="key-toggle" id="keyToggle" type="button">显示</button>
+        </div>
+      </label>
+    </div>
+
+    <div class="proto-head">
+      <span class="lbl">测试协议</span>
+      <span class="proto-tools">
+        <button class="link-btn" id="pMain" type="button">推荐</button>
+        <button class="link-btn" id="pAll" type="button">全选</button>
+        <button class="link-btn" id="pNone" type="button">清空</button>
+      </span>
+    </div>
+    <div class="proto-grid" id="protoGrid"></div>
+
+    <label class="fld" id="customWrap" style="display:none;margin-top:12px">
+      <span>自定义端点</span>
+      <input type="text" id="customUrl" class="mono" placeholder="https://api.example.com/v1/chat/completions" autocomplete="off" spellcheck="false">
+    </label>
+
+    <details class="adv">
+      <summary>高级选项 (并发、超时、过滤与指定模型)</summary>
+      <div class="inner">
+        <div class="row">
+          <label class="fld">
+            <span>并发数</span>
+            <input type="number" id="concurrency" value="6" min="1" max="20">
+          </label>
+          <label class="fld">
+            <span>超时 (秒)</span>
+            <input type="number" id="timeout" value="30" min="5" max="180">
+          </label>
+          <label class="fld">
+            <span>重试次数</span>
+            <input type="number" id="retries" value="1" min="0" max="3">
+          </label>
+        </div>
+        <div class="chk-group">
+          <label class="chk">
+            <input type="checkbox" id="rememberKey">
+            <span>记住 Key (仅留本地)</span>
+          </label>
+          <label class="chk">
+            <input type="checkbox" id="filterDeclared">
+            <span>仅测服务端声明的协议</span>
+          </label>
+          <label class="chk">
+            <input type="checkbox" id="manualMode">
+            <span>手动指定模型清单</span>
+          </label>
+        </div>
+        <label class="fld" id="manualWrap" style="display:none;margin-top:10px">
+          <span>模型列表 (每行一个)</span>
+          <textarea id="manualModels" class="mono" placeholder="deepseek-v4.1-flash&#10;glm-5.3&#10;kimi-k2.5"></textarea>
+        </label>
+      </div>
+    </details>
+
+    <button class="btn btn-primary" id="runBtn">
+      <span class="ic ic-play" aria-hidden="true"></span>
+      <span class="btn-label">一键开始全协议探测</span>
+    </button>
+  </section>
+
+  <!-- ── 能力说明：空态填充，开始测试后自动收起 ── -->
+  <div class="features-grid" id="featuresOverview">
+    <div class="feat-card">
+      <div class="feat-icon feat-blue"><span class="ic ic-globe" aria-hidden="true"></span></div>
+      <div class="feat-content">
+        <div class="feat-title">10 种协议一次过筛</div>
+        <div class="feat-desc">OpenAI Chat / Responses、Anthropic Messages、Gemini 原生与兼容层、百炼、Azure、Ollama、Cohere，逐条验证路由是否真的通。</div>
+      </div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon feat-emerald"><span class="ic ic-pulse" aria-hidden="true"></span></div>
+      <div class="feat-content">
+        <div class="feat-title">流式与非流式双测</div>
+        <div class="feat-desc">同时探测连通性、SSE 事件分块与 NDJSON，度量首包延迟 (TTFT) 与总耗时，失败项可一键重测。</div>
+      </div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon feat-purple"><span class="ic ic-shield" aria-hidden="true"></span></div>
+      <div class="feat-content">
+        <div class="feat-title">纯前端直连，零中转</div>
+        <div class="feat-desc">浏览器直接向目标服务发包，不经任何中间服务器；API Key 只留在本机浏览器，可随时不勾选「记住」。</div>
+      </div>
+    </div>
+    <div class="feat-card">
+      <div class="feat-icon feat-amber"><span class="ic ic-chart" aria-hidden="true"></span></div>
+      <div class="feat-content">
+        <div class="feat-title">矩阵与四种格式导出</div>
+        <div class="feat-desc">输出「模型 × 协议」实测矩阵，并标注「服务端声明与实际不符」的偏差项，支持导出 HTML / Markdown / JSON / CSV。</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- ============ 2. 连通性 ============ -->
+  <section class="panel" id="panel-conn" style="display:none">
+    <h2 class="panel-title">
+      <span class="ic ic-connected" aria-hidden="true"></span>
+      连通性与模型清单
+    </h2>
+    <div id="connResult"></div>
+  </section>
+
+  <!-- ============ 3. 矩阵 ============ -->
+  <section class="panel" id="panel-models" style="display:none">
+    <div class="panel-head">
+      <h2 class="panel-title">
+        <span class="ic ic-grid" aria-hidden="true"></span>
+        实测兼容性矩阵
+      </h2>
+      <div class="legend" id="legend"></div>
+    </div>
+    <div class="stat-grid" id="stats"></div>
+    <div class="bar"><i id="progBar"></i></div>
+    <div class="prog-text">
+      <span id="progLabel">准备中<span class="dots"></span></span>
+      <span id="progCount">0 / 0</span>
+    </div>
+    <div id="tableWrap" style="margin-top:14px"></div>
+    <div class="actions" id="resultActions" style="display:none">
+      <button class="btn btn-ghost" id="onlyOk">只看可用协议</button>
+      <button class="btn btn-ghost" id="retestFail">重测失败项</button>
+    </div>
+  </section>
+
+  <!-- ============ 4. 报告 ============ -->
+  <section class="panel report" id="panel-report" style="display:none">
+    <div class="panel-head">
+      <h2 class="panel-title">
+        <span class="ic ic-document" aria-hidden="true"></span>
+        测试诊断报告
+      </h2>
+      <div class="actions" id="reportActions" style="display:none;margin-top:0;padding-top:0;border:none">
+        <button class="btn btn-ghost" id="expHtml">HTML</button>
+        <button class="btn btn-ghost" id="expMd">Markdown</button>
+        <button class="btn btn-ghost" id="expJson">JSON</button>
+        <button class="btn btn-ghost" id="expCsv">CSV</button>
+      </div>
+    </div>
+    <div id="reportBody"></div>
+  </section>
+
+  <footer>
+    <p class="foot-disc">
+      本工具为纯前端项目，所有请求由你的浏览器直连目标服务，不经过任何中间服务器。为防止 API Key 泄漏，请务必<b>新建一个小额度 Key</b> 用于测试，测试完成后<b>立即删除</b>；因使用本工具导致的密钥泄漏、额度损失等后果，作者不承担任何责任。
+    </p>
+    <p class="foot-copy">© <span id="footYear">2026</span> API Compat · 模型接口兼容性测试</p>
+  </footer>
+</div>
+
+<!-- 详情弹层 -->
+<div class="modal" id="modal">
+  <div class="box">
+    <h4 id="modalTitle">明细</h4>
+    <dl class="kv" id="modalBody"></dl>
+    <div class="actions" style="border:none;padding-top:14px;margin-top:4px">
+      <button class="btn btn-ghost" id="modalClose">关闭</button>
+    </div>
+  </div>
+</div>
+
+<script>
+(function () {
+  "use strict";
+
+  /* ==================================================================
+     常量
+     ================================================================== */
+  var LS_KEY = "mat.config.v2";
+  var PROBE_INSTRUCTION = "Reply with OK.";
+  var PROBE_MAX_TOKENS = 512;
+  var RUN_LABEL = "一键开始全协议探测";
+  var RUN_LABEL_BUSY = "全协议探测中…";
+  var ANTHROPIC_VERSION = "2023-06-01";
+  var AZURE_API_VERSION = "2024-02-01";
+
+  var STATUS = {
+    OK:          { key: "OK",          label: "可用",       cls: "ok",      rank: 0, ok: true  },
+    WARN:        { key: "WARN",        label: "可用·降级",  cls: "warn",    rank: 1, ok: true  },
+    TIMEOUT:     { key: "TIMEOUT",     label: "超时",       cls: "warn",    rank: 2, ok: false },
+    RATELIMIT:   { key: "RATELIMIT",   label: "限流/欠费",  cls: "warn",    rank: 3, ok: false },
+    NOCHANNEL:   { key: "NOCHANNEL",   label: "无可用渠道", cls: "warn",    rank: 4, ok: false },
+    NOTFOUND:    { key: "NOTFOUND",    label: "模型不存在", cls: "err",     rank: 5, ok: false },
+    UNSUPPORTED: { key: "UNSUPPORTED", label: "协议不支持", cls: "neutral", rank: 6, ok: false },
+    UNAUTH:      { key: "UNAUTH",      label: "Key 无效",   cls: "err",     rank: 7, ok: false },
+    NETWORK:     { key: "NETWORK",     label: "网络/CORS",  cls: "err",     rank: 8, ok: false },
+    SERVER:      { key: "SERVER",      label: "服务异常",   cls: "err",     rank: 9, ok: false },
+    UNKNOWN:     { key: "UNKNOWN",     label: "未知",       cls: "neutral", rank:10, ok: false }
+  };
+
+  /* ==================================================================
+     协议注册表
+     每种协议 = 一套「鉴权 + 路径 + 请求体 + 响应判定 + 正文提取」
+     ================================================================== */
+
+  function okOpenai(o) {
+    return Array.isArray(o.choices) || (o.object && /chat\.completion/.test(String(o.object)));
+  }
+  function textOpenai(o) {
+    try {
+      var c = o.choices && o.choices[0];
+      var m = c && (c.message || c.delta);
+      return (m && m.content) || "";
+    } catch (e) { return ""; }
+  }
+  function okOpenaiResp(o) {
+    if (o.object === "response") return true;
+    return typeof o.type === "string" && o.type.indexOf("response.") === 0;
+  }
+  function textOpenaiResp(o) {
+    try {
+      if (o.type === "response.output_text.delta") return o.delta || "";
+      if (Array.isArray(o.output)) {
+        var s = "";
+        o.output.forEach(function (item) {
+          if (Array.isArray(item.content)) item.content.forEach(function (c) { if (c.text) s += c.text; });
+        });
+        return s;
+      }
+      return "";
+    } catch (e) { return ""; }
+  }
+  function okAnthropic(o) {
+    if (o.type === "message") return true;
+    return /^(message_start|content_block_start|content_block_delta|message_delta|message_stop|ping)$/.test(String(o.type || ""));
+  }
+  function textAnthropic(o) {
+    try {
+      if (o.type === "content_block_delta") return (o.delta && o.delta.text) || "";
+      if (Array.isArray(o.content)) return o.content.map(function (c) { return c.text || ""; }).join("");
+      return "";
+    } catch (e) { return ""; }
+  }
+  function okGoogle(o) { return Array.isArray(o.candidates); }
+  function textGoogle(o) {
+    try {
+      var c = o.candidates && o.candidates[0];
+      if (!c || !c.content || !Array.isArray(c.content.parts)) return "";
+      return c.content.parts.map(function (p) { return p.text || ""; }).join("");
+    } catch (e) { return ""; }
+  }
+  function okOllama(o) {
+    return o.message !== undefined || o.done !== undefined || Array.isArray(o.models) || o.response !== undefined;
+  }
+  function textOllama(o) {
+    if (o.message && o.message.content) return o.message.content;
+    return o.response || "";
+  }
+  function okCohere(o) {
+    if (o.message) return true;
+    return /^(message-start|content-start|content-delta|content-end|message-end)$/.test(String(o.type || ""));
+  }
+  function textCohere(o) {
+    try {
+      if (o.type === "content-delta") return (o.delta && o.delta.message && o.delta.message.content && o.delta.message.content.text) || "";
+      if (o.message && Array.isArray(o.message.content)) return o.message.content.map(function (c) { return c.text || ""; }).join("");
+      return "";
+    } catch (e) { return ""; }
+  }
+  function okAuto(o) {
+    return okOpenai(o) || okOpenaiResp(o) || okAnthropic(o) || okGoogle(o) || okOllama(o) || okCohere(o);
+  }
+  function textAuto(o) {
+    return textOpenai(o) || textOpenaiResp(o) || textAnthropic(o) || textGoogle(o) || textOllama(o) || textCohere(o);
+  }
+
+  var PROTOCOLS = [
+    {
+      id: "openai", name: "OpenAI 对话", path: "/v1/chat/completions", group: "main",
+      auth: "bearer", tag: "最通用",
+      desc: "OpenAI Chat Completions，第三方中转站的事实标准",
+      list: function (nb) {
+        return nb.roots.map(function (r) { return { url: r + "/models", kind: "openai", auth: "bearer" }; });
+      },
+      probe: function (nb, model) {
+        return nb.roots.map(function (r) {
+          return { url: r + "/chat/completions",
+                   body: { model: model, stream: true, max_tokens: PROBE_MAX_TOKENS, messages: [{ role: "user", content: PROBE_INSTRUCTION }] } };
+        });
+      },
+      ok: okOpenai, text: textOpenai
+    },
+    {
+      id: "anthropic", name: "Anthropic Messages", path: "/v1/messages", group: "main",
+      auth: "anthropic", tag: "Claude Code",
+      desc: "Anthropic 原生协议，Claude Code / cc-switch 走这条",
+      list: function (nb) {
+        return nb.roots.map(function (r) { return { url: r + "/models", kind: "openai", auth: "anthropic" }; });
+      },
+      probe: function (nb, model) {
+        return nb.roots.map(function (r) {
+          return { url: r + "/messages",
+                   body: { model: model, max_tokens: PROBE_MAX_TOKENS, stream: true, messages: [{ role: "user", content: PROBE_INSTRUCTION }] } };
+        });
+      },
+      ok: okAnthropic, text: textAnthropic
+    },
+    {
+      id: "openai-response", name: "OpenAI Responses", path: "/v1/responses", group: "main",
+      auth: "bearer", tag: "新版",
+      desc: "OpenAI 新版 Responses API，注意正文在 output[] 里",
+      list: function (nb) {
+        return nb.roots.map(function (r) { return { url: r + "/models", kind: "openai", auth: "bearer" }; });
+      },
+      probe: function (nb, model) {
+        return nb.roots.map(function (r) {
+          return { url: r + "/responses",
+                   body: { model: model, input: PROBE_INSTRUCTION, stream: true, max_output_tokens: PROBE_MAX_TOKENS } };
+        });
+      },
+      ok: okOpenaiResp, text: textOpenaiResp
+    },
+    {
+      id: "google", name: "Google Gemini 原生", path: "/v1beta/models/{model}:streamGenerateContent", group: "other",
+      auth: "google", tag: "Gemini",
+      desc: "Google AI Studio 原生格式，非流式端点常不可用",
+      list: function (nb) {
+        return [{ url: nb.origin + "/v1beta/models", kind: "google", auth: "google" }];
+      },
+      probe: function (nb, model) {
+        var m = encodeURIComponent(model);
+        return [
+          { url: nb.origin + "/v1beta/models/" + m + ":streamGenerateContent?alt=sse",
+            body: { contents: [{ parts: [{ text: PROBE_INSTRUCTION }] }] } },
+          { url: nb.origin + "/v1beta/models/" + m + ":generateContent",
+            body: { contents: [{ parts: [{ text: PROBE_INSTRUCTION }] }] } }
+        ];
+      },
+      ok: okGoogle, text: textGoogle
+    },
+    {
+      id: "google-openai", name: "Gemini OpenAI 兼容", path: "/v1beta/openai/chat/completions", group: "other",
+      auth: "google", tag: "Gemini",
+      desc: "Google 官方提供的 OpenAI 兼容层",
+      list: function (nb) { return [{ url: nb.origin + "/v1beta/models", kind: "google", auth: "google" }]; },
+      probe: function (nb, model) {
+        return [{ url: nb.origin + "/v1beta/openai/chat/completions",
+                  body: { model: model, stream: true, max_tokens: PROBE_MAX_TOKENS, messages: [{ role: "user", content: PROBE_INSTRUCTION }] } }];
+      },
+      ok: okOpenai, text: textOpenai
+    },
+    {
+      id: "dashscope", name: "阿里云百炼 兼容模式", path: "/compatible-mode/v1/chat/completions", group: "other",
+      auth: "bearer", tag: "国内",
+      desc: "DashScope / 通义千问 的 OpenAI 兼容路径",
+      list: function (nb) { return [{ url: nb.origin + "/compatible-mode/v1/models", kind: "openai", auth: "bearer" }]; },
+      probe: function (nb, model) {
+        return [{ url: nb.origin + "/compatible-mode/v1/chat/completions",
+                  body: { model: model, stream: true, max_tokens: PROBE_MAX_TOKENS, messages: [{ role: "user", content: PROBE_INSTRUCTION }] } }];
+      },
+      ok: okOpenai, text: textOpenai
+    },
+    {
+      id: "azure", name: "Azure OpenAI 风格", path: "/openai/deployments/{model}/chat/completions", group: "other",
+      auth: "azure", tag: "Azure",
+      desc: "以部署名入路径，鉴权用 api-key 头",
+      list: function (nb) { return nb.roots.map(function (r) { return { url: r + "/models", kind: "openai", auth: "azure" }; }); },
+      probe: function (nb, model) {
+        return nb.roots.map(function (r) {
+          return { url: r + "/openai/deployments/" + encodeURIComponent(model) + "/chat/completions?api-version=" + AZURE_API_VERSION,
+                   body: { stream: true, max_tokens: PROBE_MAX_TOKENS, messages: [{ role: "user", content: PROBE_INSTRUCTION }] } };
+        });
+      },
+      ok: okOpenai, text: textOpenai
+    },
+    {
+      id: "ollama", name: "Ollama 原生", path: "/api/chat", group: "other",
+      auth: "none", tag: "本地",
+      desc: "Ollama 本地服务，返回 NDJSON 而非 SSE",
+      list: function (nb) { return [{ url: nb.origin + "/api/tags", kind: "ollama", auth: "none" }]; },
+      probe: function (nb, model) {
+        return [{ url: nb.origin + "/api/chat",
+                  body: { model: model, stream: true, messages: [{ role: "user", content: PROBE_INSTRUCTION }] } }];
+      },
+      ok: okOllama, text: textOllama
+    },
+    {
+      id: "cohere", name: "Cohere v2 原生", path: "/v2/chat", group: "other",
+      auth: "bearer", tag: "Cohere",
+      desc: "Cohere Chat v2 协议",
+      list: function (nb) { return [{ url: nb.origin + "/v1/models", kind: "openai", auth: "bearer" }]; },
+      probe: function (nb, model) {
+        return [{ url: nb.origin + "/v2/chat",
+                  body: { model: model, stream: true, messages: [{ role: "user", content: PROBE_INSTRUCTION }] } }];
+      },
+      ok: okCohere, text: textCohere
+    },
+    {
+      id: "custom", name: "自定义协议", path: "（原样请求，不补路径）", group: "other",
+      auth: "bearer", tag: "兜底",
+      desc: "给已自带协议处理的代理层用，完全原样请求",
+      list: function () { return []; },
+      probe: function (nb, model) {
+        var u = String(elCustomUrl.value || "").trim();
+        if (!u) return [];
+        return [{ url: u,
+                  body: { model: model, stream: true, max_tokens: PROBE_MAX_TOKENS, messages: [{ role: "user", content: PROBE_INSTRUCTION }] } }];
+      },
+      ok: okAuto, text: textAuto
+    }
+  ];
+
+  /* 服务端 supported_endpoint_types → 协议 id 的映射（用于「只测声明支持的协议」）
+     原则：保守映射，只认声明里明确出现过的协议族。
+     注意 "openai" 只代表 Chat Completions，不代表 Responses —— 实测里两者并不等价。 */
+  var DECLARED_MAP = {
+    "openai": ["openai"],
+    "openai-response": ["openai-response"],
+    "anthropic": ["anthropic"],
+    "google": ["google"],
+    "google-openai": ["openai"],
+    "dashscope": ["openai"],
+    "azure": ["openai"],
+    "ollama": ["ollama"],
+    "cohere": ["cohere"],
+    "custom": null
+  };
+  function declaredAllows(declared, pid) {
+    if (pid === "custom") return true;
+    if (!declared || !declared.length) return true;   // 没有声明信息 → 不干预
+    var wants = DECLARED_MAP[pid];
+    if (!wants) return true;
+    for (var i = 0; i < wants.length; i++) if (declared.indexOf(wants[i]) >= 0) return true;
+    return false;
+  }
+
+  /* ==================================================================
+     DOM
+     ================================================================== */
+  function $(id) { return document.getElementById(id); }
+  var elBaseUrl = $("baseUrl"), elApiKey = $("apiKey"), elKeyToggle = $("keyToggle");
+  var elCustomUrl = $("customUrl"), customWrap = $("customWrap");
+  var protoGrid = $("protoGrid");
+  var elConcurrency = $("concurrency"), elTimeout = $("timeout"), elRetries = $("retries");
+  var elRemember = $("rememberKey"), elManual = $("manualMode"), elManualWrap = $("manualWrap");
+  var elFilterDeclared = $("filterDeclared");
+  var elManualModels = $("manualModels"), elRunBtn = $("runBtn");
+  var panelConn = $("panel-conn"), connResult = $("connResult");
+  var panelModels = $("panel-models"), statsEl = $("stats"), progBar = $("progBar");
+  var progLabel = $("progLabel"), progCount = $("progCount"), tableWrap = $("tableWrap"), legendEl = $("legend");
+  var resultActions = $("resultActions");
+  var panelReport = $("panel-report"), reportBody = $("reportBody"), reportActions = $("reportActions");
+  var modal = $("modal"), modalTitle = $("modalTitle"), modalBody = $("modalBody");
+
+  /* ==================================================================
+     状态
+     ================================================================== */
+  var state = {
+    running: false,
+    selected: { "openai": true, "anthropic": true, "openai-response": true },
+    origin: null,
+    listSource: null,
+    models: [],           // [{ id, declared: [] | null }]
+    protocols: [],        // 本次参与测试的协议对象
+    matrix: {},           // matrix[modelId][protoId] = result
+    order: [],            // 模型顺序
+    onlyOk: false,
+    startedAt: null,
+    finishedAt: null
+  };
+
+  /* ==================================================================
+     工具函数
+     ================================================================== */
+  function sleep(ms) { return new Promise(function (r) { setTimeout(r, ms); }); }
+
+  function esc(s) {
+    return String(s == null ? "" : s)
+      .replace(/&/g, "&amp;").replace(/</g, "&lt;").replace(/>/g, "&gt;")
+      .replace(/"/g, "&quot;").replace(/'/g, "&#39;");
+  }
+
+  function isHtmlBody(t) {
+    var s = String(t || "").replace(/^\s+/, "").slice(0, 200).toLowerCase();
+    return s.indexOf("<!doctype") === 0 || s.indexOf("<html") === 0;
+  }
+
+  /* 把用户填的地址拆成 origin + 若干候选 root */
+  function normalizeBase(raw) {
+    var u = String(raw || "").trim();
+    if (!u) return null;
+    u = u.replace(/[?#].*$/, "").replace(/\/+$/, "");
+    // 剥掉用户可能粘贴的完整协议路径
+    u = u.replace(/\/(openai\/deployments\/[^\/]+\/chat\/completions|compatible-mode\/v1\/chat\/completions|chat\/completions|completions|messages|responses|generateContent|streamGenerateContent|models)$/i, "");
+    u = u.replace(/\/+$/, "");
+    if (!/^https?:\/\//i.test(u)) return null;
+
+    var m = u.match(/^(https?:\/\/[^\/]+)(\/.*)?$/i);
+    if (!m) return null;
+    var origin = m[1];
+    var rest = m[2] || "";
+    var roots = [];
+    if (!rest || rest === "/") {
+      roots.push(origin + "/v1");
+      roots.push(origin);
+    } else {
+      roots.push(origin + rest);
+      if (!/\/v\d+([a-z]*)?$/i.test(rest)) roots.push(origin + "/v1");
+    }
+    var seen = {}, out = [];
+    roots.forEach(function (r) { if (!seen[r]) { seen[r] = 1; out.push(r); } });
+    return { origin: origin, roots: out, raw: String(raw).trim() };
+  }
+
+  function authHeaders(p, key) {
+    var h = {};
+    if (p.auth === "bearer") h["Authorization"] = "Bearer " + key;
+    else if (p.auth === "anthropic") {
+      h["x-api-key"] = key;
+      h["anthropic-version"] = ANTHROPIC_VERSION;
+      h["Authorization"] = "Bearer " + key;   // 实测两种都认，双发提高兼容性
+    } else if (p.auth === "google") h["x-goog-api-key"] = key;
+    else if (p.auth === "azure") h["api-key"] = key;
+    return h;
+  }
+
+  function extractErrorMessage(text) {
+    if (!text) return "";
+    try {
+      var o = JSON.parse(text);
+      if (o && o.error) {
+        if (typeof o.error === "string") return o.error;
+        return o.error.message || o.error.code || JSON.stringify(o.error);
+      }
+      if (o && o.message) return String(o.message);
+    } catch (e) { /* 非 JSON */ }
+    return String(text).replace(/\s+/g, " ").trim().slice(0, 180);
+  }
+
+  function classifyHttp(status, bodyText) {
+    var m = extractErrorMessage(bodyText);
+    if (status === 401 || status === 403) return { st: STATUS.UNAUTH, note: m || ("HTTP " + status) };
+    if (status === 404) return { st: STATUS.NOTFOUND, note: m || "接口返回 404" };
+    if (status === 429) return { st: STATUS.RATELIMIT, note: m || "触发限流或额度不足" };
+    if (status === 503 || /无可用渠道|no\s*available\s*channel|distributor/i.test(m)) {
+      return { st: STATUS.NOCHANNEL, note: m || "该模型在当前分组下没有可用渠道" };
+    }
+    if (/not\s*implemented|convert_request_failed|Invalid URL|unsupported|不支持|不适配/i.test(m)
+        || /unsupported_endpoint/.test(String(bodyText || ""))) {
+      return { st: STATUS.UNSUPPORTED, note: m };
+    }
+    if (status >= 500) return { st: STATUS.SERVER, note: m || ("HTTP " + status) };
+    if (status === 400) {
+      if (/not\s*found|不存在|invalid\s*model|不包含|does not exist/i.test(m)) return { st: STATUS.NOTFOUND, note: m };
+      return { st: STATUS.UNKNOWN, note: m || "HTTP 400 请求被拒绝" };
+    }
+    return { st: STATUS.UNKNOWN, note: m || ("HTTP " + status) };
+  }
+
+  function parseModelList(kind, data) {
+    if (!data || typeof data !== "object") return null;
+    var arr = null;
+    if (kind === "google" || kind === "ollama") arr = data.models;
+    else arr = data.data || data.models;
+    if (!Array.isArray(arr)) return null;
+    var out = [], seen = {};
+    for (var i = 0; i < arr.length; i++) {
+      var it = arr[i], id = null, declared = null;
+      if (typeof it === "string") id = it;
+      else if (it) {
+        id = it.id || it.model || it.name || it.displayName;
+        if (Array.isArray(it.supported_endpoint_types)) declared = it.supported_endpoint_types;
+      }
+      if (!id || seen[id]) continue;
+      seen[id] = 1;
+      out.push({ id: String(id), declared: declared });
+    }
+    return out;
+  }
+
+  /* ==================================================================
+     阶段一：拉取模型清单
+     ================================================================== */
+  async function fetchModelList(nb, key, timeoutMs) {
+    var eps = [];
+    function add(url, kind, auth) {
+      var k = url + "|" + auth;
+      for (var i = 0; i < eps.length; i++) if (eps[i]._k === k) return;
+      eps.push({ url: url, kind: kind, auth: auth, _k: k });
+    }
+    nb.roots.forEach(function (r) { add(r + "/models", "openai", "bearer"); });
+    add(nb.origin + "/v1/models", "openai", "bearer");
+    nb.roots.forEach(function (r) { add(r + "/models", "openai", "anthropic"); });
+    add(nb.origin + "/v1beta/models", "google", "google");
+    add(nb.origin + "/api/tags", "ollama", "none");
+
+    var fails = [];
+    for (var i = 0; i < eps.length; i++) {
+      var ep = eps[i];
+      var p = { auth: ep.auth };
+      var ctrl = new AbortController();
+      var timer = setTimeout(function () { ctrl.abort(); }, timeoutMs);
+      try {
+        var res = await fetch(ep.url, {
+          method: "GET",
+          headers: Object.assign({ "Accept": "application/json" }, authHeaders(p, key)),
+          signal: ctrl.signal
+        });
+        var text = await res.text().catch(function () { return ""; });
+        if (!res.ok) {
+          if (isHtmlBody(text)) { fails.push({ url: ep.url, st: STATUS.UNSUPPORTED, note: "返回 HTML 页面，非接口" }); continue; }
+          var c = classifyHttp(res.status, text);
+          fails.push({ url: ep.url, st: c.st, note: c.note });
+          if (c.st.key === "UNAUTH") return { ok: false, status: c.st, note: c.note, unauth: true, fails: fails };
+          continue;
+        }
+        if (isHtmlBody(text)) { fails.push({ url: ep.url, st: STATUS.UNSUPPORTED, note: "返回 HTML 页面，非接口" }); continue; }
+        var data = null;
+        try { data = JSON.parse(text); } catch (e) {
+          fails.push({ url: ep.url, st: STATUS.UNKNOWN, note: "返回内容不是合法 JSON" }); continue;
+        }
+        var list = parseModelList(ep.kind, data);
+        if (list === null) { fails.push({ url: ep.url, st: STATUS.UNKNOWN, note: "响应里没有模型数组" }); continue; }
+        if (!list.length) { fails.push({ url: ep.url, st: STATUS.UNKNOWN, note: "清单为空" }); continue; }
+        return { ok: true, models: list, source: ep.url, fails: fails };
+      } catch (err) {
+        var aborted = ctrl.signal.aborted;
+        fails.push({
+          url: ep.url,
+          st: aborted ? STATUS.TIMEOUT : STATUS.NETWORK,
+          note: aborted ? ("请求超时（" + timeoutMs + "ms）") : "无法连接：网络错误或该服务未开放跨域（CORS）"
+        });
+        if (!aborted) {
+          // 网络层问题（通常是 CORS / 不可达），换路径也一样，直接判定
+          return { ok: false, status: STATUS.NETWORK, note: "无法连接：网络错误或该服务未开放跨域（CORS）", failed: true, fails: fails };
+        }
+      } finally {
+        clearTimeout(timer);
+      }
+    }
+    return { ok: false, status: (fails[0] && fails[0].st) || STATUS.UNKNOWN, note: (fails[0] && fails[0].note) || "未找到可用的清单端点", fails: fails };
+  }
+
+  /* ==================================================================
+     阶段二：单协议单模型探针
+     ================================================================== */
+  async function probeOneUrl(url, p, body, key, timeoutMs) {
+    var ctrl = new AbortController();
+    var timedOut = false, finished = false;
+    var timer = setTimeout(function () { timedOut = true; ctrl.abort(); }, timeoutMs);
+    var t0 = performance.now();
+    function ms() { return Math.round(performance.now() - t0); }
+
+    try {
+      var headers = Object.assign({
+        "Content-Type": "application/json",
+        "Accept": "text/event-stream, application/json"
+      }, authHeaders(p, key));
+
+      var res = await fetch(url, { method: "POST", headers: headers, body: JSON.stringify(body), signal: ctrl.signal });
+
+      if (!res.ok) {
+        var bt = await res.text().catch(function () { return ""; });
+        if (isHtmlBody(bt)) {
+          return { status: STATUS.UNSUPPORTED, firstTokenMs: null, totalMs: ms(), pathMismatch: true,
+                   note: "该路径未实现此协议，被站点前端页面兜底返回了 HTML" };
+        }
+        var c = classifyHttp(res.status, bt);
+        return {
+          status: c.st, firstTokenMs: null, totalMs: ms(), note: c.note,
+          retryable: res.status >= 500 && c.st.key !== "UNSUPPORTED" && c.st.key !== "NOCHANNEL",
+          pathMismatch: res.status === 404
+        };
+      }
+
+      var ctype = (res.headers.get("content-type") || "").toLowerCase();
+
+      // 站点用 SPA 兜底时，200 也可能是 HTML
+      if (ctype.indexOf("text/html") >= 0) {
+        await res.text().catch(function () { return ""; });
+        return { status: STATUS.UNSUPPORTED, firstTokenMs: null, totalMs: ms(), pathMismatch: true,
+                 note: "返回 HTML 页面，说明该路径不是接口" };
+      }
+
+      // 非流式 JSON 直接返回
+      if (ctype.indexOf("application/json") >= 0) {
+        var txt = await res.text().catch(function () { return ""; });
+        var parsed = null;
+        try { parsed = JSON.parse(txt); } catch (e) {
+          return { status: STATUS.UNKNOWN, firstTokenMs: null, totalMs: ms(), note: "响应不是合法 JSON" };
+        }
+        if (parsed && (parsed.error || parsed.type === "error")) {
+          var c2 = classifyHttp(res.status, JSON.stringify(parsed));
+          return { status: c2.st, firstTokenMs: null, totalMs: ms(), note: c2.note };
+        }
+        if (parsed && p.ok(parsed)) {
+          var sample = "";
+          try { sample = String(p.text(parsed) || "").slice(0, 60); } catch (e) { /* ignore */ }
+          return { status: STATUS.OK, firstTokenMs: ms(), totalMs: ms(), note: "非流式响应正常", sample: sample, mode: "非流式" };
+        }
+        return { status: STATUS.UNKNOWN, firstTokenMs: null, totalMs: ms(), note: "响应结构不符合该协议（未找到预期字段）" };
+      }
+
+      if (!res.body || !res.body.getReader) {
+        return { status: STATUS.OK, firstTokenMs: ms(), totalMs: ms(), note: "响应正常（无法读取流）", mode: "流式" };
+      }
+
+      var reader = res.body.getReader();
+      var decoder = new TextDecoder();
+      var buf = "";
+      var firstValidMs = null, streamError = null, sawJson = false, sample = "";
+
+      while (true) {
+        var chunk = await reader.read();
+        if (chunk.done) break;
+        buf += decoder.decode(chunk.value, { stream: true });
+
+        var stop = false;
+        var nl;
+        while ((nl = buf.indexOf("\n")) >= 0) {
+          var line = buf.slice(0, nl).replace(/\r$/, "").trim();
+          buf = buf.slice(nl + 1);
+          if (!line || line.charAt(0) === ":") continue;
+
+          var payload = null;
+          if (line.indexOf("data:") === 0) {
+            payload = line.slice(5).trim();
+            if (!payload || payload === "[DONE]") continue;
+          } else if (line.charAt(0) === "{") {
+            payload = line;                       // NDJSON（Ollama）
+          } else {
+            continue;                             // event: 等行直接跳过
+          }
+
+          var obj = null;
+          try { obj = JSON.parse(payload); } catch (e) { continue; }
+          sawJson = true;
+
+          if (obj && (obj.error || obj.type === "error")) {
+            streamError = extractErrorMessage(JSON.stringify(obj)) || "流式响应中返回错误";
+            stop = true; break;
+          }
+          if (firstValidMs === null && p.ok(obj)) {
+            firstValidMs = ms();
+            try { sample = String(p.text(obj) || "").slice(0, 60); } catch (e) { /* ignore */ }
+          }
+          if (firstValidMs !== null) { stop = true; break; }
+        }
+
+        if (stop) {
+          finished = true;
+          try { await reader.cancel(); } catch (e) { /* ignore */ }
+          try { ctrl.abort(); } catch (e) { /* ignore */ }
+          break;
+        }
+      }
+
+      if (streamError) {
+        var c3 = classifyHttp(200, JSON.stringify({ error: { message: streamError } }));
+        return { status: c3.st, firstTokenMs: null, totalMs: ms(), note: streamError };
+      }
+      if (firstValidMs !== null) {
+        return { status: STATUS.OK, firstTokenMs: firstValidMs, totalMs: ms(), note: "流式首块正常", sample: sample, mode: "流式" };
+      }
+      if (sawJson) return { status: STATUS.WARN, firstTokenMs: null, totalMs: ms(), note: "返回了 JSON 但结构不符合该协议" };
+      return { status: STATUS.WARN, firstTokenMs: null, totalMs: ms(), note: "流已结束但没有拿到有效数据块" };
+
+    } catch (err) {
+      if (timedOut) return { status: STATUS.TIMEOUT, firstTokenMs: null, totalMs: ms(), note: "超过 " + timeoutMs + "ms 未响应", retryable: true };
+      if (finished) return { status: STATUS.OK, firstTokenMs: null, totalMs: ms(), note: "已提前断开（判定成功）" };
+      if (err && err.name === "AbortError") return { status: STATUS.TIMEOUT, firstTokenMs: null, totalMs: ms(), note: "请求被中断", retryable: true };
+      return { status: STATUS.NETWORK, firstTokenMs: null, totalMs: ms(), note: "无法连接：网络错误或未开放跨域（CORS）", retryable: true };
+    } finally {
+      clearTimeout(timer);
+    }
+  }
+
+  async function probeProtocol(nb, p, model, key, timeoutMs) {
+    var cands = p.probe(nb, model);
+    if (!cands || !cands.length) {
+      return { status: STATUS.UNSUPPORTED, firstTokenMs: null, totalMs: 0, note: "未填写自定义地址" };
+    }
+    var last = null;
+    for (var i = 0; i < cands.length; i++) {
+      var r = await probeOneUrl(cands[i].url, p, cands[i].body, key, timeoutMs);
+      r.url = cands[i].url;
+      last = r;
+      if (!r.pathMismatch) return r;
+    }
+    return last;
+  }
+
+  async function probeWithRetry(nb, p, model, key, timeoutMs, retries) {
+    var attempt = 0, last = null;
+    while (attempt <= retries) {
+      last = await probeProtocol(nb, p, model, key, timeoutMs);
+      if (!last.retryable) return last;
+      attempt++;
+      if (attempt <= retries) await sleep(400 * attempt);
+    }
+    return last;
+  }
+
+  /* ==================================================================
+     并发池
+     ================================================================== */
+  async function runPool(items, limit, worker, onProgress) {
+    var idx = 0, done = 0, total = items.length;
+    var results = new Array(total);
+    var width = Math.max(1, Math.min(limit, total));
+    async function lane() {
+      while (true) {
+        var my = idx++;
+        if (my >= total) return;
+        try { results[my] = await worker(items[my], my); }
+        catch (e) {
+          results[my] = { status: STATUS.UNKNOWN, firstTokenMs: null, totalMs: 0,
+                          note: "内部错误：" + (e && e.message ? e.message : String(e)) };
+        }
+        done++;
+        if (onProgress) onProgress(done, total, results[my]);
+      }
+    }
+    var lanes = [];
+    for (var i = 0; i < width; i++) lanes.push(lane());
+    await Promise.all(lanes);
+    return results;
+  }
+
+  /* ==================================================================
+     渲染
+     ================================================================== */
+  function renderProtoGrid() {
+    var h = "";
+    PROTOCOLS.forEach(function (p) {
+      var on = !!state.selected[p.id];
+      h += '<div class="proto' + (on ? " on" : "") + '" data-id="' + p.id + '">'
+         +   '<div class="p-top">'
+         +     '<span class="p-box">' + (on ? '<span class="ic ic-check"></span>' : "") + '</span>'
+         +     '<span class="p-name">' + esc(p.name) + '</span>'
+         +     '<span class="p-tag">' + esc(p.tag) + '</span>'
+         +   '</div>'
+         +   '<div class="p-path">' + esc(p.path).replace(/([\/:])/g, "$1<wbr>") + '</div>'
+         + '</div>';
+    });
+    protoGrid.innerHTML = h;
+    Array.prototype.forEach.call(protoGrid.querySelectorAll(".proto"), function (el) {
+      el.addEventListener("click", function () {
+        var id = this.getAttribute("data-id");
+        state.selected[id] = !state.selected[id];
+        renderProtoGrid();
+        customWrap.style.display = state.selected["custom"] ? "" : "none";
+      });
+    });
+  }
+
+  function renderConn(html) { connResult.innerHTML = html; }
+
+  function statusBadge(st) { return '<span class="badge ' + st.cls + '">' + st.label + '</span>'; }
+
+  function cellOf(r) {
+    if (!r) return '<span class="mcell plain">—</span>';
+    var ms = r.firstTokenMs != null ? '<span class="ms">' + r.firstTokenMs + 'ms</span>' : '';
+    return '<span class="mcell ' + r.status.cls + '" data-m="' + esc(r.model) + '" data-p="' + esc(r.protoId) + '">'
+         + esc(r.status.label) + ms + '</span>';
+  }
+
+  function renderMatrix() {
+    var protos = state.protocols;
+    var models = state.order.slice();
+    if (state.onlyOk) {
+      models = models.filter(function (id) {
+        return protos.some(function (p) { var r = state.matrix[id] && state.matrix[id][p.id]; return r && r.status.ok; });
+      });
+    }
+    if (!models.length) { tableWrap.innerHTML = '<div class="hint" style="padding:16px 0">当前筛选下没有记录。</div>'; legendEl.innerHTML = ""; return; }
+
+    var h = '<div class="matrix-scroll"><table class="matrix"><thead><tr>';
+    h += '<th class="mh">模型</th><th>服务端声明</th>';
+    protos.forEach(function (p) { h += '<th class="ph">' + esc(p.name) + '</th>'; });
+    h += '</tr></thead><tbody>';
+
+    models.forEach(function (id) {
+      var m = null;
+      for (var i = 0; i < state.models.length; i++) if (state.models[i].id === id) { m = state.models[i]; break; }
+      var declared = m && m.declared ? m.declared.join(",") : "—";
+      // 声明与实际不符时高亮
+      var mismatch = false;
+      if (m && m.declared && m.declared.length) {
+        protos.forEach(function (p) {
+          var r = state.matrix[id] && state.matrix[id][p.id];
+          if (!r) return;
+          var decl = declaredAllows(m.declared, p.id);
+          if (!decl && r.status.ok) mismatch = true;
+        });
+      }
+      h += '<tr><td class="mh">' + esc(id) + '</td>';
+      h += '<td><span class="declared' + (mismatch ? " mismatch" : "") + '" title="supported_endpoint_types">' + esc(declared) + '</span></td>';
+      protos.forEach(function (p) {
+        h += '<td>' + cellOf(state.matrix[id] && state.matrix[id][p.id]) + '</td>';
+      });
+      h += '</tr>';
+    });
+    h += '</tbody></table></div>';
+    tableWrap.innerHTML = h;
+
+    // 图例
+    var lg = '<span><i style="background:var(--ok)"></i>可用</span>'
+           + '<span><i style="background:var(--warn)"></i>降级/超时</span>'
+           + '<span><i style="background:var(--err)"></i>失败</span>'
+           + '<span><i style="background:var(--text-tertiary)"></i>不支持</span>';
+    legendEl.innerHTML = lg;
+
+    Array.prototype.forEach.call(tableWrap.querySelectorAll(".mcell[data-m]"), function (el) {
+      el.addEventListener("click", function () {
+        var mid = this.getAttribute("data-m"), pid = this.getAttribute("data-p");
+        var r = state.matrix[mid] && state.matrix[mid][pid];
+        if (!r) return;
+        var p = null;
+        for (var i = 0; i < PROTOCOLS.length; i++) if (PROTOCOLS[i].id === pid) p = PROTOCOLS[i];
+        modalTitle.textContent = mid + " · " + (p ? p.name : pid);
+        var rows = [
+          ["状态", statusBadge(r.status)],
+          ["请求地址", '<code class="mono">' + esc(r.url || "—") + '</code>'],
+          ["响应方式", esc(r.mode || "—")],
+          ["首块延迟", r.firstTokenMs == null ? "—" : r.firstTokenMs + " ms"],
+          ["总耗时", r.totalMs == null ? "—" : r.totalMs + " ms"],
+          ["输出样例", r.sample ? '<code class="mono">' + esc(r.sample) + '</code>' : "—"],
+          ["备注", esc(r.note || "—")]
+        ];
+        modalBody.innerHTML = rows.map(function (x) {
+          return "<dt>" + x[0] + "</dt><dd>" + x[1] + "</dd>";
+        }).join("");
+        modal.classList.add("on");
+      });
+    });
+  }
+
+  function renderStats() {
+    var protos = state.protocols;
+    var total = 0, ok = 0, lat = [];
+    state.order.forEach(function (id) {
+      protos.forEach(function (p) {
+        var r = state.matrix[id] && state.matrix[id][p.id];
+        if (!r) return;
+        total++;
+        if (r.status.ok) { ok++; if (r.firstTokenMs != null) lat.push(r.firstTokenMs); }
+      });
+    });
+    lat.sort(function (a, b) { return a - b; });
+    var median = lat.length ? lat[Math.floor(lat.length / 2)] : null;
+    var fastest = lat.length ? lat[0] : null;
+
+    function box(k, v, cls) {
+      return '<div class="stat ' + (cls || "") + '"><div class="k">' + k + '</div><div class="v">' + v + '</div></div>';
+    }
+    var h = "";
+    h += box("模型数", state.order.length);
+    h += box("协议数", protos.length);
+    h += box("组合总数", total);
+    h += box("可用组合", ok, ok > 0 ? "ok" : "");
+    h += box("失败组合", total - ok, (total - ok) > 0 ? "err" : "");
+    h += box("中位首字延迟", median == null ? "—" : median + " ms");
+    statsEl.innerHTML = h;
+  }
+
+  function setProgress(done, total, label) {
+    var pct = total ? Math.round((done / total) * 100) : 0;
+    progBar.style.width = pct + "%";
+    progCount.textContent = done + " / " + total;
+    if (label) progLabel.innerHTML = label;
+  }
+
+  /* ==================================================================
+     报告
+     ================================================================== */
+  function buildAnalysis() {
+    var protos = state.protocols;
+    var models = state.order;
+
+    var protoStats = protos.map(function (p) {
+      var pass = 0, fail = 0, lat = [], reasons = {};
+      models.forEach(function (id) {
+        var r = state.matrix[id] && state.matrix[id][p.id];
+        if (!r) return;
+        if (r.status.ok) { pass++; if (r.firstTokenMs != null) lat.push(r.firstTokenMs); }
+        else {
+          fail++;
+          reasons[r.status.label] = (reasons[r.status.label] || 0) + 1;
+        }
+      });
+      lat.sort(function (a, b) { return a - b; });
+      return {
+        proto: p, pass: pass, fail: fail, total: pass + fail,
+        median: lat.length ? lat[Math.floor(lat.length / 2)] : null,
+        fastest: lat.length ? lat[0] : null,
+        reasons: reasons
+      };
+    });
+
+    var modelStats = models.map(function (id) {
+      var okProtos = [], badProtos = [], decl = null;
+      for (var i = 0; i < state.models.length; i++) if (state.models[i].id === id) decl = state.models[i].declared;
+      protos.forEach(function (p) {
+        var r = state.matrix[id] && state.matrix[id][p.id];
+        if (!r) return;
+        if (r.status.ok) okProtos.push({ p: p, ms: r.firstTokenMs });
+        else badProtos.push({ p: p, st: r.status });
+      });
+      okProtos.sort(function (a, b) { return (a.ms == null ? 1e9 : a.ms) - (b.ms == null ? 1e9 : b.ms); });
+      // 声明与实际的两类偏差分开记录
+      var declaredFail = [], extraOk = [];
+      protos.forEach(function (p) {
+        var r = state.matrix[id] && state.matrix[id][p.id];
+        if (!r || !decl || !decl.length) return;
+        var declares = declaredAllows(decl, p.id);
+        if (declares && !r.status.ok && r.status.key !== "TIMEOUT" && r.status.key !== "RATELIMIT") {
+          declaredFail.push(p.id + "（" + r.status.label + "）");
+        }
+        if (!declares && r.status.ok) extraOk.push(p.id);
+      });
+      return {
+        id: id, declared: decl, okProtos: okProtos, badProtos: badProtos,
+        declaredFail: declaredFail, extraOk: extraOk,
+        mismatch: declaredFail.map(function (x) { return "声明含 " + x; })
+          .concat(extraOk.map(function (x) { return "声明不含 " + x + "，实际可用"; }))
+      };
+    });
+
+    return { protoStats: protoStats, modelStats: modelStats };
+  }
+
+  function renderReport() {
+    var an = buildAnalysis();
+    var ps = an.protoStats, ms = an.modelStats;
+    var h = "";
+
+    // 概览
+    var totalCombos = 0, totalOk = 0;
+    ps.forEach(function (x) { totalCombos += x.total; totalOk += x.pass; });
+    var startStr = state.startedAt ? state.startedAt.toLocaleString("zh-CN") : "—";
+
+    h += '<h3>概览</h3>';
+    h += '<table class="plain"><tbody>';
+    h += '<tr><td style="width:104px;color:var(--text-tertiary)">站点</td><td><code class="mono">' + esc(state.origin || "") + '</code></td></tr>';
+    h += '<tr><td style="color:var(--text-tertiary)">测试时间</td><td>' + esc(startStr) + '</td></tr>';
+    h += '<tr><td style="color:var(--text-tertiary)">模型 / 协议</td><td>' + ms.length + ' 个模型 × ' + ps.length + ' 种协议</td></tr>';
+    h += '<tr><td style="color:var(--text-tertiary)">可用组合</td><td><b>' + totalOk + ' / ' + totalCombos + '</b></td></tr>';
+    h += '<tr><td style="color:var(--text-tertiary)">清单来源</td><td><code class="mono">' + esc(state.listSource || "手动清单") + '</code></td></tr>';
+    h += '</tbody></table>';
+
+    // 各协议通过率
+    h += '<h3>协议通过率</h3><div class="rate-list">';
+    ps.forEach(function (x) {
+      var pct = x.total ? Math.round((x.pass / x.total) * 100) : 0;
+      var color = pct === 100 ? "#16a34a" : (pct >= 50 ? "#d97706" : "#dc2626");
+      h += '<div class="rate-row">'
+         +   '<span class="rn">' + esc(x.proto.name) + '</span>'
+         +   '<span class="rb"><i style="width:' + pct + '%;background:' + color + '"></i></span>'
+         +   '<span class="rv">' + x.pass + '/' + x.total + ' (' + pct + '%)</span>'
+         + '</div>';
+    });
+    h += '</div>';
+
+    // 结论
+    h += '<h3>结论分析</h3><ul>';
+    var dead = ps.filter(function (x) { return x.pass === 0; });
+    var live = ps.filter(function (x) { return x.pass === x.total && x.total > 0; });
+    if (dead.length) {
+      h += '<li><b>完全不可用协议：</b>' + dead.map(function (x) {
+        var rs = Object.keys(x.reasons).map(function (k) { return k + "×" + x.reasons[k]; }).join("、");
+        return '<code>' + esc(x.proto.id) + '</code>（' + esc(rs) + '）';
+      }).join("；") + '</li>';
+    }
+    if (live.length) {
+      h += '<li><b>全量通过协议：</b>' + live.map(function (x) { return '<code>' + esc(x.proto.id) + '</code>'; }).join("、") + '</li>';
+    }
+    var partial = ps.filter(function (x) { return x.pass > 0 && x.pass < x.total; });
+    if (partial.length) {
+      h += '<li><b>部分通过协议：</b>' + partial.map(function (x) {
+        return '<code>' + esc(x.proto.id) + '</code>（' + x.pass + '/' + x.total + '）';
+      }).join("、") + '</li>';
+    }
+
+    // 单协议孤儿模型
+    var orphans = ms.filter(function (x) { return x.okProtos.length === 0; });
+    if (orphans.length) {
+      h += '<li><b>完全不可用模型：</b>' + orphans.map(function (x) { return '<code>' + esc(x.id) + '</code>'; }).join("、") + '</li>';
+    }
+
+    // 声明与实际不符
+    var declaredFails = ms.filter(function (x) { return x.declaredFail.length; });
+    var extras = ms.filter(function (x) { return x.extraOk.length; });
+    if (declaredFails.length) {
+      h += '<li><b>声明支持但实测不可用：</b><br>' + declaredFails.map(function (x) {
+        return '<code>' + esc(x.id) + '</code>（声明 ' + esc((x.declared || []).join(",")) + '）→ ' + x.declaredFail.map(esc).join("；");
+      }).join("<br>") + '</li>';
+    }
+    if (extras.length) {
+      var exSample = extras.slice(0, 4).map(function (x) {
+        return '<code>' + esc(x.id) + '</code> +' + x.extraOk.join("/");
+      }).join("、");
+      h += '<li><b>未声明但实测可用：</b>共 ' + extras.length + ' 个模型（如 ' + exSample
+         + (extras.length > 4 ? ' 等' : '') + '），说明站点支持协议自动转接。</li>';
+    }
+    if (!declaredFails.length && !extras.length) {
+      h += '<li>服务端声明与实测行为完全一致。</li>';
+    }
+
+    // 推荐
+    var best = ps.filter(function (x) { return x.pass > 0; }).sort(function (a, b) {
+      if (b.pass !== a.pass) return b.pass - a.pass;
+      return (a.median == null ? 1e9 : a.median) - (b.median == null ? 1e9 : b.median);
+    })[0];
+    if (best) {
+      h += '<li><b>推荐首选：</b><code>' + esc(best.proto.id) + '</code>（' + esc(best.proto.name) + '，通过 '
+         + best.pass + '/' + best.total + (best.median != null ? '，延迟 ' + best.median + 'ms' : '') + '）</li>';
+    }
+    h += '</ul>';
+
+    // 模型明细
+    h += '<h3>模型明细</h3>';
+    h += '<table class="plain"><thead><tr><th>模型</th><th>声明</th><th>可用协议</th><th>首块延迟</th><th>失败协议</th></tr></thead><tbody>';
+    ms.forEach(function (x) {
+      var okTxt = x.okProtos.length ? x.okProtos.map(function (o) { return esc(o.p.id); }).join("、") : '<span class="note bad">无</span>';
+      var badTxt = x.badProtos.length
+        ? x.badProtos.map(function (o) { return esc(o.p.id) + '<span class="note">(' + esc(o.st.label) + ')</span>'; }).join(" ")
+        : '<span class="note">—</span>';
+      var bestMs = x.okProtos.length && x.okProtos[0].ms != null ? x.okProtos[0].ms + " ms" : "—";
+      h += '<tr>'
+         + '<td class="model-name">' + esc(x.id) + '</td>'
+         + '<td class="note">' + esc((x.declared || []).join(", ") || "—") + '</td>'
+         + '<td class="note">' + okTxt + '</td>'
+         + '<td class="num">' + bestMs + '</td>'
+         + '<td class="note">' + badTxt + '</td>'
+         + '</tr>';
+    });
+    h += '</tbody></table>';
+
+    // 失败明细
+    var failRows = [];
+    ms.forEach(function (x) {
+      x.badProtos.forEach(function (o) {
+        var r = state.matrix[x.id][o.p.id];
+        failRows.push({ model: x.id, pid: o.p.id, st: o.st, note: r.note || "" });
+      });
+    });
+    if (failRows.length) {
+      h += '<h3>失败记录 (' + failRows.length + ')</h3>';
+      h += '<table class="plain"><thead><tr><th>模型</th><th>协议</th><th>状态</th><th>原因</th></tr></thead><tbody>';
+      failRows.forEach(function (f) {
+        h += '<tr><td class="model-name">' + esc(f.model) + '</td><td class="note">' + esc(f.pid) + '</td>'
+           + '<td>' + statusBadge(f.st) + '</td><td class="note">' + esc(f.note) + '</td></tr>';
+      });
+      h += '</tbody></table>';
+    }
+
+    reportBody.innerHTML = h;
+    panelReport.style.display = "";
+    reportActions.style.display = "flex";
+  }
+
+  /* ==================================================================
+     主流程
+     ================================================================== */
+  async function run() {
+    if (state.running) return;
+
+    var nb = normalizeBase(elBaseUrl.value);
+    var key = elApiKey.value.trim();
+    var timeoutMs = Math.max(5, Number(elTimeout.value) || 30) * 1000;
+    var retries = Math.max(0, Number(elRetries.value) || 0);
+    var concurrency = Math.max(1, Math.min(20, Number(elConcurrency.value) || 6));
+
+    if (!nb) { alert("请填写正确的接口地址（需以 http:// 或 https:// 开头）"); elBaseUrl.focus(); return; }
+    if (!key) { alert("请先填写 API Key"); elApiKey.focus(); return; }
+
+    var protos = PROTOCOLS.filter(function (p) { return state.selected[p.id]; });
+    if (!protos.length) { alert("请至少选择一种兼容模式"); return; }
+    if (state.selected["custom"] && !elCustomUrl.value.trim()) {
+      alert("选择了「自定义协议」，请填写完整地址"); elCustomUrl.focus(); return;
+    }
+
+    saveConfig();
+
+    state.running = true;
+    state.origin = nb.origin;
+    state.protocols = protos;
+    state.matrix = {};
+    state.order = [];
+    state.models = [];
+    state.onlyOk = false;
+    state.startedAt = new Date();
+    elRunBtn.disabled = true;
+    elRunBtn.querySelector(".btn-label").textContent = RUN_LABEL_BUSY;
+
+    panelConn.style.display = "";
+    panelModels.style.display = "";
+    panelReport.style.display = "none";
+    resultActions.style.display = "none";
+    var featEl = $("featuresOverview");
+    if (featEl) featEl.style.display = "none";
+    renderConn('<div class="banner info"><span class="ic ic-info"></span><div>正在探测模型清单端点<span class="dots"></span></div></div>');
+    statsEl.innerHTML = "";
+    tableWrap.innerHTML = "";
+    legendEl.innerHTML = "";
+    reportBody.innerHTML = "";
+    setProgress(0, 0, "准备中<span class=\"dots\"></span>");
+
+    try {
+      /* ---- 阶段一：清单 ---- */
+      var manualList = null;
+      if (elManual.checked) {
+        manualList = elManualModels.value.split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean)
+                     .map(function (s) { return { id: s, declared: null }; });
+        if (!manualList.length) {
+          renderConn('<div class="banner err"><span class="ic ic-err"></span><div>已勾选手动模式，但清单为空。请每行填写一个模型名。</div></div>');
+          finishRun(); return;
+        }
+      }
+
+      var listRes = manualList ? { ok: true, models: manualList, source: null } : await fetchModelList(nb, key, timeoutMs);
+
+      if (!listRes.ok) {
+        var st = listRes.status;
+        var extra = "";
+        if (st.key === "NETWORK") {
+          extra = '<br><br>常见原因：<br>'
+                + '1. 该服务未开放跨域（CORS），浏览器无法直连 —— 需要服务端支持或改用代理；<br>'
+                + '2. 地址拼写有误，或网络不可达；<br>'
+                + '3. 地址需要包含端口号。';
+        } else if (st.key === "UNAUTH") {
+          extra = '<br><br>接口可达，但 Key 被拒绝。请确认 Key 未过期、未被禁用。';
+        } else {
+          extra = '<br><br>未能从该站点拉到模型清单。可在高级设置里改用「手动指定模型清单」。';
+        }
+        renderConn('<div class="banner err"><span class="ic ic-err"></span><div><b>未能获取模型清单（' + esc(st.label) + '）</b><br>'
+                 + esc(listRes.note) + extra + '</div></div>');
+        finishRun(); return;
+      }
+
+      state.models = listRes.models;
+      state.listSource = listRes.source || "手动清单";
+      state.order = state.models.map(function (m) { return m.id; });
+
+      var declaredCount = state.models.filter(function (m) { return m.declared && m.declared.length; }).length;
+      renderConn('<div class="banner ok"><span class="ic ic-ok"></span><div><b>连接成功，发现 ' + state.models.length + ' 个可见模型。</b>'
+               + '<br>清单来源：<code>' + esc(state.listSource) + '</code>'
+               + (declaredCount ? '<br>其中 ' + declaredCount + ' 个模型带服务端协议声明（supported_endpoint_types）' : '')
+               + '<br>即将按 ' + protos.length + ' 种协议交叉实测…</div></div>');
+
+      /* ---- 阶段二：矩阵 ---- */
+      var tasks = [];
+      var skipped = 0;
+      var filterOn = elFilterDeclared.checked;
+      state.models.forEach(function (m) {
+        protos.forEach(function (p) {
+          if (filterOn && !declaredAllows(m.declared, p.id)) { skipped++; return; }
+          tasks.push({ model: m.id, proto: p });
+        });
+      });
+
+      if (!tasks.length) {
+        renderConn('<div class="banner warn"><span class="ic ic-warn"></span><div>按「服务端声明」过滤后没有需要测试的组合。请取消该选项。</div></div>');
+        finishRun(); return;
+      }
+
+      setProgress(0, tasks.length, "交叉实测中<span class=\"dots\"></span>");
+
+      await runPool(
+        tasks,
+        concurrency,
+        function (t) {
+          return probeWithRetry(nb, t.proto, t.model, key, timeoutMs, retries).then(function (r) {
+            r.model = t.model;
+            r.protoId = t.proto.id;
+            return r;
+          });
+        },
+        function (done, total, one) {
+          if (one && one.model && one.protoId) {
+            if (!state.matrix[one.model]) state.matrix[one.model] = {};
+            state.matrix[one.model][one.protoId] = one;
+          }
+          setProgress(done, total, "交叉实测中<span class=\"dots\"></span>");
+          renderStats();
+          renderMatrix();
+        }
+      );
+
+      setProgress(tasks.length, tasks.length, "完成");
+      renderStats();
+      renderMatrix();
+      resultActions.style.display = "flex";
+
+      var okCount = 0;
+      Object.keys(state.matrix).forEach(function (m) {
+        Object.keys(state.matrix[m]).forEach(function (p) { if (state.matrix[m][p].status.ok) okCount++; });
+      });
+      var msg = '<div class="banner ' + (okCount === tasks.length ? "ok" : (okCount ? "warn" : "err")) + '">'
+              + '<span class="ic ic-' + (okCount === tasks.length ? "ok" : (okCount ? "warn" : "err")) + '"></span><div>'
+              + '<b>实测完成：' + tasks.length + ' 个「模型 × 协议」组合中 ' + okCount + ' 个可用。</b>'
+              + (skipped ? '<br>已按服务端声明过滤掉 ' + skipped + ' 个组合。' : '')
+              + (okCount < tasks.length ? '<br>失败项多为上游偶发，建议先点「重测失败项」再下结论。' : '')
+              + '</div></div>';
+      renderConn(msg);
+
+      renderReport();
+      state.finishedAt = new Date();
+
+    } catch (e) {
+      renderConn('<div class="banner err"><span class="ic ic-err"></span><div>执行出错：' + esc(e && e.message ? e.message : String(e)) + '</div></div>');
+    } finally {
+      finishRun();
+    }
+  }
+
+  function finishRun() {
+    state.running = false;
+    elRunBtn.disabled = false;
+    elRunBtn.querySelector(".btn-label").textContent = RUN_LABEL;
+  }
+
+  /* ==================================================================
+     重测失败项
+     ================================================================== */
+  async function retestFailed() {
+    if (state.running || !state.protocols.length) return;
+    var nb = normalizeBase(elBaseUrl.value);
+    var tasks = [];
+    state.order.forEach(function (id) {
+      state.protocols.forEach(function (p) {
+        var r = state.matrix[id] && state.matrix[id][p.id];
+        if (r && !r.status.ok && r.status.key !== "UNSUPPORTED") tasks.push({ model: id, proto: p });
+      });
+    });
+    if (!tasks.length) { alert("没有可重测的失败项（「协议不支持」属于稳定结论，已跳过）。"); return; }
+
+    var key = elApiKey.value.trim();
+    var timeoutMs = Math.max(5, Number(elTimeout.value) || 30) * 1000;
+    var retries = Math.max(0, Number(elRetries.value) || 0);
+    var concurrency = Math.max(1, Math.min(20, Number(elConcurrency.value) || 6));
+
+    state.running = true;
+    elRunBtn.disabled = true;
+    setProgress(0, tasks.length, "重测失败项<span class=\"dots\"></span>");
+
+    await runPool(tasks, concurrency, function (t) {
+      return probeWithRetry(nb, t.proto, t.model, key, timeoutMs, retries).then(function (r) {
+        r.model = t.model; r.protoId = t.proto.id; return r;
+      });
+    }, function (done, total, one) {
+      state.matrix[one.model][one.protoId] = one;
+      setProgress(done, total, "重测失败项<span class=\"dots\"></span>");
+      renderStats(); renderMatrix();
+    });
+
+    setProgress(tasks.length, tasks.length, "重测完成");
+    renderStats(); renderMatrix(); renderReport();
+    state.running = false;
+    elRunBtn.disabled = false;
+  }
+
+  /* ==================================================================
+     导出
+     ================================================================== */
+  function download(filename, content, mime) {
+    var blob = new Blob([content], { type: mime || "text/plain;charset=utf-8" });
+    var url = URL.createObjectURL(blob);
+    var a = document.createElement("a");
+    a.href = url; a.download = filename;
+    document.body.appendChild(a);
+    a.click();
+    document.body.removeChild(a);
+    setTimeout(function () { URL.revokeObjectURL(url); }, 1500);
+  }
+
+  function stamp() {
+    var d = state.startedAt || new Date();
+    function p(n) { return n < 10 ? "0" + n : "" + n; }
+    return d.getFullYear() + p(d.getMonth() + 1) + p(d.getDate()) + "-" + p(d.getHours()) + p(d.getMinutes()) + p(d.getSeconds());
+  }
+
+  function maskKey(k) {
+    if (!k) return "";
+    if (k.length <= 12) return k.slice(0, 4) + "***";
+    return k.slice(0, 8) + "…" + k.slice(-4);
+  }
+
+  function expCsv() {
+    var protos = state.protocols;
+    var rows = [["模型", "服务端声明"].concat(protos.map(function (p) { return p.id; })).concat(["可用协议数", "最快延迟ms"])];
+    state.order.forEach(function (id) {
+      var m = null;
+      for (var i = 0; i < state.models.length; i++) if (state.models[i].id === id) m = state.models[i];
+      var cells = [id, (m && m.declared ? m.declared.join("|") : "")];
+      var okN = 0, best = null;
+      protos.forEach(function (p) {
+        var r = state.matrix[id] && state.matrix[id][p.id];
+        cells.push(r ? (r.status.label + (r.firstTokenMs != null ? " " + r.firstTokenMs + "ms" : "")) : "");
+        if (r && r.status.ok) { okN++; if (r.firstTokenMs != null && (best == null || r.firstTokenMs < best)) best = r.firstTokenMs; }
+      });
+      cells.push(okN, best == null ? "" : best);
+      rows.push(cells);
+    });
+    var csv = rows.map(function (r) {
+      return r.map(function (c) { return '"' + String(c).replace(/"/g, '""') + '"'; }).join(",");
+    }).join("\r\n");
+    download("model-compat-" + stamp() + ".csv", "\ufeff" + csv, "text/csv;charset=utf-8");
+  }
+
+  function exportPayload() {
+    return {
+      generatedAt: new Date().toISOString(),
+      startedAt: state.startedAt ? state.startedAt.toISOString() : null,
+      site: state.origin,
+      listSource: state.listSource,
+      protocols: state.protocols.map(function (p) { return { id: p.id, name: p.name, path: p.path }; }),
+      models: state.models.map(function (m) { return { id: m.id, declared: m.declared }; }),
+      matrix: state.order.map(function (id) {
+        var row = { model: id };
+        state.protocols.forEach(function (p) {
+          var r = state.matrix[id] && state.matrix[id][p.id];
+          row[p.id] = r ? {
+            status: r.status.key, label: r.status.label, firstTokenMs: r.firstTokenMs,
+            totalMs: r.totalMs, url: r.url, note: r.note, sample: r.sample || null
+          } : null;
+        });
+        return row;
+      })
+    };
+  }
+
+  function expJson() {
+    download("model-compat-" + stamp() + ".json", JSON.stringify(exportPayload(), null, 2), "application/json");
+  }
+
+  function buildMarkdown() {
+    var an = buildAnalysis();
+    var ps = an.protoStats, ms = an.modelStats;
+    var L = [];
+    L.push("# 模型接口兼容性测试报告");
+    L.push("");
+    L.push("- **站点**：" + (state.origin || ""));
+    L.push("- **Key**：" + maskKey(elApiKey.value.trim()));
+    L.push("- **测试时间**：" + (state.startedAt ? state.startedAt.toLocaleString("zh-CN") : ""));
+    L.push("- **清单来源**：" + (state.listSource || "手动清单"));
+    L.push("- **规模**：" + ms.length + " 个模型 × " + ps.length + " 种协议");
+    L.push("");
+    L.push("## 各协议通过率");
+    L.push("");
+    L.push("| 协议 | 端点 | 通过 | 通过率 | 中位首字延迟 |");
+    L.push("|---|---|---|---|---|");
+    ps.forEach(function (x) {
+      var pct = x.total ? Math.round((x.pass / x.total) * 100) : 0;
+      L.push("| " + x.proto.name + " | `" + x.proto.path + "` | " + x.pass + "/" + x.total + " | " + pct + "% | "
+           + (x.median == null ? "—" : x.median + " ms") + " |");
+    });
+    L.push("");
+    L.push("## 模型 × 协议 矩阵");
+    L.push("");
+    L.push("| 模型 | 声明 | " + state.protocols.map(function (p) { return p.id; }).join(" | ") + " |");
+    L.push("|---|---|" + state.protocols.map(function () { return "---"; }).join("|") + "|");
+    state.order.forEach(function (id) {
+      var m = null;
+      for (var i = 0; i < state.models.length; i++) if (state.models[i].id === id) m = state.models[i];
+      var cells = state.protocols.map(function (p) {
+        var r = state.matrix[id] && state.matrix[id][p.id];
+        if (!r) return "—";
+        return r.status.ok ? ("✅ " + (r.firstTokenMs != null ? r.firstTokenMs + "ms" : "")) : ("❌ " + r.status.label);
+      });
+      L.push("| `" + id + "` | " + ((m && m.declared) ? m.declared.join(",") : "—") + " | " + cells.join(" | ") + " |");
+    });
+    L.push("");
+    L.push("## 结论");
+    L.push("");
+    ps.forEach(function (x) {
+      var pct = x.total ? Math.round((x.pass / x.total) * 100) : 0;
+      var mark = pct === 100 ? "✅ 全部通过" : (pct === 0 ? "❌ 完全不可用" : "⚠️ 部分可用");
+      L.push("- **" + x.proto.name + "**（`" + x.proto.id + "`）：" + mark
+           + " —— " + x.pass + "/" + x.total
+           + (Object.keys(x.reasons).length ? "（" + Object.keys(x.reasons).map(function (k) { return k + "×" + x.reasons[k]; }).join("、") + "）" : ""));
+    });
+    L.push("");
+    var declaredFails = ms.filter(function (x) { return x.declaredFail.length; });
+    var extras = ms.filter(function (x) { return x.extraOk.length; });
+    if (declaredFails.length) {
+      L.push("### 声明支持但实测不可用（需要关注）");
+      L.push("");
+      declaredFails.forEach(function (x) {
+        L.push("- `" + x.id + "`（声明 " + ((x.declared || []).join(",") || "—") + "）→ " + x.declaredFail.join("；"));
+      });
+      L.push("");
+    }
+    if (extras.length) {
+      L.push("### 未声明但实测可用（可放宽映射）");
+      L.push("");
+      L.push("共 " + extras.length + " 个模型："
+        + extras.map(function (x) { return "`" + x.id + "` +" + x.extraOk.join("/"); }).join("、"));
+      L.push("");
+    }
+    var failRows = [];
+    ms.forEach(function (x) {
+      x.badProtos.forEach(function (o) {
+        var r = state.matrix[x.id][o.p.id];
+        failRows.push("| `" + x.id + "` | " + o.p.id + " | " + o.st.label + " | " + String(r.note || "").replace(/\|/g, "\\|") + " |");
+      });
+    });
+    if (failRows.length) {
+      L.push("## 失败明细");
+      L.push("");
+      L.push("| 模型 | 协议 | 状态 | 原因 |");
+      L.push("|---|---|---|---|");
+      L.push.apply(L, failRows);
+      L.push("");
+    }
+    return L.join("\n");
+  }
+
+  function expMd() {
+    download("model-compat-" + stamp() + ".md", buildMarkdown(), "text/markdown;charset=utf-8");
+  }
+
+  function expHtmlReport() {
+    var an = buildAnalysis();
+    var ps = an.protoStats, ms = an.modelStats;
+    var totalCombos = 0, totalOk = 0;
+    ps.forEach(function (x) { totalCombos += x.total; totalOk += x.pass; });
+
+    var css = "body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;"
+            + "max-width:1020px;margin:40px auto;padding:0 24px;color:#0f172a;line-height:1.6;font-size:13px;background:#f8fafc}"
+            + "h1{font-size:20px;font-weight:700;margin:0 0 6px;letter-spacing:-.03em;color:#0f172a}"
+            + "h2{font-size:15px;font-weight:700;margin:28px 0 12px;padding-bottom:8px;border-bottom:1px solid #e2e8f0;letter-spacing:-.01em;color:#0f172a}"
+            + ".meta{color:#64748b;font-size:13px;margin-bottom:12px}"
+            + "table{border-collapse:collapse;width:100%;font-size:13px;margin:10px 0;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.03)}"
+            + "th{background:#f8fafc;text-align:left;font-size:11px;font-weight:600;color:#94a3b8;padding:9px 12px;border:1px solid #e2e8f0;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}"
+            + "td{padding:9px 12px;border:1px solid #f1f5f9;vertical-align:top}"
+            + "code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;background:#f1f5f9;color:#0f172a;padding:2px 6px;border-radius:4px}"
+            + ".ok{color:#10b981;font-weight:600}.bad{color:#ef4444;font-weight:600}.warn{color:#f59e0b;font-weight:600}.na{color:#94a3b8}"
+            + ".bar{height:5px;background:#e2e8f0;border-radius:9999px;overflow:hidden;display:inline-block;width:160px;vertical-align:middle}"
+            + ".bar>i{display:block;height:100%;border-radius:9999px}"
+            + "ul{padding-left:20px}li{margin-bottom:6px;font-size:13px;color:#475569}"
+            + ".kpi{display:flex;gap:12px;margin:16px 0;flex-wrap:wrap}"
+            + ".kpi div{border:1px solid #e2e8f0;border-radius:10px;padding:12px 18px;background:#ffffff;box-shadow:0 1px 3px rgba(0,0,0,0.02)}"
+            + ".kpi b{display:block;font-size:20px;font-weight:700;letter-spacing:-.02em;color:#0f172a}"
+            + ".kpi span{font-size:11px;color:#94a3b8;font-weight:500}"
+            + "footer{margin-top:36px;padding-top:14px;border-top:1px solid #e2e8f0;color:#94a3b8;font-size:11px;line-height:1.7;text-align:center}";
+
+    var h = "<!DOCTYPE html><html lang=\"zh-CN\"><head><meta charset=\"UTF-8\">";
+    h += "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">";
+    h += "<title>模型接口兼容性测试报告</title><style>" + css + "</style></head><body>";
+    h += "<h1>模型接口兼容性测试报告</h1>";
+    h += "<div class=\"meta\">站点 <code>" + esc(state.origin || "") + "</code> · Key <code>" + esc(maskKey(elApiKey.value.trim()))
+       + "</code> · " + esc(state.startedAt ? state.startedAt.toLocaleString("zh-CN") : "") + "</div>";
+
+    h += "<div class=\"kpi\">"
+       + "<div><b>" + ms.length + "</b><span>模型</span></div>"
+       + "<div><b>" + ps.length + "</b><span>协议</span></div>"
+       + "<div><b>" + totalOk + " / " + totalCombos + "</b><span>可用组合</span></div>"
+       + "<div><b>" + (totalCombos ? Math.round(totalOk / totalCombos * 100) : 0) + "%</b><span>总体通过率</span></div>"
+       + "</div>";
+
+    h += "<h2>各协议通过率</h2><table><thead><tr><th>协议</th><th>端点</th><th>通过</th><th>通过率</th><th>中位首字延迟</th></tr></thead><tbody>";
+    ps.forEach(function (x) {
+      var pct = x.total ? Math.round((x.pass / x.total) * 100) : 0;
+      var color = pct === 100 ? "#15803d" : (pct >= 50 ? "#b45309" : "#b91c1c");
+      h += "<tr><td><b>" + esc(x.proto.name) + "</b><br><code>" + esc(x.proto.id) + "</code></td>"
+         + "<td><code>" + esc(x.proto.path) + "</code></td>"
+         + "<td>" + x.pass + " / " + x.total + "</td>"
+         + "<td><span class=\"bar\"><i style=\"width:" + pct + "%;background:" + color + "\"></i></span> " + pct + "%</td>"
+         + "<td>" + (x.median == null ? "—" : x.median + " ms") + "</td></tr>";
+    });
+    h += "</tbody></table>";
+
+    h += "<h2>模型 × 协议 矩阵</h2><table><thead><tr><th>模型</th><th>服务端声明</th>";
+    state.protocols.forEach(function (p) { h += "<th>" + esc(p.id) + "</th>"; });
+    h += "</tr></thead><tbody>";
+    state.order.forEach(function (id) {
+      var m = null;
+      for (var i = 0; i < state.models.length; i++) if (state.models[i].id === id) m = state.models[i];
+      h += "<tr><td><code>" + esc(id) + "</code></td><td class=\"na\">" + esc((m && m.declared) ? m.declared.join(",") : "—") + "</td>";
+      state.protocols.forEach(function (p) {
+        var r = state.matrix[id] && state.matrix[id][p.id];
+        if (!r) { h += "<td class=\"na\">—</td>"; return; }
+        if (r.status.ok) h += "<td class=\"ok\">✅ " + (r.firstTokenMs != null ? r.firstTokenMs + "ms" : "可用") + "</td>";
+        else {
+          var cls = r.status.key === "UNSUPPORTED" ? "na" : (r.status.cls === "warn" ? "warn" : "bad");
+          h += "<td class=\"" + cls + "\">❌ " + esc(r.status.label) + "</td>";
+        }
+      });
+      h += "</tr>";
+    });
+    h += "</tbody></table>";
+
+    h += "<h2>结论</h2><ul>";
+    var dead = ps.filter(function (x) { return x.pass === 0; });
+    var live = ps.filter(function (x) { return x.pass === x.total && x.total > 0; });
+    var partial = ps.filter(function (x) { return x.pass > 0 && x.pass < x.total; });
+    if (live.length) h += "<li><b>全部模型可用：</b>" + live.map(function (x) { return "<code>" + esc(x.proto.id) + "</code>"; }).join("、") + "</li>";
+    if (partial.length) h += "<li><b>存在模型级差异（部分可用）：</b>" + partial.map(function (x) {
+      return "<code>" + esc(x.proto.id) + "</code>（" + x.pass + "/" + x.total + "）"; }).join("、") + "</li>";
+    if (dead.length) h += "<li><b>本站不可用：</b>" + dead.map(function (x) {
+      var rs = Object.keys(x.reasons).map(function (k) { return k + "×" + x.reasons[k]; }).join("、");
+      return "<code>" + esc(x.proto.id) + "</code>（" + esc(rs) + "）"; }).join("；") + "</li>";
+    var declaredFails = ms.filter(function (x) { return x.declaredFail.length; });
+    if (declaredFails.length) {
+      h += "<li><b>声明支持但实测不可用：</b><br>" + declaredFails.map(function (x) {
+        return "<code>" + esc(x.id) + "</code>（声明 " + esc((x.declared || []).join(",")) + "）→ " + x.declaredFail.map(esc).join("；");
+      }).join("<br>") + "</li>";
+    }
+    var extras2 = ms.filter(function (x) { return x.extraOk.length; });
+    if (extras2.length) {
+      h += "<li><b>未声明但实测可用：</b>共 " + extras2.length + " 个模型，例如 "
+        + extras2.slice(0, 4).map(function (x) { return "<code>" + esc(x.id) + "</code> +" + esc(x.extraOk.join("/")); }).join("、") + "</li>";
+    }
+    var best = ps.filter(function (x) { return x.pass > 0; }).sort(function (a, b) {
+      if (b.pass !== a.pass) return b.pass - a.pass;
+      return (a.median == null ? 1e9 : a.median) - (b.median == null ? 1e9 : b.median);
+    })[0];
+    if (best) h += "<li><b>推荐首选：</b><code>" + esc(best.proto.id) + "</code>（" + esc(best.proto.name) + "，"
+                + best.pass + "/" + best.total + (best.median != null ? "，中位 " + best.median + "ms" : "") + "）</li>";
+    h += "</ul>";
+
+    var failRows = [];
+    ms.forEach(function (x) {
+      x.badProtos.forEach(function (o) {
+        var r = state.matrix[x.id][o.p.id];
+        failRows.push("<tr><td><code>" + esc(x.id) + "</code></td><td><code>" + esc(o.p.id) + "</code></td><td>"
+                    + esc(o.st.label) + "</td><td>" + esc(r.note || "") + "</td></tr>");
+      });
+    });
+    if (failRows.length) {
+      h += "<h2>失败明细（" + failRows.length + "）</h2><table><thead><tr><th>模型</th><th>协议</th><th>状态</th><th>原因</th></tr></thead><tbody>"
+         + failRows.join("") + "</tbody></table>";
+    }
+
+    h += "<footer>由「模型接口兼容性测试」生成 · 本工具为纯前端项目，报告数据全部在本机生成，未上传任何服务器<br>"
+       + "本报告中的 <code>Key</code> 已做掩码处理。请使用小额度 Key 测试并即时删除，因使用本工具导致的密钥泄漏、额度损失等后果，作者不承担任何责任。</footer></body></html>";
+    download("model-compat-report-" + stamp() + ".html", h, "text/html;charset=utf-8");
+  }
+
+  /* ==================================================================
+     配置持久化
+     ================================================================== */
+  function saveConfig() {
+    try {
+      var cfg = {
+        baseUrl: elBaseUrl.value.trim(),
+        concurrency: elConcurrency.value, timeout: elTimeout.value, retries: elRetries.value,
+        remember: elRemember.checked, filterDeclared: elFilterDeclared.checked,
+        selected: state.selected, customUrl: elCustomUrl.value.trim()
+      };
+      if (elRemember.checked) cfg.apiKey = elApiKey.value.trim();
+      localStorage.setItem(LS_KEY, JSON.stringify(cfg));
+    } catch (e) { /* ignore */ }
+  }
+
+  function loadConfig() {
+    try {
+      var raw = localStorage.getItem(LS_KEY);
+      if (!raw) return;
+      var cfg = JSON.parse(raw);
+      if (cfg.baseUrl) elBaseUrl.value = cfg.baseUrl;
+      if (cfg.concurrency) elConcurrency.value = cfg.concurrency;
+      if (cfg.timeout) elTimeout.value = cfg.timeout;
+      if (cfg.retries != null) elRetries.value = cfg.retries;
+      if (cfg.filterDeclared) elFilterDeclared.checked = true;
+      if (cfg.customUrl) elCustomUrl.value = cfg.customUrl;
+      if (cfg.selected) state.selected = cfg.selected;
+      if (cfg.remember) {
+        elRemember.checked = true;
+        if (cfg.apiKey) elApiKey.value = cfg.apiKey;
+      }
+    } catch (e) { /* ignore */ }
+  }
+
+  /* ==================================================================
+     事件绑定
+     ================================================================== */
+  elKeyToggle.addEventListener("click", function () {
+    var isPwd = elApiKey.type === "password";
+    elApiKey.type = isPwd ? "text" : "password";
+    elKeyToggle.textContent = isPwd ? "隐藏" : "显示";
+  });
+
+  elManual.addEventListener("change", function () {
+    elManualWrap.style.display = elManual.checked ? "" : "none";
+  });
+
+  $("pMain").addEventListener("click", function () {
+    state.selected = { "openai": true, "anthropic": true, "openai-response": true };
+    renderProtoGrid(); customWrap.style.display = "none";
+  });
+  $("pAll").addEventListener("click", function () {
+    PROTOCOLS.forEach(function (p) { state.selected[p.id] = true; });
+    renderProtoGrid(); customWrap.style.display = "";
+  });
+  $("pNone").addEventListener("click", function () {
+    PROTOCOLS.forEach(function (p) { state.selected[p.id] = false; });
+    renderProtoGrid(); customWrap.style.display = "none";
+  });
+
+  elRunBtn.addEventListener("click", run);
+  $("expHtml").addEventListener("click", expHtmlReport);
+  $("expMd").addEventListener("click", expMd);
+  $("expJson").addEventListener("click", expJson);
+  $("expCsv").addEventListener("click", expCsv);
+  $("retestFail").addEventListener("click", retestFailed);
+  $("onlyOk").addEventListener("click", function () {
+    state.onlyOk = !state.onlyOk;
+    this.textContent = state.onlyOk ? "显示全部" : "只看可用协议";
+    renderMatrix();
+  });
+  $("modalClose").addEventListener("click", function () { modal.classList.remove("on"); });
+  modal.addEventListener("click", function (e) { if (e.target === modal) modal.classList.remove("on"); });
+
+  [elBaseUrl, elApiKey].forEach(function (el) {
+    el.addEventListener("keydown", function (e) {
+      if (e.key === "Enter") { e.preventDefault(); run(); }
+    });
+  });
+
+  renderProtoGrid();
+  loadConfig();
+  renderProtoGrid();
+  customWrap.style.display = state.selected["custom"] ? "" : "none";
+
+  /* 版权行的年份跟随当前时间，避免日后过期 */
+  var elFootYear = document.getElementById("footYear");
+  if (elFootYear) elFootYear.textContent = String(new Date().getFullYear());
+
+  /* 暴露给自动化测试 */
+  window.__MAT__ = {
+    normalizeBase: normalizeBase,
+    classifyHttp: classifyHttp,
+    extractErrorMessage: extractErrorMessage,
+    parseModelList: parseModelList,
+    isHtmlBody: isHtmlBody,
+    declaredAllows: declaredAllows,
+    PROTOCOLS: PROTOCOLS,
+    state: state,
+    buildMarkdown: buildMarkdown,
+    exportPayload: exportPayload
+  };
+})();
+</script>
+</body>
+</html>
