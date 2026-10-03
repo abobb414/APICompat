@@ -235,26 +235,27 @@ for (const w of [390, 768, 1024]) {
   await p.close();
 }
 
-// ---- 8. 深色主题 ----
+// ---- 8. 深浅主题 ----
 const btnTheme = await page.evaluate(() => {
   const b = document.getElementById('themeBtn');
   return {
     has: !!b,
     w: b ? Math.round(b.getBoundingClientRect().width) : 0,
-    // 三个图标同时躺在按钮里，同一时刻只该露出一个
-    shown: b ? [...b.querySelectorAll('.ic')].filter(e => getComputedStyle(e).display !== 'none').length : 0,
-    mode: document.documentElement.getAttribute('data-theme-mode'),
+    // 太阳 / 月亮两张 mask 同时躺在按钮里，同一时刻只该露出一张：
+    // 非当前态缩到 0.45 并转 -25°，靠 opacity 隐藏（不是 display:none，这样才有过渡）
+    shown: b ? [...b.querySelectorAll('.ic')].filter(e => +getComputedStyle(e).opacity > 0.5).length : 0,
+    icons: b ? b.querySelectorAll('.ic').length : 0,
   };
 });
 check('顶栏有主题切换按钮', btnTheme.has && btnTheme.w > 20, `宽 ${btnTheme.w}`);
-check('主题按钮同一时刻只露一个图标', btnTheme.shown === 1, `露出 ${btnTheme.shown} 个`);
+check('主题按钮里是太阳和月亮两张、同一时刻只露一张',
+  btnTheme.icons === 2 && btnTheme.shown === 1, `${btnTheme.icons} 张里露了 ${btnTheme.shown} 张`);
 
-await page.click('#themeBtn');   // auto → light
-await page.click('#themeBtn');   // light → dark
-/* 先等过渡跑完再量。按钮/卡片上挂着 transition:background .15s，
-   点完立刻量会采到「白 → 深蓝」的第一帧（曾在这里误报出 .theme-btn 的
-   rgb(253,254,254)、.key-toggle 的 rgb(247,249,252)、.link-btn 的纯白
-   —— 三个都是中间帧，等 150ms 后终态一律收敛到 #151c26 / #0d1117）。 */
+await page.click('#themeBtn');   // 浅 → 深（首次访问没有记录，按系统落在浅色）
+/* 先等过渡跑完再量。按钮/卡片上挂着 transition:background .15s，图标本身还有
+   .18s 与 .26s 的交叉旋转淡入 —— 点完立刻量会采到中间帧（曾在这里误报出 .theme-btn 的
+   rgb(253,254,254)、.key-toggle 的 rgb(247,249,252)、.link-btn 的纯白，
+   三个都是过渡第一帧，等 400ms 后终态一律收敛到 #151c26 / #0d1117）。 */
 await page.waitForTimeout(400);
 const dark = await page.evaluate(() => {
   const root = document.documentElement;
@@ -269,21 +270,32 @@ const dark = await page.evaluate(() => {
     if (m && +m[1] > 235 && +m[2] > 235 && +m[3] > 235) whites.push(el.className + ' → ' + bg);
   });
   const body = getComputedStyle(document.body);
+  const moon = document.querySelector('.ic-t-moon');
+  let saved = null;
+  try { saved = localStorage.getItem('apicompat.theme'); } catch (e) {}
   return {
-    theme: root.getAttribute('data-theme'), mode: root.getAttribute('data-theme-mode'),
+    theme: root.getAttribute('data-theme'), saved,
     bg: body.backgroundColor, fg: body.color, whites,
     meta: (document.querySelector('meta[name="theme-color"]') || {}).content || '',
+    moonOpacity: moon ? +getComputedStyle(moon).opacity : 0,
   };
 });
-check('切到深色档后 html[data-theme=dark]', dark.theme === 'dark' && dark.mode === 'dark', `${dark.theme}/${dark.mode}`);
+check('切到深色后 html[data-theme=dark]', dark.theme === 'dark', String(dark.theme));
 check('深色下页面底色确实是深的', dark.bg === 'rgb(13, 17, 23)', dark.bg);
 check('深色下正文是浅色字', (dark.fg.match(/\d+/) || [0])[0] > 180, dark.fg);
 check('深色下没有残留白底元素', dark.whites.length === 0, dark.whites.slice(0, 3).join(' | '));
 check('地址栏染色跟着主题走', dark.meta === '#0d1117', dark.meta);
 
-await page.click('#themeBtn');   // dark → auto
-const modeBack = await page.evaluate(() => document.documentElement.getAttribute('data-theme-mode'));
-check('主题按钮循环回「跟随系统」', modeBack === 'auto', String(modeBack));
+await page.click('#themeBtn');   // 深 → 浅
+await page.waitForTimeout(400);
+const back = await page.evaluate(() => {
+  let saved = null;
+  try { saved = localStorage.getItem('apicompat.theme'); } catch (e) {}
+  return { theme: document.documentElement.getAttribute('data-theme'), saved };
+});
+check('再点一次切回浅色，且月亮已淡出、选择被记住',
+  back.theme === 'light' && back.saved === 'light' && dark.moonOpacity > 0.9,
+  `${back.theme}/${back.saved}，深色时月亮 opacity=${dark.moonOpacity}`);
 
 // ---- 9. 采样次数与测速档 ----
 // 压到单协议 × 全部模型的 16 格，并把两件事分两轮跑，各自只花几秒

@@ -20,8 +20,8 @@ giving a status and a first-chunk latency per cell, and finally exports a diagno
 [![Dependencies](https://img.shields.io/badge/dependencies-0-3fb950?style=flat-square&logo=javascript&logoColor=white)](#project-structure)
 [![Protocols](https://img.shields.io/badge/protocols-10-8b5cf6?style=flat-square)](#protocol-matrix)
 [![States](https://img.shields.io/badge/states-11_attributions-f59e0b?style=flat-square)](#the-eleven-states)
-[![Theme](https://img.shields.io/badge/theme-light_%C2%B7_dark_%C2%B7_auto-334155?style=flat-square)](#light-dark-and-follow-the-system)
-[![Single File](https://img.shields.io/badge/single_file-165_KB_%C2%B7_3194_lines-64748b?style=flat-square)](#project-structure)
+[![Theme](https://img.shields.io/badge/theme-light_%C2%B7_dark-334155?style=flat-square)](#light-and-dark-a-sun-and-a-moon)
+[![Single File](https://img.shields.io/badge/single_file-158_KB_%C2%B7_3196_lines-64748b?style=flat-square)](#project-structure)
 
 [Live Demo](https://apicompat.abobb.site) · [Preview](#preview) · [Protocol Matrix](#protocol-matrix) · [Test Flow](#test-flow) · [Quick Start](#quick-start) · [Engineering Notes](#engineering-notes-the-pitfalls)
 
@@ -59,7 +59,7 @@ giving a status and a first-chunk latency per cell, and finally exports a diagno
   <tr>
     <td width="50%" valign="top">
       <img src="docs/screenshots/dark-config.jpg" alt="Config panel in the dark theme">
-      <br><sub><b>Dark theme</b> · the three-state button top right: follow system / light / dark. The whole site draws on one set of CSS variables, so nothing is left bright in the dark</sub>
+      <br><sub><b>Dark theme</b> · one moon button top right (a sun in light mode) — click it to swap. The whole site draws on one set of CSS variables, so nothing is left bright in the dark</sub>
     </td>
     <td width="50%" valign="top">
       <img src="docs/screenshots/dark-matrix.jpg" alt="Matrix and report in the dark theme">
@@ -90,7 +90,7 @@ giving a status and a first-chunk latency per cell, and finally exports a diagno
   - [First-Chunk Latency: The Bar for "Usable"](#first-chunk-latency-the-bar-for-usable)
   - [Multi-Round Sampling and Metering Mode: Every Number Needs a Provenance](#multi-round-sampling-and-metering-mode-every-number-needs-a-provenance)
   - [Timing Scope and Retries: Two Numbers That Have to Be Stated Plainly](#timing-scope-and-retries-two-numbers-that-have-to-be-stated-plainly)
-  - [Light, Dark, and Follow the System](#light-dark-and-follow-the-system)
+  - [Light and Dark: A Sun and a Moon](#light-and-dark-a-sun-and-a-moon)
   - [Declared ≠ Observed](#declared--observed)
   - [Base URL Normalization: Whatever You Paste Works](#base-url-normalization-whatever-you-paste-works)
   - [Four Export Formats](#four-export-formats)
@@ -234,7 +234,7 @@ flowchart LR
 | 🚀 | **Tunable concurrency / timeout / retries** | 6 concurrent by default; measured to be an order of magnitude faster than serial |
 | ↻ | **Retry cost on display** | Cells that only passed after a retry carry ↻, with the first attempt's duration and backoff spelled out |
 | 🔁 | **Retest failures only** | A flaky upstream doesn't force a full rerun |
-| 🌗 | **Light / dark / follow system** | Three states, persisted; dark isn't an inversion but its own set of levels and contrast ratios |
+| 🌗 | **Light / dark** | One button with two states, persisted; the first visit follows the OS preference and after that only your click counts |
 | 📊 | **Four export formats** | HTML (send it straight to someone) / Markdown (paste into an issue) / JSON (feed to scripts) / CSV |
 
 ### Fetch the list first, then test
@@ -321,17 +321,23 @@ That is the same trick as "retry until success and only display the successes", 
 
 > In one line: the latency in a cell comes from the attempt that succeeded, but **the cost paid before the retry is never hidden**.
 
-### Light, Dark, and Follow the System
+### Light and Dark: A Sun and a Moon
 
-One three-state button in the top bar, cycling **follow system → light → dark**. The choice lands in
-`localStorage` and survives the next visit. The "follow system" state listens to `prefers-color-scheme` live,
-so changing the OS setting doesn't send you back to re-click.
+One button in the top bar — a **sun** in light mode, a **moon** in dark mode — click it to swap. The choice lands in
+`localStorage` and survives the next visit. On a first visit (nothing chosen yet) it falls back to the OS preference
+`prefers-color-scheme`; after that it only honours your click.
+
+The two icons aren't drawn here: they come from the same set as the author's other project
+[Startpage](https://github.com/abobb414/Startpage) (icons8 SF Regular `sun` and `moon-symbol`, confirmed by a
+shape-normalized IoU lookup at 0.926 / 0.891 — the runner-up only reaches 0.33), turned into CSS masks so the color
+follows the theme. The swap **rotates in**: the leaving state shrinks to 0.45 and turns -25° while the arriving state
+returns to 1 / 0°, the two directions complementing each other so nothing visibly jumps. Both masks sit in the same
+grid cell, and the button is nothing but the icon — no outline or disc behind it.
 
 A few things that aren't obvious:
 
-- **Mode and current theme are two separate attributes.** `data-theme-mode` records the state the user picked
-  (`auto` / `light` / `dark`), while `data-theme` records **what should actually render right now**
-  (`light` / `dark`). Splitting them is what lets "follow system" know both that you asked for auto and which side to land on.
+- **Two states need only one attribute.** `data-theme` is both "what you asked for" and "what renders right now"
+  (`light` / `dark`) — with the third "follow system" state gone, the old `data-theme-mode` layer has no reason to exist.
 - **Dark isn't an inversion of light**, it's its own set of values: the background isn't pure black
   (`#000` with light text smears on OLED), it's `#0d1117`; the accent is actually **lightened one step**
   (`#2563eb` → `#4d8dfb`) because the original blue sinks into a dark ground; and text on the bright-blue
@@ -430,7 +436,7 @@ vercel deploy --prod
 
 ```
 .
-├── index.html              # everything — styles, logic, vector icons and favicon all inlined, 165 KB / 3194 lines
+├── index.html              # everything — styles, logic, vector icons and favicon all inlined, 158 KB / 3196 lines
 ├── robots.txt
 ├── docs/
 │   ├── images/
@@ -445,7 +451,7 @@ vercel deploy --prod
 
 **Having only one `index.html`** is deliberate: hand it to a colleague, drop it on a USB stick, attach it to an email — no directory to carry along.
 The price is that the file can't afford to grow fat — every icon was converted to vectors and inlined as a CSS mask,
-and the 17 icons (16 distinct glyphs) come to 25.8 KB, three-quarters smaller than the same set as PNGs, and crisp at any scale.
+and the 16 icons (15 distinct glyphs) come to 21.4 KB, three-quarters smaller than the same set as PNGs, and crisp at any scale.
 
 ## Implementation Notes
 
@@ -458,16 +464,17 @@ and the 17 icons (16 distinct glyphs) come to 25.8 KB, three-quarters smaller th
 - **Only "worth retrying" gets retried**: network blips, timeouts and 5xx are retried with backoff;
   deterministic failures like 401 / 404 / unsupported protocol are not, saving time and quota.
 - **Anything read out of `localStorage` is sanitized as untrusted input**: the key is only persisted when "remember" is ticked,
-  and corrupted config must never be allowed to break the page.
-- **25.8 KB of vector icons**: bitmaps were traced into `path` with potrace and used as CSS masks
+  and corrupted config must never be allowed to break the page. The theme works the same way — an unrecognized value
+  falls back to the OS preference instead of throwing.
+- **21.4 KB of vector icons**: bitmaps were traced into `path` with potrace and used as CSS masks
   (`background-color: currentColor`), so colors follow the theme automatically — smaller and sharper than bitmaps.
   The key is that **coordinate precision has to match the render size**: tracing at 1024px for something displayed
   at 16px writes every coordinate as a decimal and multiplies the size for nothing. Rounding the `path` coordinates to
   integers and re-rendering to compare still leaves a shape mismatch of ~0.3%, while cutting the size by a quarter.
 - **The prefixed and standard properties share one URI**: `--m: url("data:…")` is declared once on the icon class,
   and `.ic` references it as `-webkit-mask-image: var(--m)` and `mask-image: var(--m)`.
-  Without that, the same URI has to be written out twice — 17 icons would take 42.8 KB instead of 25.8 KB,
-  and keeping the two copies byte-identical is pure clerical burden.
+  Without that, the same URI has to be written out twice, and keeping the two copies byte-identical is pure
+  clerical burden — the v1.1.0 rework took the single file from 182.5 KB down to 165.3 KB (-9.4%).
 - **Two layers of theme variables**: `:root` is light, `[data-theme="dark"]` only overrides values, and
   `@media (prefers-color-scheme: dark)` covers the case where the script never ran.
   In the dark theme `color-scheme: dark` brings scrollbars and native dropdowns along.
@@ -533,13 +540,13 @@ PASS  no horizontal overflow at 390px
 PASS  no horizontal overflow at 768px
 PASS  no horizontal overflow at 1024px
 PASS  the top bar has a theme toggle button
-PASS  the theme button shows exactly one icon at a time
-PASS  switching to the dark state sets html[data-theme=dark]
+PASS  the theme button holds a sun and a moon, exactly one of them visible at a time
+PASS  switching to dark sets html[data-theme=dark]
 PASS  the page background really is dark in the dark theme
 PASS  body text is light in the dark theme
 PASS  no bright-background elements are left in the dark theme
 PASS  the address-bar tint follows the theme
-PASS  the theme button cycles back to "follow system"
+PASS  clicking again returns to light, the moon has faded out, and the choice is remembered
 PASS  with 3 samples the matrix still has 16 cells
 PASS  the cell tooltip states the sample count and each run's latency
 PASS  the detail popup gives the sample count and "median within the cell"
