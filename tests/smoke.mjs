@@ -33,22 +33,32 @@ page.on('pageerror', e => consoleErrors.push('pageerror: ' + e.message));
 await page.goto(BASE, { waitUntil: 'load', timeout: 60000 });
 await page.waitForTimeout(400);
 
-const hero = await page.evaluate(() => ({
-  cards: document.querySelectorAll('#protoGrid .proto').length,
-  on: [...document.querySelectorAll('#protoGrid .proto.on')].map(e => e.dataset.id),
-  title: document.title,
-  foot: document.querySelector('footer')?.innerText || '',
-  noPaint: [...document.querySelectorAll('.ic')]
-    .filter(e => e.offsetParent !== null)
-    .filter(e => { const r = e.getBoundingClientRect(); const cs = getComputedStyle(e);
-      return r.width === 0 || !(cs.maskImage || cs.webkitMaskImage || 'none').includes('url'); }).length,
-}));
+const hero = await page.evaluate(() => {
+  const cards = [...document.querySelectorAll('#protoGrid .proto')];
+  return {
+    cards: cards.length,
+    on: cards.filter(e => e.classList.contains('on')).map(e => e.dataset.id),
+    title: document.title,
+    foot: document.querySelector('footer')?.innerText || '',
+    // 新版的每张协议卡都要把「名字 / 标签 / 路径 / 一句场景说明」四件套摆全 ——
+    // 这是它相对旧版 3 列密排的主要改动，缺了就等于退回到只给路径
+    fields: cards.filter(c => c.querySelector('.p-name') && c.querySelector('.p-tag')
+      && (c.querySelector('.p-path')?.textContent || '').trim()
+      && (c.querySelector('.p-desc')?.textContent || '').trim().length > 8).length,
+    hasThemeBtn: !!document.getElementById('themeBtn'),
+    hasSamplingUi: !!document.getElementById('samples') || !!document.getElementById('probeMode'),
+  };
+});
 check('页面载入无控制台报错', consoleErrors.length === 0, consoleErrors.slice(0, 3).join(' | '));
 check('渲染 10 张协议卡', hero.cards === 10, `实际 ${hero.cards}`);
 check('默认只勾选 3 个主协议', hero.on.length === 3 && hero.on.includes('openai') && hero.on.includes('anthropic'),
   hero.on.join(','));
-check('图标全部挂上矢量蒙版', hero.noPaint === 0, `${hero.noPaint} 个异常`);
-check('页脚含小额度 Key 提示与免责声明', hero.foot.includes('小额度 Key') && hero.foot.includes('不承担任何责任'));
+check('每张协议卡都带名字 / 标签 / 路径 / 场景说明', hero.fields === 10, `齐整 ${hero.fields} / 10`);
+check('页脚是纯前端说明', /纯前端实现/.test(hero.foot) && /只留在本机浏览器/.test(hero.foot), hero.foot);
+// 主题开关与采样/测速控件都被刻意从界面上去掉了，这里把「不出现」钉成断言，
+// 免得日后有人顺手又把它们加回页面上
+check('页面上没有主题切换按钮', !hero.hasThemeBtn);
+check('页面上没有采样次数与探测模式控件', !hero.hasSamplingUi);
 
 // ---- 2. 跑一轮（接 mock）----
 page.on('dialog', d => { consoleErrors.push('dialog: ' + d.message()); d.dismiss(); });
@@ -116,8 +126,9 @@ check('统计条「组合总数」自洽', R.stat['组合总数'] === '160' && R
 check('存在可用组合且与统计一致',
   Number(R.stat['可用组合']) === R.okCells && R.okCells > 0, `${R.stat['可用组合']} / ${R.okCells}`);
 check('图例四色齐全', ['可用', '降级', '失败', '不支持'].every(t => R.legend.includes(t)), R.legend);
-check('诊断报告生成（含协议通过率与结论分析）',
-  R.report.includes('协议通过率') && R.report.includes('结论分析'), R.report.slice(0, 80));
+// 新版报告的标题是「各协议通过率」与「结论」（旧版叫「结论分析」）
+check('诊断报告生成（含协议通过率与结论）',
+  R.report.includes('各协议通过率') && R.report.includes('结论'), R.report.slice(0, 80));
 
 // ---- 3. 明细弹窗 ----
 const cell = page.locator('#tableWrap .mcell').first();
@@ -235,67 +246,57 @@ for (const w of [390, 768, 1024]) {
   await p.close();
 }
 
-// ---- 8. 深浅主题 ----
-const btnTheme = await page.evaluate(() => {
-  const b = document.getElementById('themeBtn');
-  return {
-    has: !!b,
-    w: b ? Math.round(b.getBoundingClientRect().width) : 0,
-    // 太阳 / 月亮两张 mask 同时躺在按钮里，同一时刻只该露出一张：
-    // 非当前态缩到 0.45 并转 -25°，靠 opacity 隐藏（不是 display:none，这样才有过渡）
-    shown: b ? [...b.querySelectorAll('.ic')].filter(e => +getComputedStyle(e).opacity > 0.5).length : 0,
-    icons: b ? b.querySelectorAll('.ic').length : 0,
-  };
-});
-check('顶栏有主题切换按钮', btnTheme.has && btnTheme.w > 20, `宽 ${btnTheme.w}`);
-check('主题按钮里是太阳和月亮两张、同一时刻只露一张',
-  btnTheme.icons === 2 && btnTheme.shown === 1, `${btnTheme.icons} 张里露了 ${btnTheme.shown} 张`);
-
-await page.click('#themeBtn');   // 浅 → 深（首次访问没有记录，按系统落在浅色）
-/* 先等过渡跑完再量。按钮/卡片上挂着 transition:background .15s，图标本身还有
-   .18s 与 .26s 的交叉旋转淡入 —— 点完立刻量会采到中间帧（曾在这里误报出 .theme-btn 的
-   rgb(253,254,254)、.key-toggle 的 rgb(247,249,252)、.link-btn 的纯白，
-   三个都是过渡第一帧，等 400ms 后终态一律收敛到 #151c26 / #0d1117）。 */
-await page.waitForTimeout(400);
-const dark = await page.evaluate(() => {
-  const root = document.documentElement;
-  /* 深色下还亮着的「面」＝漏改的硬编码色。逐个量真正参与渲染的那些元素，
-     而不是只看 body —— 白块通常出现在卡片、表头、输入框这些内层。 */
-  const sel = '.panel,.stat,.matrix-scroll,.btn-ghost,.proto,.link-btn,input[type=text],' +
-              'table.matrix thead th,.modal .box,.theme-btn,.key-toggle';
-  const whites = [];
-  document.querySelectorAll(sel).forEach(el => {
-    const bg = getComputedStyle(el).backgroundColor;
-    const m = bg.match(/^rgb\((\d+), (\d+), (\d+)\)$/);
-    if (m && +m[1] > 235 && +m[2] > 235 && +m[3] > 235) whites.push(el.className + ' → ' + bg);
+// ---- 8. 深浅主题：跟随系统，页面上没有开关 ----
+// 新版把主题开关整个去掉了，配色交给 prefers-color-scheme 的纯 CSS 媒体查询。
+// 好处是根本不存在「先亮一屏再变暗」：没有 JS 参与，也就没有首屏闪烁，
+// 连旧版 <head> 里那段同步脚本都不需要了。
+// 这里用两套 colorScheme 各开一个页面，验证「跟随系统」确实跟着系统走。
+const schemeCases = [
+  { scheme: 'light', bg: 'rgb(245, 245, 247)', dark: false },
+  { scheme: 'dark',  bg: 'rgb(16, 16, 19)',    dark: true  },
+];
+for (const c of schemeCases) {
+  const p = await browser.newPage({ viewport: { width: 1440, height: 1000 }, colorScheme: c.scheme });
+  await p.goto(BASE, { waitUntil: 'load' });
+  await p.waitForTimeout(300);
+  const r = await p.evaluate(() => {
+    const body = getComputedStyle(document.body);
+    /* 深色下还亮着的「面」＝漏改的硬编码色。逐个量真正参与渲染的元素，
+       而不是只看 body —— 白块通常出现在卡片、表头、输入框这些内层。 */
+    const sel = '.panel,.proto,.stat,.key-toggle,.link-btn,.btn-ghost,.modal .box,' +
+                'table.matrix thead th,.matrix-scroll';
+    const whites = [];
+    document.querySelectorAll(sel).forEach(el => {
+      const bg = getComputedStyle(el).backgroundColor;
+      const m = bg.match(/^rgb\((\d+), (\d+), (\d+)\)$/);
+      if (m && +m[1] > 235 && +m[2] > 235 && +m[3] > 235) whites.push(el.className + ' → ' + bg);
+    });
+    const metas = [...document.querySelectorAll('meta[name="theme-color"]')];
+    return {
+      bg: body.backgroundColor, fg: body.color, whites,
+      metas: metas.length,
+      media: metas.map(m => (m.getAttribute('media') || '').replace(/\s+/g, '')),
+      // 首屏不该有任何 JS 在改主题 —— data-theme / data-theme-mode 这类属性一个都不该有
+      attrs: [...document.documentElement.attributes].map(a => a.name)
+        .filter(n => n.indexOf('data-') === 0),
+    };
   });
-  const body = getComputedStyle(document.body);
-  const moon = document.querySelector('.ic-t-moon');
-  let saved = null;
-  try { saved = localStorage.getItem('apicompat.theme'); } catch (e) {}
-  return {
-    theme: root.getAttribute('data-theme'), saved,
-    bg: body.backgroundColor, fg: body.color, whites,
-    meta: (document.querySelector('meta[name="theme-color"]') || {}).content || '',
-    moonOpacity: moon ? +getComputedStyle(moon).opacity : 0,
-  };
-});
-check('切到深色后 html[data-theme=dark]', dark.theme === 'dark', String(dark.theme));
-check('深色下页面底色确实是深的', dark.bg === 'rgb(13, 17, 23)', dark.bg);
-check('深色下正文是浅色字', (dark.fg.match(/\d+/) || [0])[0] > 180, dark.fg);
-check('深色下没有残留白底元素', dark.whites.length === 0, dark.whites.slice(0, 3).join(' | '));
-check('地址栏染色跟着主题走', dark.meta === '#0d1117', dark.meta);
-
-await page.click('#themeBtn');   // 深 → 浅
-await page.waitForTimeout(400);
-const back = await page.evaluate(() => {
-  let saved = null;
-  try { saved = localStorage.getItem('apicompat.theme'); } catch (e) {}
-  return { theme: document.documentElement.getAttribute('data-theme'), saved };
-});
-check('再点一次切回浅色，且月亮已淡出、选择被记住',
-  back.theme === 'light' && back.saved === 'light' && dark.moonOpacity > 0.9,
-  `${back.theme}/${back.saved}，深色时月亮 opacity=${dark.moonOpacity}`);
+  const tag = c.dark ? '深色' : '浅色';
+  check(`系统${tag}时页面底色跟着走`, r.bg === c.bg, r.bg);
+  check(`系统${tag}时正文对比正确`,
+    c.dark ? +((r.fg.match(/\d+/) || [0])[0]) > 180 : +((r.fg.match(/\d+/) || [255])[0]) < 120, r.fg);
+  check(`系统${tag}时没有 JS 落定的主题属性`, r.attrs.length === 0, r.attrs.join(','));
+  // 白底扫描只在深色下有判据：浅色本来就是白底，扫不出东西
+  if (c.dark) {
+    check('深色下没有残留白底元素', r.whites.length === 0, r.whites.slice(0, 3).join(' | '));
+  }
+  check(`${tag}下有两条按系统分流 theme-color 的 meta`,
+    r.metas === 2
+      && r.media.some(x => x.includes('prefers-color-scheme:light'))
+      && r.media.some(x => x.includes('prefers-color-scheme:dark')),
+    JSON.stringify(r.media));
+  await p.close();
+}
 
 // ---- 9. 采样次数与测速档 ----
 // 压到单协议 × 全部模型的 16 格，并把两件事分两轮跑，各自只花几秒
@@ -308,9 +309,33 @@ await page.evaluate(() => {
 const waitDone = () => page.waitForFunction(
   () => { const b = document.getElementById('runBtn'); return b && !b.disabled; }, null, { timeout: 180000 });
 
-await page.fill('#samples', '3');
-await page.selectOption('#probeMode', 'fast');
-await page.waitForTimeout(120);
+/* 采样与测速在页面上没有控件（刻意不放），自测直接改内部口径对象。
+   probeSettings 只在 run() 开头读一次，所以必须在点「开始测试」之前改。 */
+const setProbe = (o) => page.evaluate(
+  (v) => Object.assign(window.__MAT__.probeSettings, v), o);
+
+/* 地址栏参数是这两项能力唯一的入口，所以解析本身也要有断言 ——
+   不然 README 里写的 ?samples= / ?meter= 就成了没人验过的说法。 */
+{
+  const p = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
+  await p.goto(BASE + '?samples=4&meter=1', { waitUntil: 'domcontentloaded' });
+  const on = await p.evaluate(() => window.__MAT__.probeSettings);
+  check('?samples=4&meter=1 被解析进内部口径',
+    on.samples === 4 && on.metering === true, JSON.stringify(on));
+
+  await p.goto(BASE + '?samples=99&meter=nope', { waitUntil: 'domcontentloaded' });
+  const clamp = await p.evaluate(() => window.__MAT__.probeSettings);
+  check('参数越界取上限、认不出的值当关',
+    clamp.samples === 5 && clamp.metering === false, JSON.stringify(clamp));
+
+  await p.goto(BASE, { waitUntil: 'domcontentloaded' });
+  const off = await p.evaluate(() => window.__MAT__.probeSettings);
+  check('不带参数时是零额外消耗的默认口径',
+    off.samples === 1 && off.metering === false, JSON.stringify(off));
+  await p.close();
+}
+
+await setProbe({ samples: 3, metering: false });
 await page.click('#runBtn');
 await waitDone();
 
@@ -334,9 +359,7 @@ check('完成横幅说明这轮每格采样了几次', /每格采样 3 次/.test
 await page.click('#modalClose');
 await page.waitForTimeout(200);
 
-await page.fill('#samples', '1');
-await page.selectOption('#probeMode', 'meter');
-await page.waitForTimeout(120);
+await setProbe({ samples: 1, metering: true });
 await page.click('#runBtn');
 await waitDone();
 
@@ -377,6 +400,8 @@ const EX = await page.evaluate(async () => {
 });
 check('JSON 导出带上了测量口径与新指标',
   EX.setup && EX.cps && EX.samples && EX.jitter && EX.scope, JSON.stringify(EX));
+
+await setProbe({ samples: 1, metering: false });
 
 // ---- 10. file:// 直开 ----
 {

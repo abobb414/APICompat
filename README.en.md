@@ -20,8 +20,8 @@ giving a status and a first-chunk latency per cell, and finally exports a diagno
 [![Dependencies](https://img.shields.io/badge/dependencies-0-3fb950?style=flat-square&logo=javascript&logoColor=white)](#project-structure)
 [![Protocols](https://img.shields.io/badge/protocols-10-8b5cf6?style=flat-square)](#protocol-matrix)
 [![States](https://img.shields.io/badge/states-11_attributions-f59e0b?style=flat-square)](#the-eleven-states)
-[![Theme](https://img.shields.io/badge/theme-light_%C2%B7_dark-334155?style=flat-square)](#light-and-dark-a-sun-and-a-moon)
-[![Single File](https://img.shields.io/badge/single_file-158_KB_%C2%B7_3191_lines-64748b?style=flat-square)](#project-structure)
+[![Theme](https://img.shields.io/badge/theme-follows_OS_%C2%B7_no_toggle-334155?style=flat-square)](#light-and-dark-follows-the-os-no-toggle)
+[![Single File](https://img.shields.io/badge/single_file-131_KB_%C2%B7_3233_lines-64748b?style=flat-square)](#project-structure)
 
 [Live Demo](https://apicompat.abobb.site) · [Preview](#preview) · [Protocol Matrix](#protocol-matrix) · [Test Flow](#test-flow) · [Quick Start](#quick-start) · [Engineering Notes](#engineering-notes-the-pitfalls)
 
@@ -58,12 +58,12 @@ giving a status and a first-chunk latency per cell, and finally exports a diagno
   </tr>
   <tr>
     <td width="50%" valign="top">
-      <img src="docs/screenshots/dark-config.jpg" alt="Config panel in the dark theme">
-      <br><sub><b>Dark theme</b> · one moon button top right (a sun in light mode) — click it to swap. The whole site draws on one set of CSS variables, so nothing is left bright in the dark</sub>
+      <img src="docs/screenshots/dark-config.jpg" alt="Config panel under the OS dark theme">
+      <br><sub><b>Dark</b> · switch the OS to dark and this is what you get — there is no toggle on the page. Colors all run through one set of CSS variables, so nothing is left bright</sub>
     </td>
     <td width="50%" valign="top">
-      <img src="docs/screenshots/dark-matrix.jpg" alt="Matrix and report in the dark theme">
-      <br><sub><b>Matrix and report, dark</b> · this run used <b>metering mode</b>, so each cell carries a characters/sec figure after its latency, and the overview gains a "measurement setup" row</sub>
+      <img src="docs/screenshots/dark-matrix.jpg" alt="Matrix under the OS dark theme">
+      <br><sub><b>Matrix, dark</b> · dark is not light inverted: base color, accent and the text on accent chips are all separately chosen values</sub>
     </td>
   </tr>
 </table>
@@ -88,9 +88,9 @@ giving a status and a first-chunk latency per cell, and finally exports a diagno
 - [Features](#features)
   - [Fetch the list first, then test](#fetch-the-list-first-then-test)
   - [First-Chunk Latency: The Bar for "Usable"](#first-chunk-latency-the-bar-for-usable)
-  - [Multi-Round Sampling and Metering Mode: Every Number Needs a Provenance](#multi-round-sampling-and-metering-mode-every-number-needs-a-provenance)
+  - [Sampling and Metering: the Capability Is There, the Controls Are Not](#sampling-and-metering-the-capability-is-there-the-controls-are-not)
   - [Timing Scope and Retries: Two Numbers That Have to Be Stated Plainly](#timing-scope-and-retries-two-numbers-that-have-to-be-stated-plainly)
-  - [Light and Dark: A Sun and a Moon](#light-and-dark-a-sun-and-a-moon)
+  - [Light and Dark: Follows the OS, No Toggle](#light-and-dark-follows-the-os-no-toggle)
   - [Declared ≠ Observed](#declared--observed)
   - [Base URL Normalization: Whatever You Paste Works](#base-url-normalization-whatever-you-paste-works)
   - [Four Export Formats](#four-export-formats)
@@ -227,14 +227,14 @@ flowchart LR
 | 🔎 | **List first, test second** | Pull the visible models from the site, then verify them protocol by protocol, instead of typing model names by hand |
 | 🧩 | **Ten protocols, ten independent request shapes** | Paths, auth headers and body shapes all follow each protocol's own rules, instead of an OpenAI template |
 | ⏱ | **First-chunk latency only, never a faked total time** | Streaming aborts on the first chunk so it burns no tokens — no total time for streaming; non-streaming gets response time |
-| 🔢 | **Multi-round sampling per cell** | Hit the same cell N times; **status by mode, latency by median**, with jitter reported alongside |
-| 📏 | **Metering mode: keep reading to get output speed** | Continue the stream past the first chunk to compute characters/sec; counted **separately** from first-chunk latency, never added |
+| 🔢 | **Multi-round sampling, off the UI** | Hit the same cell N times; **status by mode, latency by median**, jitter alongside. No control on the page — open with `?samples=3` |
+| 📏 | **Metering mode, off the UI** | Keep reading past the first chunk for characters/sec, counted **separately** from first-chunk latency. Open with `?meter=1` |
 | 🎯 | **Eleven-state attribution** | Tell "your key is broken" apart from "this model has no channel" |
 | ⚖️ | **Declared vs. observed, side by side** | Put `supported_endpoint_types` next to what actually got through; flag mismatches in yellow |
 | 🚀 | **Tunable concurrency / timeout / retries** | 6 concurrent by default; measured to be an order of magnitude faster than serial |
 | ↻ | **Retry cost on display** | Cells that only passed after a retry carry ↻, with the first attempt's duration and backoff spelled out |
 | 🔁 | **Retest failures only** | A flaky upstream doesn't force a full rerun |
-| 🌗 | **Light / dark** | One button with two states, persisted; the first visit follows the OS preference and after that only your click counts |
+| 🌗 | **Light / dark follows the OS** | No toggle, nothing persisted; set the OS to dark and the page follows, with `color-scheme` declared alongside |
 | 📊 | **Four export formats** | HTML (send it straight to someone) / Markdown (paste into an issue) / JSON (feed to scripts) / CSV |
 
 ### Fetch the list first, then test
@@ -260,11 +260,11 @@ Reasoning models have a trap: with too small a `max_tokens`, they spend it all o
 Checking "content is non-empty" would misjudge them as failures, so the bar stops at **whether the chunk is valid**,
 and `max_tokens` is set to 512 to leave headroom.
 
-### Multi-Round Sampling and Metering Mode: Every Number Needs a Provenance
+### Sampling and Metering: the Capability Is There, the Controls Are Not
 
 **A single sample measures an instant, not a combination.** A cell's latency swinging 300–400 ms is ordinary —
 treating one run as the verdict is the same mistake as judging a node dead from a single ping.
-So "samples per cell" is adjustable (1–5):
+So a cell can be hit N times in a row (1–5):
 
 | | How it's reduced | Why |
 |---|---|---|
@@ -295,9 +295,21 @@ Three deliberate choices:
 - **The timeout window is reset once while draining.** Otherwise "first chunk took 25 s, then 6 more s of reading"
   gets misjudged as a timeout by the 30-second total.
 
-> Metering costs a little extra quota (a few dozen more chunks), so it's an **optional mode** — fast remains the default.
-> Afterwards the report overview gains a "measurement setup" row spelling out
-> "samples / mode / drain cap / concurrency / timeout / retries" in one line.
+> **Neither of these is turned into a UI control.** Both multiply request count and quota (sampling ×N,
+> metering reads a few dozen extra chunks after the first one), and most people opening this page
+> just want to know whether it works — there is no reason to put two expensive switches on the default path.
+> So the default setup is pinned to **1 sample + fast mode** (zero extra requests, zero extra quota),
+> and you open the heavier setup from the address bar when you need a firmer conclusion:
+>
+> | Parameter | Effect |
+> |---|---|
+> | `?samples=3` | Hit each cell 3 times (max 5); latency by median, status by mode, jitter reported |
+> | `?meter=1` | Metering: keep draining to 64 chunks / 6 s past the first chunk for a real output speed |
+>
+> They stack (`?samples=3&meter=1`). With them on, the matrix gains an output-speed column, cell tooltips spell out
+> the sample count and each sample's first-chunk latency, and the overview gains a "measurement setup" row.
+> **With the default setup none of that appears** — the UI is **pixel-identical** to the no-parameter version
+> (verified with a full-page pixel diff when this capability was ported back; see the engineering notes).
 
 ### Timing Scope and Retries: Two Numbers That Have to Be Stated Plainly
 
@@ -321,29 +333,35 @@ That is the same trick as "retry until success and only display the successes", 
 
 > In one line: the latency in a cell comes from the attempt that succeeded, but **the cost paid before the retry is never hidden**.
 
-### Light and Dark: A Sun and a Moon
+### Light and Dark: Follows the OS, No Toggle
 
-One button in the top bar — a **sun** in light mode, a **moon** in dark mode — click it to swap. The choice lands in
-`localStorage` and survives the next visit. On a first visit (nothing chosen yet) it falls back to the OS preference
-`prefers-color-scheme`; after that it only honours your click.
+There is **no theme button on the page**. Light and dark follow the OS `prefers-color-scheme` only:
+switch the OS to dark and the page goes dark. Dropping the toggle also drops three problems — nothing to
+remember about "what I picked last time", no "I clicked it but it flipped back on another machine",
+and no synchronous script in `<head>` racing the first frame.
 
-The sun and moon are kept as standalone SVG sources in `assets/icons/` and also embedded as data URIs in `index.html`, preserving the single-file double-click workflow. CSS masks make their color follow the theme. The swap **rotates in**: the leaving state shrinks to 0.45 and turns -25° while the arriving state returns to 1 / 0°. Both masks sit in the same grid cell, and the button has no outline or disc behind it.
+The mobile address bar follows too, via two system-split `theme-color` metas:
+
+```html
+<meta name="theme-color" media="(prefers-color-scheme:light)" content="#f5f5f7">
+<meta name="theme-color" media="(prefers-color-scheme:dark)"  content="#101013">
+```
 
 A few things that aren't obvious:
 
-- **Two states need only one attribute.** `data-theme` is both "what you asked for" and "what renders right now"
-  (`light` / `dark`) — with the third "follow system" state gone, the old `data-theme-mode` layer has no reason to exist.
 - **Dark isn't an inversion of light**, it's its own set of values: the background isn't pure black
-  (`#000` with light text smears on OLED), it's `#0d1117`; the accent is actually **lightened one step**
-  (`#2563eb` → `#4d8dfb`) because the original blue sinks into a dark ground; and text on the bright-blue
-  accent switches from white to a dark ink `#0b1220` (white there is only 3.8:1; the dark ink is 5.9:1).
-- **Every hard-coded color is collapsed into variables.** The dark block only overrides values and touches no rules —
+  (`#000` with light text smears on OLED), it's `#101013`; the accent moves from Apple blue `#007aff`
+  **up** to `#0a84ff` (in light mode hover *darkens* to `#0051d5`, but in dark mode it has to *lighten*
+  to `#409cff`, because the original blue sinks into a dark ground); and borders go from
+  `rgba(0,0,0,.08)` to `rgba(255,255,255,.10)` — skip that and the edges simply vanish.
+- **Every hard-coded color is collapsed into variables.** Dark only overrides values and touches no rules —
   otherwise some corner (a table header, a checkbox, the popup, a secondary button) always leaks a bright patch.
-- **No first-paint flash.** The theme has to be settled in a **synchronous** script inside `<head>`;
-  move it before `</body>` and you get a bright first frame before it darkens. The same script updates
-  `meta[theme-color]` so the mobile address bar follows along.
-- **`color-scheme` has to be declared too**, or the browser's native widgets (scrollbars, the `<select>` dropdown,
-  autofill backgrounds) won't follow.
+  The overrides sit in one `@media screen and (prefers-color-scheme:dark)` block at the end of the stylesheet;
+  `screen` keeps `@media print` on the light palette, so printing on a dark system doesn't yield grey-on-grey.
+- **`color-scheme` has to be declared too** (`:root{color-scheme:light dark}`), or the browser's native widgets
+  (scrollbars, number-input spinners, the `<select>` dropdown, autofill backgrounds) won't follow.
+- **Exported reports follow as well.** The HTML report is a standalone file that doesn't carry the main stylesheet,
+  so it writes its own dark overrides — it has to follow the **recipient's** OS, not the one you exported on.
 
 ### Declared ≠ Observed
 
@@ -383,7 +401,8 @@ All four formats carry the same disclaimer, and the report footer also records w
 **The measurement setup of that run** (samples, fast/metering mode, drain cap, concurrency, timeout, retries)
 also goes into the Markdown header, the HTML report overview and the JSON `setup` field —
 whoever receives a CSV should be able to answer "where did this 42 chars/sec come from",
-rather than only seeing the outcome.
+rather than only seeing the outcome. Under the default setup (1 sample + fast mode) the speed column and the
+setup row aren't rendered at all — every character in the report corresponds to something the page actually showed.
 
 ## Quick Start
 
@@ -395,7 +414,7 @@ python3 -m http.server 8788
 # then open http://127.0.0.1:8788
 ```
 
-You can also just double-click `index.html` — the styles, scripts, icons and favicon are all inlined in that one file.
+You can also just double-click `index.html` — the styles and scripts are all inlined in that one file, and the page requests no external resources.
 
 Using it takes three steps:
 
@@ -431,21 +450,23 @@ vercel deploy --prod
 
 ```
 .
-├── index.html              # page styles and logic, inline icons and favicon, 158 KB / 3191 lines
-├── assets/icons/           # source SVGs for the theme sun / moon
+├── index.html              # all styles and logic, no external requests, 131 KB / 3233 lines
 ├── robots.txt
 ├── docs/
 │   ├── images/             # README header logos
-│   └── screenshots/        # desktop, mobile and dark-theme screenshots
+│   └── screenshots/        # config, matrix, detail, report, mobile, dark
 └── tests/
     ├── mock.py             # fake relay: 16 models × 10 protocols, Python standard library only
-    ├── smoke.mjs           # end-to-end assertions (Playwright)
+    ├── smoke.mjs           # end-to-end assertions (Playwright, 56 of them)
     └── run.sh              # start mock → run assertions → done
 ```
 
 **Having only one `index.html`** is deliberate: hand it to a colleague, drop it on a USB stick, attach it to an email — no directory to carry along.
-The price is that the file can't afford to grow fat — every icon was converted to vectors and inlined as a CSS mask,
-and the 16 icons (15 distinct glyphs) come to 21.4 KB, three-quarters smaller than the same set as PNGs, and crisp at any scale.
+The price is that the file can't afford to grow fat — no icon font, no icon bitmaps, no favicon file, not a single
+`data:` inlined asset. Every graphic on the page (status pills, colour bars, checkboxes, the step dots) is drawn in CSS.
+So dropping the previous version's "trace a bitmap to vectors, then inline it as a mask" icon set took the file from
+158 KB down to 131 KB — while this version has **more** capability than the last one (sampling and metering,
+just kept off the UI).
 
 ## Implementation Notes
 
@@ -458,22 +479,21 @@ and the 16 icons (15 distinct glyphs) come to 21.4 KB, three-quarters smaller th
 - **Only "worth retrying" gets retried**: network blips, timeouts and 5xx are retried with backoff;
   deterministic failures like 401 / 404 / unsupported protocol are not, saving time and quota.
 - **Anything read out of `localStorage` is sanitized as untrusted input**: the key is only persisted when "remember" is ticked,
-  and corrupted config must never be allowed to break the page. The theme works the same way — an unrecognized value
-  falls back to the OS preference instead of throwing.
-- **21.4 KB of vector icons**: bitmaps were traced into `path` with potrace and used as CSS masks
-  (`background-color: currentColor`), so colors follow the theme automatically — smaller and sharper than bitmaps.
-  The key is that **coordinate precision has to match the render size**: tracing at 1024px for something displayed
-  at 16px writes every coordinate as a decimal and multiplies the size for nothing. Rounding the `path` coordinates to
-  integers and re-rendering to compare still leaves a shape mismatch of ~0.3%, while cutting the size by a quarter.
-- **The prefixed and standard properties share one URI**: `--m: url("data:…")` is declared once on the icon class,
-  and `.ic` references it as `-webkit-mask-image: var(--m)` and `mask-image: var(--m)`.
-  Without that, the same URI has to be written out twice, and keeping the two copies byte-identical is pure
-  clerical burden — v1.1.0 measured the single file dropping from 182.5 KB to 165.3 KB (-9.4%); those are historical figures for that release, not the current file size.
-- **Two layers of theme variables**: `:root` is light, `[data-theme="dark"]` only overrides values, and
-  `@media (prefers-color-scheme: dark)` covers the case where the script never ran.
-  In the dark theme `color-scheme: dark` brings scrollbars and native dropdowns along.
-- **Only 4 font sizes**: 11 / 13 / 15 / 20px; hard-coded `font-size` across the site is down to zero,
-  and the standalone stylesheet in exported reports shares the same set — same for colors, no rules carry raw hex.
+  and corrupted config must never be allowed to break the page — every field goes through a type and range check,
+  and anything missing falls back to a default.
+- **The two expensive switches live in URL parameters, not on the UI**: `probeSettings` parses `?samples=` / `?meter=`
+  out of `location.search`, and falls back to the default (1 sample + fast mode) when it can't. That makes
+  "capability present, controls absent" a structural fact rather than a comment convention — there is literally
+  nothing to click. Every new piece of copy (the speed column, the tooltip scope, the overview setup row, the speed
+  fields in the report) hangs off a condition, so none of it renders under the default parameters.
+- **Light and dark follow the OS only, nothing persisted**: `:root` carries the light values, and one
+  `@media screen and (prefers-color-scheme:dark)` block at the end of the stylesheet overrides the same variable names.
+  No JS is involved, so there's no window where "the script hasn't run yet" flashes a light page —
+  the previous version's toggle needed a synchronous script in `<head>` to beat the first frame, and that whole block is gone.
+  `:root{color-scheme:light dark}` brings scrollbars and native dropdowns along.
+- **Only 4 font sizes**: 12 / 14 / 18 / 22px (`--fs-sm` → `--fs-xl`). Apart from the `html{font-size:16px}` root
+  baseline, the main stylesheet carries no hard-coded `font-size`; the standalone stylesheet in exported reports
+  follows the same ladder. Same for colors — no rules carry raw hex.
 
 ## Tests
 
@@ -493,20 +513,23 @@ node tests/smoke.mjs
 BASE=https://apicompat.abobb.site node tests/smoke.mjs
 ```
 
-Coverage falls into these buckets: hero rendering and icon mounting, list fetching, matrix dimensions and stats consistency,
+Coverage falls into these buckets: hero rendering and the protocol-card four-piece set, list fetching, matrix dimensions and stats consistency,
 the cell-detail popup and its timing scope, **retry cost made visible**, the "only usable protocols" filter,
 the four exports being non-empty, no horizontal overflow at the 390 / 768 / 1024 breakpoints,
-and double-click opening over `file://` — plus this round's **dark theme** (including the
-"nothing is left bright in the dark" check) and **multi-round sampling / metering mode**.
+and double-click opening over `file://` — plus two assertions that guard what must **not** be on the page
+(the theme toggle, the sampling/metering controls). Things deliberately removed get their absence pinned as an
+assertion, so nobody quietly adds them back later.
 
-**50 assertions in total; against `tests/mock.py` it's 50 passed / 0 failed.**
+**56 assertions in total; against `tests/mock.py` it's 56 passed / 0 failed.**
 
 ```
 PASS  page loads with no console errors
 PASS  renders 10 protocol cards
 PASS  only the 3 main protocols are ticked by default
-PASS  every icon gets its vector mask
-PASS  footer carries the low-quota key warning and the disclaimer
+PASS  every protocol card carries name / tag / path / scenario note
+PASS  footer is the pure-front-end notice
+PASS  there is no theme toggle button on the page
+PASS  there are no sample-count or probe-mode controls on the page
 PASS  full-protocol probe finishes
 PASS  model list fetched (16 visible models)
 PASS  matrix row count = model count
@@ -515,7 +538,7 @@ PASS  matrix cells = 16 × 10
 PASS  stats bar "total combinations" is self-consistent
 PASS  usable combinations exist and match the stats
 PASS  legend has all four colors
-PASS  diagnostic report generated (with protocol pass rate and conclusion analysis)
+PASS  diagnostic report generated (with protocol pass rate and conclusion)
 PASS  clicking a cell opens the detail popup (with first-chunk latency and timing scope)
 PASS  the detail popup no longer mislabels first-chunk latency as "total time"
 PASS  "only usable protocols" filter applies and can be undone
@@ -533,14 +556,18 @@ PASS  JSON export no longer contains the misleading totalMs field
 PASS  no horizontal overflow at 390px
 PASS  no horizontal overflow at 768px
 PASS  no horizontal overflow at 1024px
-PASS  the top bar has a theme toggle button
-PASS  the theme button holds a sun and a moon, exactly one of them visible at a time
-PASS  switching to dark sets html[data-theme=dark]
-PASS  the page background really is dark in the dark theme
-PASS  body text is light in the dark theme
-PASS  no bright-background elements are left in the dark theme
-PASS  the address-bar tint follows the theme
-PASS  clicking again returns to light, the moon has faded out, and the choice is remembered
+PASS  the page background follows the OS in light mode
+PASS  body text contrast is right in light mode
+PASS  no JS-settled theme attribute when the OS is light
+PASS  two system-split theme-color metas in light mode
+PASS  the page background follows the OS in dark mode
+PASS  body text contrast is right in dark mode
+PASS  no JS-settled theme attribute when the OS is dark
+PASS  no bright-background elements are left in dark mode
+PASS  two system-split theme-color metas in dark mode
+PASS  ?samples=4&meter=1 is parsed into the internal setup
+PASS  out-of-range clamps to the cap, unrecognized values read as off
+PASS  with no parameters it's the zero-overhead default setup
 PASS  with 3 samples the matrix still has 16 cells
 PASS  the cell tooltip states the sample count and each run's latency
 PASS  the detail popup gives the sample count and "median within the cell"
@@ -554,10 +581,16 @@ PASS  the JSON export carries the measurement setup and the new metrics
 PASS  file:// double-click works (protocol cards and scripts are both there)
 
 ====================================================
-  50 passed, 0 failed
+  56 passed, 0 failed
 ====================================================
 ```
 
+> The theme assertions don't click a button — they open **one page per `colorScheme`** (`light` / `dark`) and
+> measure the background, the body-text contrast and the `meta[theme-color]` set, then confirm the page carries
+> **no `data-*` theme attribute at all**. With the toggle gone, an assertion can't pretend there's something to click.
+> The sampling/metering assertions first verify the URL-parameter parsing (out-of-range and unrecognized values included),
+> then drive two real runs by mutating the internal setup object — because **the URL parameters are the only entry point**
+> to these capabilities, and skipping that would leave the README claiming something nothing verifies.
 > The retry assertions are triggered by two combinations in the mock relay that return 500 on every other hit
 > (`GET /__reset` clears the counters); the metering assertion relies on the mock actually emitting text character by
 > character (24 chunks × 50 ms ≈ 40 chars/sec, and the assertion requires the measurement to land between 20 and 90).
@@ -587,32 +620,21 @@ and in automated tests `alert` is auto-dismissed by default, so it presented as 
 **5. Some sites return 200 + the homepage HTML for paths that don't exist.**
 Look at the status code alone and you'd quietly get an empty list. It now detects the HTML body and reports "returned an HTML page, not an API".
 
-**6. potracer traces the *dark* pixels, while a mask coming out of PIL is "bright = foreground".**
-`potrace.Bitmap`'s `blacklevel` defaults to 0.5 and is compared in the **0–255 domain** (threshold 127.5):
-darker than the threshold is the foreground to trace, brighter is background. So an alpha mask where
-"bright = foreground" is exactly backwards and has to be inverted. That inversion has two chained traps,
-both measured on `pulsar-line__moon-symbol.png` at 1024px:
+**6. "Port the capability back but don't change the UI by one pixel" — prove it with a pixel diff, not with your eyes.**
+This round's redesigned UI had dropped multi-round sampling and metering mode. They had to come back, but no new control
+could appear on the page. "Looks the same to me" doesn't count: shoot the **whole page** with Playwright at
+1440×960 / DPR 2 before and after the port, then compare pixel by pixel with `ImageChops.difference` —
+under the default setup all 8,605,440 pixels are identical, and only then can you claim the UI is unchanged.
+The technique itself is nothing clever: the new code runs entirely through conditionals, so under the default
+parameters not one node or string is rendered. Then pin "there are no such controls on the page" as a test assertion,
+so nobody adds them back by reflex later.
 
-| What was fed in | Curves traced | Result |
-|---|---|---|
-| `alpha >= 128` (bool, True = foreground) | 3 curves / 52 nodes | traces the **whole canvas**, with the moon as a hole |
-| `~alpha` (bool inverted) | **2 curves / 50 nodes** | ✅ the moon itself (outer contour + inner arc) |
-| `alpha.astype(uint8)` (0/1) | 1 curve / 4 nodes | the entire canvas as a single rectangle, glyph gone |
-| `np.invert(alpha.astype(uint8))` | **0 curves** | empty path — exports a blank icon |
-
-`np.invert` on uint8 produces `254/255` (everything "bright"), which is not a logical inversion —
-a 0/1 uint8 mask has to be cast to bool and inverted with `~`, or expanded to 0/255 and done as `255 - x`.
-**The symptom is silent**: nothing raises, you just trace an empty or full-canvas shape.
-Only "render it back and compare the shape mismatch rate against the source" catches it.
-
-**7. The "nothing is left bright in the dark" assertion was a false positive on its first run.**
-49 passed / 1 failed, reporting `.theme-btn` = `rgb(253,254,254)`, `.key-toggle` = `rgb(247,249,252)`
-and `.link-btn` = pure white — it looked like three missed hard-coded colors. Tracing frame by frame showed that
-all three carry `transition:background .15s`, so measuring **immediately** after the theme switch samples the first
-frame of "white → dark blue". After 400 ms they settle to `#151c26` across the board. The fix belongs in the
-assertion (wait for the transition); **the feature was right all along**.
-> The values themselves were the clue: `#fdfefe` does not appear anywhere in the file — no one writes a
-> hard-coded color that is two levels off white. When a color isn't in the source, suspect a transition frame first.
+**7. `boundingBox()` returns viewport coordinates; `fullPage + clip` wants document coordinates.**
+Shooting `#panel-report` after the page had already been scrolled, using `boundingBox()` directly as `clip`,
+produced a misaligned crop. Under `fullPage: true` the `clip` is measured in **document** coordinates, while
+`boundingBox()` gives the position within the **current viewport** — the difference is exactly `window.scrollY`.
+Using `el.getBoundingClientRect().top + window.scrollY` lines it up.
+(A cousin of the same trap: calling `boundingBox()` and *then* scrolling the page — the scroll invalidates that coordinate.)
 
 **8. When the DOM shape changes, fix the assertion first — don't rush to suspect the feature.**
 The `.rt` (retry marker) tooltip used to live on the marker itself; once a cell had to state three things at once
@@ -632,11 +654,12 @@ the assertion is still watching the node it thinks it is.
 - **The matrix only reflects the moment you tested.** Upstream channels change, quota runs out, models get added —
   a red cell doesn't mean the model will never work; run a few more rounds before concluding.
 - **No scheduled health checks.** Those would mean storing historical results somewhere, and "nothing stored server-side" is a premise of this project.
-- **Multi-round sampling multiplies the request count by N.** 16 models × 10 protocols × 3 samples = 480 requests.
-  For a first look, use 1 sample and tick "only test declared protocols" to shrink the combination count before raising it.
+  If you want trend comparison, accumulate JSON exports yourself.
+- **Multi-round sampling multiplies the request count by N.** 16 models × 10 protocols × 3 samples = 480 requests —
+  which is exactly why it's off by default and only reachable through `?samples=`. If you do turn it on,
+  tick "only test declared protocols" first to shrink the combination count.
 - **Metering mode costs more quota than fast mode.** It keeps reading past the first chunk (up to 64 chunks or 6 seconds)
   in exchange for the extra "output speed" dimension. If all you want is "does it work", the default fast mode is enough.
-  If you want trend comparison, accumulate JSON exports yourself.
 
 ---
 

@@ -3,749 +3,613 @@
 <head>
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1">
-<meta name="theme-color" content="#f7f9fc">
-<script>
-/* 主题必须在这里、在样式表之前定下来 —— 放到 </body> 前会出现「先亮一屏再变暗」的闪。
-   data-theme 存「当前实际主题」：浅色显示太阳、深色显示月亮。没手动选过就跟随系统。 */
-(function () {
-  var m = null;
-  try { m = localStorage.getItem('apicompat.theme'); } catch (e) {}
-  /* 只认 light / dark 两个明确值；没有记录（首次访问）就跟随系统。
-     这段必须在 <head> 里同步跑完，否则会先亮一屏浅色再变暗。 */
-  var q = window.matchMedia ? window.matchMedia('(prefers-color-scheme: dark)') : null;
-  var dark = (m === 'dark') || (m !== 'light' && q && q.matches);
-  var el = document.documentElement;
-  el.setAttribute('data-theme', dark ? 'dark' : 'light');
-  var tc = document.querySelector('meta[name="theme-color"]');
-  if (tc) tc.setAttribute('content', dark ? '#0d1117' : '#f7f9fc');
-})();
-</script>
-<link rel="icon" type="image/svg+xml" href="data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%232f6bf0%22%20d%3D%22M66.6%20239.8C65.8%20232.1%2062%20178.5%2062%20175.9C62%20174.2%2061.2%20174%2054%20174L45.9%20174%2046.2%20121.8C46.5%2062.4%2046.1%2065.3%2055.2%2057.6C61.5%2052.1%2066.7%2051%2085.5%2051L101.7%2051%20102.3%2045.8C103.9%2032.5%20107.5%2031%20138.6%2031L164%2031%20164%2043.5L164%2056%20183.8%2056C209.5%2056.1%20215%2058.4%20215%2069.7C215%2079.8%20209.4%2082%20184%2082L164%2082%20164%20110L164%20138%20184.3%20138C209.3%20138%20215%20140.4%20215%20151C215%20161.6%20209.4%20164%20184.3%20164L164%20164%20164%20176.5L164%20189%20138.9%20189C122.4%20189%20113.1%20188.6%20111.7%20187.9C107.6%20185.8%20104%20181.6%20102.9%20177.8C101.1%20170.9%2097.3%20172.4%2096.6%20180.2C95.8%20187.9%2092%20241.5%2092%20244.1C92%20245.9%2091.1%20246%2079.6%20246L67.2%20246%2066.6%20239.8ZM82.4%20231.8C82.7%20229.4%2083.7%20216.9%2084.5%20204C85.3%20191.1%2086.2%20179%2086.4%20177.2L86.9%20174%2079.3%20174L71.8%20174%2072.4%20179.2C72.7%20182.1%2073.7%20195.5%2074.6%20209C76.4%20237.2%2076.2%20236%2079.4%20236C81.6%20236%2081.9%20235.5%2082.4%20231.8ZM154%20110L154%2041%20134.7%2041C121%2041%20115.1%2041.3%20114.2%2042.2C112.5%2043.9%20112.5%20176.1%20114.2%20177.8C115.1%20178.7%20121%20179%20134.7%20179L154%20179%20154%20110ZM102%20112.4L102%2060.8%2084.8%2061.2C54.8%2061.7%2056.1%2059.2%2056%20119.2L56%20164%2079%20164L102%20164%20102%20112.4ZM204.1%20152.4C207%20148.8%20203%20148%20182.8%20148L164%20148%20164%20151L164%20154%20183.4%20154C200%20154%20202.9%20153.8%20204.1%20152.4ZM204%2070.5C206.5%2067.4%20204%2067%20183.9%2067L164%2067%20164%2069.5L164%2072%20183.4%2072C199.1%2072%20203%2071.7%20204%2070.5Z%22%2F%3E%3C%2Fsvg%3E">
-<link rel="icon" type="image/png" sizes="32x32" href="data:image/png;base64,iVBORw0KGgoAAAANSUhEUgAAACAAAAAgCAYAAABzenr0AAAABmJLR0QA/wD/AP+gvaeTAAADGElEQVRYhe2XTWhcVRiGn/fcaRMMSSadURFdaRFFyIiiYNzoUoi4kK7ElSszFpeCKO1GcOFCsbaiOwU36UbqQmjcVBAUoiU1WCytjRsV7eQODU5nknteF2lKqvfO3KSj3fjBXZz5/p77Hs53z8D/dpNNu008cMDJ2Xp7Yu/eON7rhco21+qZY9XVsnXCzltbjWZ6/Mfb2pdDoLWxEVZC4PzWkyR+eSfVKoNDrrfpFy/fCzwrq5nZn2/3hcAnO63XF2C6mT4UxFM2U8A4AMruxCKab88cq17YHt9opp2hATw4154zftuRReQ/QB1gDWMAnK3l5dk61Gimh64uI9AGVmzeWDpaPV4KYP9Bjzi237R4dem96lvXgb20+oTNrJJKLx/dn0k6sbWK1qjwc0G8DpQDmAyrt2/EMB6CPs1vAokd8z2atZm9troqGNY7edG5AOtdJpRAZ633axHAeiGAPw5BHwHYoZNl8cp6CBfPHp24VBogqYTRaMjG6gUyFysgceG7d6sLRXl/t9w5EKUAcFeNrChRyZa2N2a5AI6bE/LW5eIm644FWzAEgIRNBebnKWwyske7HuMDAeytb4QKFci62sUYLwvAxsDisTIcBXJPgROkATscVaSenp+eSx/fWiu4iznvzB8uvb/v+3IAUQNfr6KiLfAvkha3/TBmNEOiGeCRUgCJCB5wyLKoJN+jO2weBpAIQpPAPaAv86ILFEAIGs30lX/4zN0AcrwlH2CbAiYFMsnn4uiVk6UBSEidsSB4AbHf5gvEmOAxw88CCHEsL1Vi4fSR6uF8uJz4fs7GwfajRH89GrLJXtzzQCR+FRXuD46ngJ+AFaM/hbub1fy04IPTR6ZKA/Q9bklGC6DjpObofUC877fxc5A9aXPScPFacwDrRIxeLKqXZ31vRN0RWpUeJFBziHVQOj+vDFgGXttJoyLrq8Dy5EQKZBHVgCnYVGSY1n/iHVY0pIKaofZvAAy8Fcu0ItRl1QW5l4obsTIflEsi1hA14/8ewKIFegaYQZT+xzM0AMEpm99tfkDhm2ED3HT7CzObN3JAka7GAAAAAElFTkSuQmCC">
-<title>模型接口兼容性测试 · API Compat</title>
+<!-- 手机浏览器地址栏颜色也跟着系统走（无开关） -->
+<meta name="theme-color" media="(prefers-color-scheme:light)" content="#f5f5f7">
+<meta name="theme-color" media="(prefers-color-scheme:dark)" content="#101013">
+<title>模型接口兼容性测试</title>
 <style>
+  /* ============================================================================
+     颜色令牌：浅色为基准值，深色覆盖统一放在文件末尾的
+     @media screen and (prefers-color-scheme:dark) 里 —— 全站配色只认这里的变量，
+     禁止在具体规则里写死颜色，否则深色模式会漏掉那一处。
+     color-scheme 让浏览器自绘的部分（滚动条、数字输入框的上下箭头、
+     原生控件、表单自动填充）也跟着系统走。
+     ============================================================================ */
   :root{
-    /* ── 表面 ── */
-    --bg:#f7f9fc;
-    --bg-card:#ffffff;
-    --border:#e4e9f0;
-    --border-hover:#cfd8e3;
+    color-scheme:light dark;
 
-    /* ── 文字（三级） ── */
-    --text-primary:#0f172a;
-    --text-secondary:#4a586e;
-    --text-tertiary:#93a1b5;
+    /* Surface layers - 苹果风格的浅色分层 */
+    --surface-0:#f5f5f7;
+    --surface-1:#ffffff;
+    --surface-2:#fbfbfd;
+    --surface-3:#f5f5f7;
+    --surface-4:#e8e8ed;
+    --field-bg:#ffffff;      /* 输入框/文本域的填充，深色下比面板亮一档 */
+    --overlay:rgba(0,0,0,.4);
 
-    /* ── 强调色（全站唯一） ── */
-    --accent:#2563eb;
-    --accent-hover:#1d4ed8;
-    --accent-subtle:#eef4ff;
-    --accent-ring:rgba(37,99,235,.14);
+    /* Accent - 苹果蓝 */
+    --accent:#007aff;
+    --accent-hover:#0051d5;
+    --accent-deep:#004fc6;
+    --accent-glow:rgba(0,122,255,.15);
+    --accent-soft:rgba(0,122,255,.06);
+    --on-accent:#ffffff;     /* 铺满强调色的元素（按钮/选中框/步骤圆点）上的文字 */
 
-    /* ── 语义色 ── */
-    --ok:#0f9d6e;      --ok-bg:#eafaf4;
-    --warn:#b7791f;    --warn-bg:#fdf6e7;
-    --err:#dc3545;     --err-bg:#fdf0f1;
-    --neutral:#5b6b80; --neutral-bg:#f1f5f9;
+    /* Text */
+    --text:#1d1d1f;
+    --text-dim:#6e6e73;
+    --text-faint:#86868b;
+    --text-ghost:#d2d2d7;
 
-    /* ── 深浅主题共用的「表面层级」 ──
-       这些原先是散在规则里的硬编码色（#ffffff / #f8fafc / #e4e9f0 …），
-       深色主题下每一处都要换值，抽成变量才不会漏掉某个角落留一块白。
-       命名按「离页面底色的距离」递增：field(输入/卡片) → surface-2(表头/悬停) → surface-3(更沉) */
-    --nav-bg:rgba(255,255,255,.86);   /* 顶栏毛玻璃底：不能写死，深色下白色毛玻璃会糊成一块灰 */
-    --field-bg:#ffffff;               /* 输入框 / 勾选框 / 次级按钮底 */
-    --surface-2:#f8fafc;              /* 表头、行悬停 */
-    --surface-3:#f1f5f9;              /* 代码块、更沉的浅底 */
-    --line-soft:#f1f5f9;              /* 表格内部的细横线（比 --border 轻） */
-    --bar-bg:#e4e9f0;                 /* 进度条底槽 */
-    --code-bg:rgba(15,23,42,.06);     /* 行内 code 底 */
-    --overlay:rgba(15,23,42,.38);     /* 弹窗遮罩 */
-    --check-border:#cbd5e1;           /* 未勾选的方框描边 */
-    --on-accent:#ffffff;             /* 强调色块上的前景（白字/白勾） */
-    --accent-path:#4a6cc4;            /* 选中协议卡里的路径文字 */
-    --glow:rgba(37,99,235,.055);      /* 页头那圈径向光 */
+    /* Status colors */
+    --ok:#34c759;
+    --ok-dim:#28a745;
+    --ok-bg:rgba(52,199,89,.08);
+    --warn:#ff9500;
+    --warn-dim:#ff8800;
+    --warn-bg:rgba(255,149,0,.08);
+    --err:#ff3b30;
+    --err-dim:#ff2d20;
+    --err-bg:rgba(255,59,48,.08);
+    --neutral:#8e8e93;
+    --neutral-bg:rgba(142,142,147,.08);
 
-    /* 提示条：底色用 --*-bg，描边与文字各自一档（浅色下是深字浅边） */
-    --banner-info-line:#d6e3ff; --banner-info-text:#1e40af;
-    --banner-ok-line:#c2ebda;   --banner-ok-text:#0a6b4b;
-    --banner-warn-line:#f0e0b8; --banner-warn-text:#8a5b10;
-    --banner-err-line:#f7ccd1;  --banner-err-text:#a3222f;
+    /* Status borders - 状态胶囊/提示条的 1px 边线 */
+    --accent-line:rgba(0,122,255,.15);
+    --ok-line:rgba(52,199,89,.15);
+    --warn-line:rgba(255,149,0,.15);
+    --err-line:rgba(255,59,48,.15);
+    --neutral-line:rgba(142,142,147,.15);
 
-    /* 能力卡的四个彩色字形 */
-    --c-blue:#2563eb; --c-emerald:#0f9d6e;
-    --c-purple:#7c3aed; --c-amber:#c2801a;
+    /* Borders */
+    --border:rgba(0,0,0,.08);
+    --border-soft:rgba(0,0,0,.04);
+    --border-strong:rgba(0,0,0,.12);
 
-    /* ── 排印：全站只用 4 档字号，任何地方都不准写死 px ── */
-    --fs-xs:11px;   /* 标签 / 表头 / 脚注 / 版权行 */
-    --fs-sm:13px;   /* 正文 / 说明 / 输入 / 按钮 / 表格 / 代码 */
-    --fs-md:15px;   /* 面板标题 / 品牌名 */
-    --fs-lg:20px;   /* 页面标题 / 统计数值 */
+    /* 字号体系：全站只用四档，不要再新增第五档
+       ┌ 12px  辅助 提示 / 路径 / 标签 / 表头 / 脚注 / 代码
+       ├ 14px  正文 正文 / 字段标签 / 输入框 / 按钮 / 表格内容
+       ├ 18px  小标题 区块标题 / 弹层标题 / 提示条图标
+       └ 22px  大标题 面板标题 / 统计数值 */
+    --fs-sm:12px;
+    --fs-base:14px;
+    --fs-lg:18px;
+    --fs-xl:22px;
 
-    --font-sans:-apple-system,BlinkMacSystemFont,"Segoe UI","PingFang SC","Hiragino Sans GB","Microsoft YaHei",Roboto,"Helvetica Neue",Arial,sans-serif;
-    --font-mono:ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,"Courier New",monospace;
+    /* Line heights */
+    --lh-tight:1.38;
+    --lh:1.47;
+    --lh-loose:1.6;
 
-    --lh-tight:1.25;
-    --lh-base:1.6;
+    /* Font weights - 苹果风格字重 */
+    --fw:400;
+    --fw-medium:500;
+    --fw-semi:590;
+    --fw-bold:700;
 
-    --radius-sm:6px;
-    --radius-md:9px;
-    --radius-lg:14px;
-    --radius-full:9999px;
+    /* Border radius - 苹果风格圆角 */
+    --r-xs:4px;
+    --r-sm:8px;
+    --r-md:12px;
+    --r-lg:18px;
+    --r-xl:28px;
+    --r-pill:980px;
 
-    --shadow-1:0 1px 2px rgba(15,23,42,.04);
-    --shadow-2:0 1px 2px rgba(15,23,42,.04), 0 10px 24px -12px rgba(15,23,42,.14);
-    --shadow-3:0 10px 34px -12px rgba(15,23,42,.2);
+    /* Spacing scale */
+    --space-xs:6px;
+    --space-sm:12px;
+    --space-md:20px;
+    --space-lg:32px;
+    --space-xl:48px;
 
-    /* 让浏览器自带的部件（滚动条、<select> 下拉、日期选择器、自动填充）跟着主题走。
-       少了这一行，深色主题里滚动条和下拉还是刺眼的浅色。 */
-    color-scheme:light;
+    /* Shadows - 苹果风格轻盈阴影 */
+    --shadow-xs:0 1px 1px rgba(0,0,0,.04);
+    --shadow-sm:0 2px 4px rgba(0,0,0,.04);
+    --shadow:0 2px 16px rgba(0,0,0,.06);
+    --shadow-lg:0 8px 24px rgba(0,0,0,.08);
+    --shadow-xl:0 12px 48px rgba(0,0,0,.12);
+
+    --mono:'SF Mono',ui-monospace,Menlo,Monaco,Consolas,monospace;
+    --system:-apple-system,BlinkMacSystemFont,'SF Pro Text','SF Pro Display','Helvetica Neue','PingFang SC','Hiragino Sans GB',sans-serif;
   }
-
-  /* ══ 深色主题 ══
-     只覆盖上面那一组变量，规则本身一行都不用改 —— 这也正是把硬编码色收干净的理由。
-     底色不用纯黑（#000 配浅字在 OLED 上会有拖影），用带一点蓝的 #0d1117，
-     与强调色同色系，避免深色下整页发灰。 */
-  [data-theme="dark"]{
-    color-scheme:dark;
-
-    --bg:#0d1117;
-    --bg-card:#151c26;
-    --border:#252e3b;
-    --border-hover:#3a4655;
-
-    --text-primary:#e7eef8;
-    --text-secondary:#a3b1c4;
-    --text-tertiary:#7e8fa4;
-
-    /* 强调色整体提亮一档，否则 #2563eb 在深底上会「沉」下去；
-       相应地 --on-accent 换成深墨色 —— 亮蓝底配白字只有 3.8:1，配深墨色是 5.9:1。 */
-    --accent:#4d8dfb;
-    --accent-hover:#6ea6ff;
-    --accent-subtle:#16243c;
-    --accent-ring:rgba(77,141,251,.24);
-
-    --ok:#3ddc97;      --ok-bg:#0f2a21;
-    --warn:#e3b45c;    --warn-bg:#2b2416;
-    --err:#ff6b7a;     --err-bg:#33161b;
-    --neutral:#93a3b8; --neutral-bg:#1b232e;
-
-    --nav-bg:rgba(13,17,23,.82);
-    --field-bg:#151c26;
-    --surface-2:#1a222d;
-    --surface-3:#1e2733;
-    --line-soft:#202834;
-    --bar-bg:#26303d;
-    --code-bg:rgba(255,255,255,.07);
-    --overlay:rgba(0,0,0,.62);
-    --check-border:#4b586a;
-    --on-accent:#0b1220;
-    --accent-path:#8fb4ff;
-    --glow:rgba(77,141,251,.09);
-
-    --banner-info-line:#24395e; --banner-info-text:#a8c8ff;
-    --banner-ok-line:#1d4436;   --banner-ok-text:#68e0b3;
-    --banner-warn-line:#463a1f; --banner-warn-text:#ecc87e;
-    --banner-err-line:#4d252c;  --banner-err-text:#ff9aa6;
-
-    --c-blue:#6ba1ff; --c-emerald:#3ddc97;
-    --c-purple:#a78bfa; --c-amber:#e0b155;
-
-    --shadow-1:0 1px 2px rgba(0,0,0,.45);
-    --shadow-2:0 1px 2px rgba(0,0,0,.45), 0 10px 24px -12px rgba(0,0,0,.65);
-    --shadow-3:0 10px 34px -12px rgba(0,0,0,.8);
-  }
-
-  /* 兜底：跟随系统。仅在 <head> 里那段同步脚本没能落上 data-theme 时才生效
-     （脚本被 CSP 拦掉 / 禁用了 JS 的极端情况），免得系统是深色却给一屏白。
-     值与上面那份相同 —— 有意的重复，因为 CSS 没法从一个选择器继承到另一个。 */
-  @media (prefers-color-scheme:dark){
-    :root:not([data-theme]){
-      color-scheme:dark;
-      --bg:#0d1117; --bg-card:#151c26; --border:#252e3b; --border-hover:#3a4655;
-      --text-primary:#e7eef8; --text-secondary:#a3b1c4; --text-tertiary:#7e8fa4;
-      --accent:#4d8dfb; --accent-hover:#6ea6ff; --accent-subtle:#16243c;
-      --accent-ring:rgba(77,141,251,.24);
-      --ok:#3ddc97; --ok-bg:#0f2a21; --warn:#e3b45c; --warn-bg:#2b2416;
-      --err:#ff6b7a; --err-bg:#33161b; --neutral:#93a3b8; --neutral-bg:#1b232e;
-      --nav-bg:rgba(13,17,23,.82); --field-bg:#151c26; --surface-2:#1a222d;
-      --surface-3:#1e2733; --line-soft:#202834; --bar-bg:#26303d;
-      --code-bg:rgba(255,255,255,.07); --overlay:rgba(0,0,0,.62);
-      --check-border:#4b586a; --on-accent:#0b1220; --accent-path:#8fb4ff;
-      --glow:rgba(77,141,251,.09);
-      --banner-info-line:#24395e; --banner-info-text:#a8c8ff;
-      --banner-ok-line:#1d4436;   --banner-ok-text:#68e0b3;
-      --banner-warn-line:#463a1f; --banner-warn-text:#ecc87e;
-      --banner-err-line:#4d252c;  --banner-err-text:#ff9aa6;
-      --c-blue:#6ba1ff; --c-emerald:#3ddc97; --c-purple:#a78bfa; --c-amber:#e0b155;
-      --shadow-1:0 1px 2px rgba(0,0,0,.45);
-      --shadow-2:0 1px 2px rgba(0,0,0,.45), 0 10px 24px -12px rgba(0,0,0,.65);
-      --shadow-3:0 10px 34px -12px rgba(0,0,0,.8);
-    }
-  }
-
-  *{box-sizing:border-box}
-  html,body{margin:0;padding:0}
+  *,*::before,*::after{box-sizing:border-box;margin:0}
+  html,body{margin:0;padding:0;height:100%}
+  html{font-size:16px}
   body{
-    background:var(--bg);
-    color:var(--text-primary);
-    font-family:var(--font-sans);
-    font-size:var(--fs-sm);
-    line-height:var(--lh-base);
+    background:var(--surface-0);
+    color:var(--text);
+    font-family:var(--system);
+    font-size:var(--fs-base);
+    font-weight:var(--fw);
+    line-height:var(--lh);
     -webkit-font-smoothing:antialiased;
-    /* 纵向 flex 只为了一件事：正文不足一屏时，把页脚压到视口底部。
-       不这么做 body 虽然 min-height:100vh，页脚仍会悬在半空、下面留一条白。 */
-    display:flex;
-    flex-direction:column;
-    min-height:100vh;
-    min-height:100dvh;
-    position:relative;
+    -moz-osx-font-smoothing:grayscale;
+    text-rendering:optimizeLegibility;
+    letter-spacing:-.011em;
   }
+  .wrap{max-width:980px;margin:0 auto;padding:clamp(24px,4vw,32px) clamp(20px,4vw,32px) 48px}
 
-  /* 顶部一层极淡的氛围光，只做气氛、不抢视线 */
-  body::before{
-    content:"";
-    position:fixed;
-    top:0;left:0;right:0;
-    height:320px;
-    background:radial-gradient(62% 210px at 50% 0, var(--glow), rgba(247,249,252,0) 72%);
-    pointer-events:none;
-    z-index:0;
-  }
+  /* ================= 页头 ================= */
+  header{margin-bottom:0}
 
-  /* ── 图标：icons8 ios 线性图标矢量化后作 mask，颜色一律跟随 currentColor ── */
-  .ic{
-    display:inline-block;
-    flex:0 0 auto;
-    background-color:currentColor;
-    -webkit-mask-size:contain;         mask-size:contain;
-    -webkit-mask-repeat:no-repeat;     mask-repeat:no-repeat;
-    -webkit-mask-position:center;      mask-position:center;
-    /* URI 只存一份在 --m 里，前缀属性与标准属性各引用一次。
-       同一条 URI 写两遍等于把图标体积翻倍（改前 17 个图标要多花 16.6 KB）。 */
-    -webkit-mask-image:var(--m);       mask-image:var(--m);
-  }
-  /* 上下文配色 */
-  .panel-title .ic{color:var(--text-tertiary)}
-  .ic-play{color:currentColor}
-
-  /* ── 顶部导航：只留品牌 + 状态，让首屏尽快到表单 ── */
-  .top-nav{
-    position:sticky;
-    top:0;
-    z-index:40;
-    background:var(--nav-bg);
-    backdrop-filter:blur(14px) saturate(180%);
-    -webkit-backdrop-filter:blur(14px) saturate(180%);
-    border-bottom:1px solid var(--border);
-  }
-  .nav-inner{
-    max-width:1020px;
-    margin:0 auto;
-    padding:11px 24px;
-    display:flex;
-    align-items:center;
-  }
-  .nav-brand{
-    display:flex;
-    align-items:center;
-    gap:9px;
-    min-width:0;
-    text-decoration:none;
-    color:inherit;
-  }
-  .nav-title{
-    font-size:var(--fs-md);
-    font-weight:700;
-    letter-spacing:-.015em;
-    white-space:nowrap;
-  }
-  .nav-sep{
-    color:var(--border-hover);
-    font-weight:400;
-  }
-  .nav-sub{
-    font-size:var(--fs-sm);
-    color:var(--text-tertiary);
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-
-  /* ── 主题切换：太阳 / 月亮两态，点一下在浅↔深之间换 ──
-     两张 mask 同时躺在按钮里，靠 html[data-theme] 决定露哪一张：
-     这样每条 mask 只写一次，切换时也不用重建 DOM，图标不会闪。 */
-  .theme-btn{
-    margin-left:auto;
-    flex:0 0 auto;
-    width:30px;
-    height:30px;
-    padding:0;
-    display:inline-grid;
-    place-items:center;
-    /* 只留图标本身：外面不再套一圈描边 + 圆底（原来那圈） */
-    border:0;
-    background:none;
-    color:var(--text-secondary);
-    cursor:pointer;
-    transition:color .15s;
-  }
-  .theme-btn:hover{color:var(--text-primary)}
-  .theme-btn:focus-visible{outline:2px solid var(--accent);outline-offset:2px}
-  /* 两张 mask 叠在同一格，靠 html[data-theme] 决定露哪张；切换时「转着换过去」而不是硬切
-     —— 非当前态缩到 0.45 并转 -25°，当前态回到 1 / 0°，两个方向互补所以看不出跳变。 */
-  .theme-btn .ic{grid-area:1/1;opacity:0;transform:scale(.45) rotate(-25deg);
-    transition:opacity .18s ease,transform .26s cubic-bezier(.22,.61,.36,1)}
-  html[data-theme="light"] .theme-btn .ic-t-sun,
-  html[data-theme="dark"]  .theme-btn .ic-t-moon{opacity:1;transform:scale(1) rotate(0)}
-  /* ── 主内容区 ── */
-  .wrap{
-    max-width:1020px;
-    margin:0 auto;
-    /* 底部内边距只留一点点：页脚已经吸底，留 72px 会在页脚下方又撑出一条白 */
-    padding:0 24px 24px;
-    position:relative;
-    z-index:1;
-    /* 作为 flex 项撑满剩余高度，footer 的 margin-top:auto 才有东西可推 */
-    flex:1 0 auto;
-    width:100%;
-    align-self:center;
-    display:flex;
-    flex-direction:column;
-  }
-
-  /* ── 页头：只留一行标题，就此打住 ── */
-  .page-head{padding:32px 2px 4px}
-  .page-title{
-    font-size:var(--fs-lg);
-    font-weight:700;
-    letter-spacing:-.02em;
-    line-height:var(--lh-tight);
-    margin:0;
-  }
-
-  /* ── 面板 ── */
+  /* ================= 面板 ================= */
   .panel{
-    background:var(--bg-card);
+    background:var(--surface-1);
     border:1px solid var(--border);
-    border-radius:var(--radius-lg);
-    box-shadow:var(--shadow-1);
-    padding:22px 24px;
-    margin-top:16px;
-  }
-  .panel-head{
-    display:flex;
-    align-items:center;
-    justify-content:space-between;
-    gap:12px;
-    flex-wrap:wrap;
-    margin-bottom:16px;
+    border-radius:var(--r-xl);
+    padding:clamp(28px,4vw,40px);
+    margin-top:var(--space-lg);
+    box-shadow:var(--shadow);
   }
   .panel-title{
+    font-size:var(--fs-xl);
+    font-weight:var(--fw-semi);
+    margin:0 0 var(--space-xl);
     display:flex;
     align-items:center;
-    gap:8px;
-    font-size:var(--fs-md);
-    font-weight:700;
-    letter-spacing:-.01em;
-    color:var(--text-primary);
-    margin:0 0 16px;
+    gap:var(--space-md);
+    letter-spacing:-.02em;
+    color:var(--text);
   }
-  .panel-head .panel-title{margin-bottom:0}
-  .panel-note{
-    font-size:var(--fs-xs);
-    color:var(--text-tertiary);
-    font-weight:500;
+  .panel-title .step{
+    width:32px;
+    height:32px;
+    border-radius:50%;
+    background:var(--accent);
+    color:var(--on-accent);
+    font-size:var(--fs-base);
+    font-weight:var(--fw-bold);
+    display:inline-flex;
+    align-items:center;
+    justify-content:center;
+    flex:0 0 auto;
   }
 
-  /* ── 表单 ── */
-  label.fld{display:block;margin-bottom:15px}
+  /* ================= 表单 ================= */
+  label.fld{display:block;margin-bottom:var(--space-lg)}
   label.fld > span{
     display:block;
-    font-size:var(--fs-xs);
-    font-weight:600;
-    color:var(--text-secondary);
-    margin-bottom:6px;
-    letter-spacing:.02em;
-  }
-  /* 高级选项里的补充说明，比正式标签轻一档 */
-  .fld-note{
-    font-size:var(--fs-xs);
-    line-height:1.6;
-    color:var(--text-tertiary);
-    margin:-3px 0 12px;
+    font-size:var(--fs-base);
+    font-weight:var(--fw-semi);
+    color:var(--text);
+    margin-bottom:var(--space-sm);
+    letter-spacing:-.01em;
   }
   input[type=text],input[type=password],input[type=number],textarea,select{
     width:100%;
-    padding:10px 13px;
-    border:1px solid var(--border);
-    border-radius:var(--radius-md);
+    padding:11px 14px;
+    border:1px solid var(--border-strong);
+    border-radius:var(--r-md);
     background:var(--field-bg);
-    color:var(--text-primary);
-    font-size:var(--fs-sm);
+    color:var(--text);
+    font-size:var(--fs-base);
     font-family:inherit;
-    line-height:1.4;
-    transition:border-color .15s ease, box-shadow .15s ease;
+    line-height:var(--lh-tight);
+    transition:all .2s ease;
+    outline:none;
+  }
+  input:hover,textarea:hover,select:hover{
+    border-color:var(--text-ghost);
   }
   input:focus,textarea:focus,select:focus{
-    outline:none;
     border-color:var(--accent);
-    box-shadow:0 0 0 3px var(--accent-ring);
+    box-shadow:0 0 0 4px var(--accent-glow);
   }
   textarea{
-    font-family:var(--font-mono);
+    font-family:var(--mono);
     font-size:var(--fs-sm);
     resize:vertical;
-    min-height:78px;
-    line-height:1.5;
+    min-height:120px;
+    line-height:var(--lh-loose);
   }
-  .mono{font-family:var(--font-mono)}
+  .mono{font-family:var(--mono)}
 
-  .row{display:flex;gap:14px}
-  .row > *{flex:1;min-width:0}
-  /* 「每格采样次数」这种单个小数字不需要跟旁边的字段一样宽 */
-  .row > .fld-narrow{flex:0 0 200px}
+  /* 并排字段组：间距完全由 grid gap 控制。
+     手机端堆叠时若沿用 label.fld 的 32px 下外边距，会与 gap 叠加成 52px，故在组内归零，
+     组的整体下间距用 margin-bottom 补回，保证与勾选框之间仍是 --space-lg。 */
+  .row{
+    display:grid;
+    grid-template-columns:repeat(auto-fit,minmax(200px,1fr));
+    gap:var(--space-md);
+    margin-bottom:var(--space-lg);
+  }
+  .row > .fld{margin-bottom:0}
+
+  .hint{
+    font-size:var(--fs-sm);
+    color:var(--text-faint);
+    margin-top:var(--space-sm);
+    line-height:var(--lh);
+  }
+  .hint.mid{margin-top:var(--space-md)}
+  .hint.blank{padding:var(--space-lg) 0}
+  .hint code{
+    font-family:var(--mono);
+    background:var(--surface-3);
+    color:var(--accent);
+    padding:2px 6px;
+    border-radius:var(--r-xs);
+    font-weight:var(--fw-medium);
+  }
 
   .key-wrap{position:relative}
-  .key-wrap input{padding-right:62px}
+  .key-wrap input{padding-right:72px}
   .key-toggle{
     position:absolute;
     right:8px;
     top:50%;
     transform:translateY(-50%);
-    border:1px solid var(--border);
-    background:var(--bg);
-    color:var(--text-secondary);
-    font-size:var(--fs-xs);
-    font-weight:600;
+    border:none;
+    background:transparent;
+    color:var(--accent);
+    font-size:var(--fs-sm);
+    font-weight:var(--fw-medium);
     cursor:pointer;
-    padding:4px 10px;
-    border-radius:var(--radius-full);
+    padding:6px 10px;
+    border-radius:var(--r-sm);
     font-family:inherit;
-    transition:all .15s;
+    transition:all .2s;
   }
-  .key-toggle:hover{background:var(--field-bg);color:var(--text-primary);border-color:var(--border-hover)}
+  .key-toggle:hover{
+    background:var(--accent-soft);
+  }
 
-  /* ── 协议选择 ── */
+  /* ================= 协议选择 ================= */
   .proto-head{
     display:flex;
     align-items:center;
     justify-content:space-between;
-    gap:8px;
-    margin:2px 0 10px;
+    gap:var(--space-md);
+    margin-bottom:var(--space-md);
+    flex-wrap:wrap;
   }
   .proto-head .lbl{
-    font-size:var(--fs-xs);
-    font-weight:600;
-    color:var(--text-secondary);
-    letter-spacing:.02em;
+    font-size:var(--fs-base);
+    font-weight:var(--fw-semi);
+    color:var(--text);
   }
-  .proto-tools{display:flex;gap:6px}
+  .proto-tools{display:flex;gap:var(--space-sm)}
   .link-btn{
-    border:1px solid var(--border);
-    background:var(--field-bg);
-    color:var(--text-secondary);
-    font-size:var(--fs-xs);
-    font-weight:500;
-    padding:3px 10px;
-    border-radius:var(--radius-full);
+    border:1px solid var(--border-strong);
+    background:var(--surface-1);
+    color:var(--text-dim);
+    font-size:var(--fs-sm);
+    font-weight:var(--fw-medium);
+    padding:6px 14px;
+    border-radius:var(--r-pill);
     cursor:pointer;
     font-family:inherit;
-    transition:all .15s;
+    transition:all .2s ease;
   }
-  .link-btn:hover{background:var(--neutral-bg);color:var(--text-primary);border-color:var(--border-hover)}
+  .link-btn:hover{
+    background:var(--surface-3);
+    color:var(--text);
+    border-color:var(--border-strong);
+  }
 
   .proto-grid{
     display:grid;
-    /* 268px 是量出来的下限：再窄，「协议名 + 标签」同一行就装不下
-       （900px 视口下 3 列会把「Anthropic Messages」截成「Anthropic Messag…」），
-       长路径也要多折一行；再宽则 1024px 以上会从 3 列掉到 2 列、白白变高 */
-    grid-template-columns:repeat(auto-fill,minmax(268px,1fr));
-    gap:9px;
+    grid-template-columns:repeat(auto-fill,minmax(280px,1fr));
+    gap:var(--space-md);
   }
   .proto{
     border:1px solid var(--border);
-    border-radius:var(--radius-md);
-    padding:10px 12px;
+    border-radius:var(--r-lg);
+    padding:var(--space-md);
     cursor:pointer;
     user-select:none;
-    background:var(--bg-card);
-    min-width:0;               /* 关键：让网格项不被内部 nowrap 路径撑破 */
-    transition:border-color .16s, box-shadow .16s, background .16s;
+    background:var(--surface-1);
+    transition:all .2s ease;
   }
-  .proto:hover{border-color:var(--border-hover);box-shadow:var(--shadow-1)}
+  .proto:hover{
+    border-color:var(--border-strong);
+    box-shadow:var(--shadow-sm);
+    transform:translateY(-1px);
+  }
   .proto.on{
     border-color:var(--accent);
-    background:var(--accent-subtle);
-    box-shadow:0 0 0 1px var(--accent);
+    background:var(--accent-soft);
   }
-  .proto .p-top{display:flex;align-items:center;gap:8px}
+  .proto .p-top{display:flex;align-items:flex-start;gap:var(--space-sm)}
   .proto .p-box{
-    width:15px;height:15px;
-    border-radius:4px;
-    border:1.5px solid var(--check-border);
+    width:20px;
+    height:20px;
+    border-radius:var(--r-xs);
+    border:1.5px solid var(--border-strong);
     flex:0 0 auto;
+    margin-top:1px;
     display:flex;
     align-items:center;
     justify-content:center;
-    color:var(--on-accent);
-    transition:all .15s;
-    background:var(--field-bg);
-  }
-  .proto.on .p-box{background:var(--accent);border-color:var(--accent)}
-  .proto .p-name{
     font-size:var(--fs-sm);
-    font-weight:600;
-    color:var(--text-primary);
-    flex:1;
-    min-width:0;
-    white-space:nowrap;
-    overflow:hidden;
-    text-overflow:ellipsis;
-  }
-  /* 协议名与标签同占第一行（标签靠右），路径独占第二行并可按 / : 折行。
-     列宽够时这样最省高度；列窄下来时名字会先省略号，标签不会被挤掉。 */
-  .proto .p-tag{
-    font-size:var(--fs-xs);
-    line-height:1;
-    padding:3px 7px;
-    border-radius:var(--radius-full);
-    background:var(--neutral-bg);
-    color:var(--neutral);
-    font-weight:500;
-    flex:0 0 auto;
-    white-space:nowrap;
-  }
-  .proto.on .p-tag{
-    background:var(--field-bg);
     color:var(--accent);
-    font-weight:600;
-    border:1px solid var(--accent-ring);
+    line-height:1;
+    transition:all .2s;
+  }
+  .proto.on .p-box{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:var(--on-accent);
+  }
+  .proto .p-name{
+    font-size:var(--fs-base);
+    font-weight:var(--fw-semi);
+    flex:1 1 auto;
+    min-width:0;
+    overflow-wrap:break-word;
+    color:var(--text);
   }
   .proto .p-path{
-    font-family:var(--font-mono);
-    font-size:var(--fs-xs);
-    color:var(--text-tertiary);
-    min-width:0;
-    margin-top:5px;
-    /* 长路径（/v1beta/models/{model}:streamGenerateContent）必须能折行，
-       但不能拦腰断在「:streamGen / erateContent」上 —— 渲染时已在每个 / 和 : 后
-       插入 <wbr>，浏览器优先在这些位置断。break-word 只作最后的兜底。 */
-    overflow-wrap:break-word;
+    font-family:var(--mono);
+    font-size:var(--fs-sm);
+    color:var(--text-faint);
+    margin-top:var(--space-xs);
+    word-break:break-all;
+    line-height:var(--lh-tight);
   }
-  .proto.on .p-path{color:var(--accent-path)}
+  .proto .p-desc{
+    font-size:var(--fs-sm);
+    color:var(--text-dim);
+    margin-top:var(--space-xs);
+    line-height:var(--lh);
+  }
+  .proto .p-tag{
+    flex:0 0 auto;
+    margin-left:auto;
+    font-size:var(--fs-sm);
+    font-weight:var(--fw-semi);
+    padding:3px 8px;
+    border-radius:var(--r-pill);
+    background:var(--neutral-bg);
+    color:var(--neutral);
+    line-height:var(--lh-tight);
+  }
+  .proto.on .p-tag{
+    background:var(--accent);
+    color:var(--on-accent);
+  }
 
-  /* ── 按钮 ── */
+  /* ================= 按钮 ================= */
   .btn{
     display:inline-flex;
     align-items:center;
     justify-content:center;
-    gap:8px;
-    padding:9px 16px;
-    border-radius:var(--radius-md);
-    border:1px solid transparent;
-    font-size:var(--fs-sm);
-    font-weight:600;
+    gap:var(--space-sm);
+    padding:12px 24px;
+    border-radius:var(--r-pill);
+    border:none;
+    font-size:var(--fs-base);
+    font-weight:var(--fw-semi);
     font-family:inherit;
     cursor:pointer;
-    transition:background .16s ease, border-color .16s ease, box-shadow .16s ease, transform .16s ease;
+    line-height:var(--lh-tight);
+    transition:all .2s ease;
   }
   .btn-primary{
-    width:100%;
-    margin-top:14px;
-    padding:12px 22px;
-    font-size:var(--fs-md);
     background:var(--accent);
     color:var(--on-accent);
-    box-shadow:0 1px 2px rgba(37,99,235,.2), 0 10px 22px -12px rgba(37,99,235,.5);
+    width:100%;
+    margin-top:var(--space-md);
   }
   .btn-primary:hover:not(:disabled){
     background:var(--accent-hover);
-    transform:translateY(-1px);
-    box-shadow:0 2px 5px rgba(37,99,235,.22), 0 14px 28px -14px rgba(37,99,235,.55);
+    transform:scale(0.99);
   }
-  .btn-primary:active:not(:disabled){transform:translateY(0)}
-  .btn-primary:disabled{opacity:.45;cursor:not-allowed;transform:none;box-shadow:none}
+  .btn-primary:active:not(:disabled){
+    transform:scale(0.97);
+  }
+  .btn-primary:disabled{
+    opacity:.4;
+    cursor:not-allowed;
+  }
   .btn-ghost{
-    background:var(--field-bg);
-    border-color:var(--border);
-    color:var(--text-secondary);
-    padding:6px 13px;
+    background:var(--surface-1);
+    border:1px solid var(--border-strong);
+    color:var(--text);
+    padding:7px 16px;
     font-size:var(--fs-sm);
-    border-radius:var(--radius-full);
-    font-weight:500;
   }
-  .btn-ghost:hover{background:var(--neutral-bg);color:var(--text-primary);border-color:var(--border-hover)}
+  .btn-ghost:hover{
+    background:var(--surface-3);
+    border-color:var(--border-strong);
+  }
 
-  /* ── 复选框 ── */
-  .chk-group{display:flex;gap:20px;flex-wrap:wrap;margin:12px 0 4px}
+  /* 勾选框 = 协议卡片里 .p-box 的同款：同尺寸、同圆角、同描边、同蓝色填充、
+     同一个 ✓ 字形；左边界也退到卡片内容线上（卡片 1px 边框 + 20px 内边距） */
   .chk{
+    position:relative;
     display:flex;
-    align-items:center;
-    gap:7px;
-    font-size:var(--fs-sm);
-    color:var(--text-secondary);
-    cursor:pointer;
-    user-select:none;
-  }
-  .chk input{width:auto;margin:0;accent-color:var(--accent);cursor:pointer}
-
-  /* ── 高级选项 ── */
-  details.adv{
-    margin:10px 0 14px;
-    border-top:1px dashed var(--border);
-    padding-top:12px;
-  }
-  details.adv summary{
-    cursor:pointer;
-    font-size:var(--fs-xs);
-    font-weight:600;
-    color:var(--text-secondary);
-    list-style:none;
-    display:flex;
-    align-items:center;
-    gap:6px;
-    user-select:none;
-  }
-  details.adv summary::-webkit-details-marker{display:none}
-  details.adv summary::before{
-    content:"▸";
-    transition:transform .15s;
-    display:inline-block;
-    font-size:var(--fs-xs);
-    color:var(--text-tertiary);
-  }
-  details.adv[open] summary::before{transform:rotate(90deg)}
-  details.adv .inner{padding-top:14px}
-
-  /* ── 能力说明（空态时填充页面，开始测试后自动收起） ── */
-  .features-grid{
-    display:grid;
-    grid-template-columns:repeat(2,1fr);
-    gap:12px;
-    margin-top:16px;
-  }
-  .feat-card{
-    background:var(--bg-card);
-    border:1px solid var(--border);
-    border-radius:var(--radius-lg);
-    box-shadow:var(--shadow-1);
-    padding:18px 20px;
-    display:flex;
-    gap:14px;
     align-items:flex-start;
-    transition:border-color .18s ease, box-shadow .18s ease;
+    gap:var(--space-sm);
+    padding-left:calc(1px + var(--space-md));
+    margin-bottom:var(--space-md);
+    color:var(--text);
+    cursor:pointer;
+    user-select:none;
   }
-  .feat-card:hover{border-color:var(--border-hover);box-shadow:var(--shadow-2)}
-  /* 只留裸字形，不要浅色圆角底块 */
-  .feat-icon{
-    width:20px;height:20px;
+  .chk input{
+    position:absolute;
+    width:1px;
+    height:1px;
+    margin:0;
+    padding:0;
+    border:0;
+    opacity:0;
+    pointer-events:none;
+  }
+  .chk .cbox{
+    flex:0 0 auto;
+    width:20px;
+    height:20px;
+    margin-top:1px;
+    border:1.5px solid var(--border-strong);
+    border-radius:var(--r-xs);
+    background:var(--surface-1);
     display:flex;
     align-items:center;
     justify-content:center;
-    flex:0 0 auto;
-    margin-top:1px;
-  }
-  .feat-blue{color:var(--c-blue)}
-  .feat-emerald{color:var(--c-emerald)}
-  .feat-purple{color:var(--c-purple)}
-  .feat-amber{color:var(--c-amber)}
-  .feat-content{flex:1;min-width:0}
-  .feat-title{
     font-size:var(--fs-sm);
-    font-weight:700;
-    letter-spacing:-.01em;
-    color:var(--text-primary);
-    margin-bottom:3px;
+    line-height:1;
+    color:transparent;
+    transition:all .2s;
   }
-  .feat-desc{font-size:var(--fs-sm);color:var(--text-secondary);line-height:1.55}
+  .chk input:checked + .cbox{
+    background:var(--accent);
+    border-color:var(--accent);
+    color:var(--on-accent);
+  }
+  .chk input:focus-visible + .cbox{
+    box-shadow:0 0 0 4px var(--accent-glow);
+  }
+  .chk .ctxt{
+    font-size:var(--fs-base);
+    font-weight:var(--fw-semi);
+    color:var(--text);
+  }
 
-  /* ── 状态横幅 ── */
+  details.adv{
+    margin:var(--space-lg) 0 0;
+    border-top:1px solid var(--border);
+    padding-top:var(--space-md);
+  }
+  details.adv summary{
+    cursor:pointer;
+    font-size:var(--fs-base);
+    font-weight:var(--fw-semi);
+    color:var(--text);
+    list-style:none;
+    display:flex;
+    align-items:center;
+    gap:var(--space-xs);
+    transition:color .2s;
+    padding:var(--space-sm) 0;
+  }
+  details.adv summary:hover{color:var(--accent)}
+  details.adv summary::-webkit-details-marker{display:none}
+    details.adv summary::before{
+      content:"›";
+      transition:transform .2s;
+      display:inline-block;
+      font-size:var(--fs-lg);
+    color:var(--text-dim);
+    font-weight:var(--fw-bold);
+    line-height:1;
+  }
+  details.adv[open] summary::before{transform:rotate(90deg)}
+  details.adv .inner{padding-top:var(--space-md)}
+
+  /* ================= 提示条 ================= */
   .banner{
-    padding:11px 14px;
-    border-radius:var(--radius-md);
-    font-size:var(--fs-sm);
-    line-height:1.55;
-    margin-bottom:14px;
+    padding:var(--space-md) var(--space-lg);
+    border-radius:var(--r-lg);
+    font-size:var(--fs-base);
+    margin-bottom:var(--space-lg);
     border:1px solid transparent;
     display:flex;
-    gap:9px;
+    gap:var(--space-md);
     align-items:flex-start;
+    line-height:var(--lh);
   }
-  .banner .ic{margin-top:2px}
-  .banner.info{background:var(--accent-subtle);border-color:var(--banner-info-line);color:var(--banner-info-text)}
-  .banner.ok{background:var(--ok-bg);border-color:var(--banner-ok-line);color:var(--banner-ok-text)}
-  .banner.warn{background:var(--warn-bg);border-color:var(--banner-warn-line);color:var(--banner-warn-text)}
-  .banner.err{background:var(--err-bg);border-color:var(--banner-err-line);color:var(--banner-err-text)}
+  .banner .ico{
+    flex:0 0 auto;
+    font-size:var(--fs-lg);
+    line-height:1;
+  }
+  .banner.info{
+    background:var(--accent-soft);
+    border-color:var(--accent-line);
+    color:var(--accent-hover);
+  }
+  .banner.ok{
+    background:var(--ok-bg);
+    border-color:var(--ok-line);
+    color:var(--ok-dim);
+  }
+  .banner.warn{
+    background:var(--warn-bg);
+    border-color:var(--warn-line);
+    color:var(--warn-dim);
+  }
+  .banner.err{
+    background:var(--err-bg);
+    border-color:var(--err-line);
+    color:var(--err-dim);
+  }
   .banner code{
-    font-family:var(--font-mono);
-    font-size:var(--fs-xs);
-    background:var(--code-bg);
+    font-family:var(--mono);
+    font-size:var(--fs-sm);
+    background:var(--surface-3);
+    color:var(--accent);
     padding:2px 6px;
-    border-radius:4px;
+    border-radius:var(--r-xs);
+    font-weight:var(--fw-medium);
   }
 
-  /* ── 统计卡片 ── */
+  /* ================= 统计 ================= */
   .stat-grid{
     display:grid;
-    grid-template-columns:repeat(auto-fit,minmax(116px,1fr));
-    gap:9px;
-    margin-bottom:15px;
+    grid-template-columns:repeat(auto-fit,minmax(140px,1fr));
+    gap:var(--space-md);
+    margin-bottom:var(--space-lg);
   }
   .stat{
-    background:var(--bg-card);
+    background:var(--surface-1);
     border:1px solid var(--border);
-    border-radius:var(--radius-md);
-    padding:11px 14px;
-    box-shadow:var(--shadow-1);
+    border-radius:var(--r-lg);
+    padding:var(--space-md) var(--space-lg);
+    transition:all .2s;
+  }
+  .stat:hover{
+    border-color:var(--border-strong);
+    box-shadow:var(--shadow-sm);
   }
   .stat .k{
-    font-size:var(--fs-xs);
-    color:var(--text-tertiary);
-    font-weight:600;
-    margin-bottom:2px;
-    letter-spacing:.03em;
+    font-size:var(--fs-sm);
+    color:var(--text-faint);
+    font-weight:var(--fw-medium);
+    margin-bottom:var(--space-xs);
   }
   .stat .v{
-    font-size:var(--fs-lg);
-    font-weight:700;
-    color:var(--text-primary);
+    font-size:var(--fs-xl);
+    font-weight:var(--fw-bold);
     letter-spacing:-.02em;
-    line-height:1.2;
     font-variant-numeric:tabular-nums;
+    line-height:var(--lh-tight);
+    color:var(--text);
   }
   .stat.ok .v{color:var(--ok)}
   .stat.err .v{color:var(--err)}
 
-  /* ── 进度条 ── */
   .bar{
-    height:5px;
-    border-radius:var(--radius-full);
-    background:var(--bar-bg);
+    height:6px;
+    border-radius:var(--r-pill);
+    background:var(--surface-3);
     overflow:hidden;
-    margin:10px 0 8px;
+    margin:var(--space-md) 0 var(--space-sm);
   }
   .bar > i{
     display:block;
     height:100%;
     background:var(--accent);
     width:0;
-    border-radius:var(--radius-full);
-    transition:width .25s ease;
+    border-radius:var(--r-pill);
+    transition:width .4s ease;
   }
+
   .prog-text{
-    font-size:var(--fs-xs);
-    color:var(--text-secondary);
+    font-size:var(--fs-sm);
+    color:var(--text-dim);
     display:flex;
     justify-content:space-between;
     font-variant-numeric:tabular-nums;
   }
 
-  /* ── 矩阵表 ── */
+  /* ================= 矩阵表 ================= */
   .matrix-scroll{
     overflow-x:auto;
     border:1px solid var(--border);
-    border-radius:var(--radius-md);
-    background:var(--bg-card);
+    border-radius:var(--r-lg);
+    background:var(--surface-1);
   }
   table.matrix{
     border-collapse:separate;
@@ -754,42 +618,41 @@
     width:100%;
   }
   table.matrix th,table.matrix td{
-    padding:9px 12px;
-    border-bottom:1px solid var(--line-soft);
+    padding:12px 16px;
+    border-bottom:1px solid var(--border-soft);
     text-align:left;
     vertical-align:middle;
   }
   table.matrix thead th{
-    position:sticky;
-    top:0;
     background:var(--surface-2);
-    z-index:2;
-    font-size:var(--fs-xs);
-    font-weight:600;
-    color:var(--text-tertiary);
+    font-size:var(--fs-sm);
+    font-weight:var(--fw-semi);
+    color:var(--text-faint);
+    white-space:nowrap;
     border-bottom:1px solid var(--border);
-    letter-spacing:.02em;
+    text-transform:uppercase;
+    letter-spacing:.03em;
   }
-  /* 协议表头横排：允许折行，底部对齐，别转 90° */
   table.matrix thead th.ph{
     white-space:normal;
     vertical-align:bottom;
     line-height:var(--lh-tight);
-    min-width:98px;
   }
   table.matrix tbody tr:last-child td{border-bottom:none}
+  table.matrix tbody tr{transition:background .15s ease}
   table.matrix tbody tr:hover{background:var(--surface-2)}
   table.matrix td.mh{
     position:sticky;
     left:0;
-    background:var(--bg-card);
+    background:var(--surface-1);
     z-index:1;
-    font-family:var(--font-mono);
+    font-family:var(--mono);
     font-size:var(--fs-sm);
-    font-weight:500;
+    font-weight:var(--fw-medium);
     word-break:break-all;
-    min-width:168px;
+    min-width:200px;
     border-right:1px solid var(--border);
+    color:var(--text);
   }
   table.matrix tbody tr:hover td.mh{background:var(--surface-2)}
   table.matrix thead th.mh{
@@ -803,152 +666,250 @@
   .mcell{
     display:inline-flex;
     align-items:center;
-    gap:4px;
-    padding:3px 8px;
-    border-radius:var(--radius-full);
-    font-size:var(--fs-xs);
-    font-weight:600;
+    gap:6px;
+    padding:5px 12px;
+    border-radius:var(--r-pill);
+    font-size:var(--fs-sm);
+    font-weight:var(--fw-semi);
     white-space:nowrap;
     cursor:pointer;
     border:1px solid transparent;
+    line-height:var(--lh-tight);
+    transition:all .15s ease;
   }
-  .mcell.plain{background:transparent;color:var(--text-tertiary);cursor:default}
-  .mcell.ok{background:var(--ok-bg);color:var(--ok)}
-  .mcell.warn{background:var(--warn-bg);color:var(--warn)}
-  .mcell.err{background:var(--err-bg);color:var(--err)}
-  .mcell.neutral{background:var(--neutral-bg);color:var(--neutral)}
-  .mcell .ms{font-weight:400;opacity:.8;font-variant-numeric:tabular-nums}
-  /* 测速档的吐字速度：跟在延迟后面，比延迟轻一档 */
-  .mcell .cps{font-weight:400;opacity:.7;font-variant-numeric:tabular-nums}
-  /* 重试标记：提示这一格的延迟是「重试之后」才拿到的，鼠标悬停看首次尝试的代价 */
-  .mcell .rt{margin-left:3px;font-weight:700;opacity:.7;cursor:help}
+  .mcell.plain{
+    background:transparent;
+    color:var(--text-ghost);
+    cursor:default;
+  }
+  .mcell.ok{
+    background:var(--ok-bg);
+    color:var(--ok-dim);
+    border-color:var(--ok-line);
+  }
+  .mcell.ok:hover{
+    border-color:var(--ok);
+    box-shadow:0 2px 8px var(--ok-line);
+  }
+  .mcell.warn{
+    background:var(--warn-bg);
+    color:var(--warn-dim);
+    border-color:var(--warn-line);
+  }
+  .mcell.warn:hover{
+    border-color:var(--warn);
+    box-shadow:0 2px 8px var(--warn-line);
+  }
+  .mcell.err{
+    background:var(--err-bg);
+    color:var(--err-dim);
+    border-color:var(--err-line);
+  }
+  .mcell.err:hover{
+    border-color:var(--err);
+    box-shadow:0 2px 8px var(--err-line);
+  }
+  .mcell.neutral{
+    background:var(--neutral-bg);
+    color:var(--neutral);
+    border-color:var(--neutral-line);
+  }
+  .mcell.neutral:hover{
+    border-color:var(--neutral);
+  }
+  .mcell .ms{
+    font-weight:var(--fw);
+    opacity:.7;
+    font-variant-numeric:tabular-nums;
+  }
 
   .declared{
-    font-size:var(--fs-xs);
-    color:var(--text-tertiary);
-    font-family:var(--font-mono);
+    font-size:var(--fs-sm);
+    color:var(--text-faint);
+    font-family:var(--mono);
     white-space:nowrap;
+    line-height:var(--lh-tight);
   }
-  .declared.mismatch{color:var(--warn);font-weight:600}
+  .declared.mismatch{
+    color:var(--warn);
+    font-weight:var(--fw-semi);
+  }
 
   .legend{
     display:flex;
-    gap:12px;
+    gap:var(--space-lg);
     flex-wrap:wrap;
-    font-size:var(--fs-xs);
-    color:var(--text-secondary);
-  }
-  .legend span{display:inline-flex;align-items:center;gap:5px}
-  .legend i{width:7px;height:7px;border-radius:50%;display:inline-block;flex:0 0 auto}
-
-  /* ── 报告 ── */
-  .report h3{
     font-size:var(--fs-sm);
-    font-weight:700;
-    margin:18px 0 8px;
-    letter-spacing:-.01em;
-    color:var(--text-primary);
+    color:var(--text-dim);
+    margin:var(--space-md) 0 var(--space-xs);
+  }
+  .legend span{
+    display:inline-flex;
+    align-items:center;
+    gap:6px;
+  }
+  .legend i{
+    width:10px;
+    height:10px;
+    border-radius:50%;
+    display:inline-block;
+  }
+
+  /* ================= 报告 ================= */
+  .report h3{
+    font-size:var(--fs-lg);
+    font-weight:var(--fw-semi);
+    margin:var(--space-xl) 0 var(--space-md);
+    letter-spacing:-.015em;
+    color:var(--text);
   }
   .report h3:first-child{margin-top:0}
-  .report ul{margin:4px 0;padding-left:18px}
+  .report ul{margin:var(--space-sm) 0;padding-left:var(--space-xl)}
   .report li{
-    margin-bottom:6px;
-    font-size:var(--fs-sm);
-    color:var(--text-secondary);
-    line-height:var(--lh-base);
+    margin-bottom:var(--space-sm);
+    font-size:var(--fs-base);
+    color:var(--text-dim);
+    line-height:var(--lh);
   }
-  .report li b{color:var(--text-primary)}
+  .report li b{color:var(--text);font-weight:var(--fw-semi)}
   .report code{
-    font-family:var(--font-mono);
-    font-size:var(--fs-xs);
-    background:var(--neutral-bg);
-    color:var(--text-primary);
+    font-family:var(--mono);
+    font-size:var(--fs-sm);
+    background:var(--surface-3);
+    color:var(--accent);
     padding:2px 6px;
-    border-radius:4px;
+    border-radius:var(--r-xs);
+    font-weight:var(--fw-medium);
   }
 
-  .rate-list{display:flex;flex-direction:column;gap:8px;margin:6px 0 0}
-  .rate-row{display:flex;align-items:center;gap:10px;font-size:var(--fs-sm)}
+  .rate-list{
+    display:flex;
+    flex-direction:column;
+    gap:var(--space-sm);
+    margin:var(--space-sm) 0 0;
+  }
+  .rate-row{
+    display:flex;
+    align-items:center;
+    gap:var(--space-md);
+    font-size:var(--fs-sm);
+  }
   .rate-row .rn{
-    width:152px;
+    width:180px;
     flex:0 0 auto;
-    font-family:var(--font-mono);
-    font-size:var(--fs-xs);
-    overflow:hidden;
-    text-overflow:ellipsis;
-    white-space:nowrap;
+    font-family:var(--mono);
+    font-size:var(--fs-sm);
+    color:var(--text);
   }
   .rate-row .rb{
     flex:1;
-    height:5px;
-    border-radius:var(--radius-full);
-    background:var(--bar-bg);
+    height:6px;
+    border-radius:var(--r-pill);
+    background:var(--surface-3);
     overflow:hidden;
-    min-width:60px;
+    min-width:80px;
   }
-  .rate-row .rb > i{display:block;height:100%;border-radius:var(--radius-full)}
+  .rate-row .rb > i{
+    display:block;
+    height:100%;
+    border-radius:var(--r-pill);
+    transition:width .4s ease;
+  }
   .rate-row .rv{
-    width:74px;
+    width:100px;
     text-align:right;
     flex:0 0 auto;
     font-variant-numeric:tabular-nums;
-    color:var(--text-secondary);
-    font-size:var(--fs-xs);
-    font-weight:600;
+    color:var(--text-dim);
+    font-size:var(--fs-sm);
     white-space:nowrap;
   }
 
-  table.plain{width:100%;border-collapse:collapse;font-size:var(--fs-sm)}
+  table.plain{
+    width:100%;
+    border-collapse:collapse;
+    font-size:var(--fs-sm);
+    border:1px solid var(--border);
+    border-radius:var(--r-lg);
+    overflow:hidden;
+  }
   table.plain th{
     text-align:left;
-    font-size:var(--fs-xs);
-    font-weight:600;
-    color:var(--text-tertiary);
-    padding:8px 12px;
+    font-size:var(--fs-sm);
+    font-weight:var(--fw-semi);
+    color:var(--text-faint);
+    padding:10px 14px;
     border-bottom:1px solid var(--border);
     white-space:nowrap;
     background:var(--surface-2);
-    letter-spacing:.02em;
+    text-transform:uppercase;
+    letter-spacing:.03em;
   }
-  table.plain td{padding:9px 12px;border-bottom:1px solid var(--line-soft);vertical-align:top}
+  table.plain td{
+    padding:10px 14px;
+    border-bottom:1px solid var(--border-soft);
+    vertical-align:top;
+  }
   table.plain tr:last-child td{border-bottom:none}
-  table.plain td.num{font-variant-numeric:tabular-nums;white-space:nowrap;color:var(--text-secondary)}
+  table.plain tbody tr{transition:background .15s ease}
+  table.plain tbody tr:hover{background:var(--surface-2)}
+  table.plain td.num{
+    font-variant-numeric:tabular-nums;
+    white-space:nowrap;
+    color:var(--text-dim);
+  }
+  table.plain td.lb{
+    color:var(--text-faint);
+    width:120px;
+  }
 
   .badge{
     display:inline-flex;
     align-items:center;
-    gap:3px;
-    padding:2px 8px;
-    border-radius:var(--radius-full);
-    font-size:var(--fs-xs);
-    font-weight:600;
+    gap:4px;
+    padding:4px 10px;
+    border-radius:var(--r-pill);
+    font-size:var(--fs-sm);
+    font-weight:var(--fw-semi);
     white-space:nowrap;
+    line-height:var(--lh-tight);
+    border:1px solid transparent;
   }
-  .badge.ok{background:var(--ok-bg);color:var(--ok)}
-  .badge.err{background:var(--err-bg);color:var(--err)}
-  .badge.warn{background:var(--warn-bg);color:var(--warn)}
-  .badge.neutral{background:var(--neutral-bg);color:var(--neutral)}
-  .badge.info{background:var(--accent-subtle);color:var(--accent)}
+  .badge.ok{background:var(--ok-bg);color:var(--ok-dim);border-color:var(--ok-line)}
+  .badge.err{background:var(--err-bg);color:var(--err-dim);border-color:var(--err-line)}
+  .badge.warn{background:var(--warn-bg);color:var(--warn-dim);border-color:var(--warn-line)}
+  .badge.neutral{background:var(--neutral-bg);color:var(--neutral);border-color:var(--neutral-line)}
+  .badge.info{background:var(--accent-soft);color:var(--accent);border-color:var(--accent-line)}
 
   .model-name{
-    font-family:var(--font-mono);
+    font-family:var(--mono);
     font-size:var(--fs-sm);
-    font-weight:500;
+    font-weight:var(--fw-medium);
     word-break:break-all;
+    color:var(--text);
   }
-  .note{font-size:var(--fs-sm);color:var(--text-tertiary);word-break:break-word}
+  .note{
+    font-size:var(--fs-sm);
+    color:var(--text-faint);
+    word-break:break-word;
+  }
   .note.bad{color:var(--err)}
 
   .actions{
     display:flex;
-    gap:8px;
+    gap:var(--space-sm);
     flex-wrap:wrap;
-    margin-top:16px;
-    padding-top:14px;
+    margin-top:var(--space-lg);
+    padding-top:var(--space-lg);
     border-top:1px solid var(--border);
   }
+  .actions.bare{
+    border-top:none;
+    padding-top:var(--space-lg);
+    margin-top:var(--space-sm);
+  }
 
-  /* ── 弹窗 ── */
+  /* ================= 弹层 ================= */
   .modal{
     position:fixed;
     inset:0;
@@ -956,294 +917,236 @@
     display:none;
     align-items:center;
     justify-content:center;
-    padding:20px;
+    padding:var(--space-lg);
     z-index:50;
-    backdrop-filter:blur(6px);
-    -webkit-backdrop-filter:blur(6px);
+    animation:fadeIn .25s ease;
   }
   .modal.on{display:flex}
   .modal .box{
-    background:var(--bg-card);
+    background:var(--surface-1);
     border:1px solid var(--border);
-    border-radius:var(--radius-lg);
-    padding:22px 24px;
-    max-width:540px;
+    border-radius:var(--r-xl);
+    padding:var(--space-xl);
+    max-width:680px;
     width:100%;
-    box-shadow:var(--shadow-3);
-    max-height:80vh;
+    box-shadow:var(--shadow-xl);
+    max-height:85vh;
     overflow:auto;
+    animation:slideUp .3s ease;
   }
+  @keyframes fadeIn{from{opacity:0}to{opacity:1}}
+  @keyframes slideUp{from{transform:translateY(16px);opacity:0}to{transform:translateY(0);opacity:1}}
   .modal h4{
-    margin:0 0 14px;
-    font-size:var(--fs-md);
-    font-weight:700;
-    letter-spacing:-.01em;
-    color:var(--text-primary);
+    margin:0 0 var(--space-lg);
+    font-size:var(--fs-lg);
+    font-weight:var(--fw-semi);
+    color:var(--text);
   }
   .kv{
     display:grid;
-    grid-template-columns:84px 1fr;
-    gap:8px 12px;
+    grid-template-columns:120px 1fr;
+    gap:var(--space-sm) var(--space-lg);
     font-size:var(--fs-sm);
   }
-  .kv dt{color:var(--text-tertiary);font-weight:600}
-  .kv dd{margin:0;word-break:break-word}
+  .kv dt{
+    color:var(--text-faint);
+    font-weight:var(--fw-semi);
+  }
+  .kv dd{
+    margin:0;
+    word-break:break-word;
+    color:var(--text-dim);
+  }
 
   .dots::after{content:"";animation:dots 1.2s steps(4,end) infinite}
   @keyframes dots{0%{content:""}25%{content:"."}50%{content:".."}75%{content:"..."}}
 
-  .hint{font-size:var(--fs-sm);color:var(--text-tertiary);text-align:center;padding:20px}
-
-  /* ── 页脚：免责声明 + 版权 ── */
   footer{
-    /* auto = 内容不足一屏时把页脚顶到视口底部（这就是「吸底」）；
-       代价是内容超过一屏时 auto 解析成 0，原本那 40px 间距会消失，
-       所以间距与分隔线改由 ::before 承担，两种情况都在。 */
-    margin-top:auto;
+    margin-top:var(--space-xl);
+    padding-top:var(--space-lg);
+    font-size:var(--fs-sm);
+    color:var(--text-faint);
     text-align:center;
-    line-height:1.65;
-  }
-  footer::before{
-    content:"";
-    display:block;
-    margin-top:40px;     /* 与上一区块的最小间距（原 footer 的 margin-top） */
-    margin-bottom:16px;  /* 分隔线与正文的间距（原 footer 的 padding-top） */
     border-top:1px solid var(--border);
   }
-  .foot-disc{
-    max-width:680px;
-    margin:0 auto 11px;
-    font-size:var(--fs-sm);
-    color:var(--text-tertiary);
-  }
-  .foot-disc b{color:var(--text-secondary);font-weight:600;white-space:nowrap}
-  .foot-copy{
-    margin:0;
-    font-size:var(--fs-xs);
-    color:var(--text-tertiary);
+
+  /* ============================================================================
+     深色模式：完全跟随系统，没有开关（改系统外观即可，无需刷新以外的操作）。
+     只覆盖颜色令牌，不碰布局；未在这里列出的令牌沿用上面的浅色值。
+     深色的层次逻辑与浅色同构 —— 浅色是「越高层越白」，深色就是「越高层越亮」，
+     所以 --surface-0 → 1 → 2 → 3 在深色下是一条由暗到亮的灰阶。
+     用 screen 限定是为了让 @media print 走浅色，避免深色系统下打印出灰底浅字。
+     ============================================================================ */
+  @media screen and (prefers-color-scheme:dark){
+    :root{
+      /* 表面层：页面底 → 面板 → 表头/悬停 → 代码块/进度槽 */
+      --surface-0:#101013;
+      --surface-1:#1c1c1f;
+      --surface-2:#26262a;
+      --surface-3:#313137;
+      --field-bg:#26262a;          /* 比面板亮一档，输入框才看得出是个「框」 */
+      --overlay:rgba(0,0,0,.62);   /* 深色下遮罩要更重才有「压住」的感觉 */
+
+      /* 强调色：iOS 深色系统蓝；悬停变为提亮（浅色下是加深） */
+      --accent:#0a84ff;
+      --accent-hover:#409cff;
+      --accent-deep:#409cff;
+      --accent-glow:rgba(10,132,255,.35);
+      --accent-soft:rgba(10,132,255,.16);
+
+      /* 文本：深底上整体提亮，保持与浅色同等的对比层级 */
+      --text:#f5f5f7;
+      --text-dim:#b4b4bd;
+      --text-faint:#8e8e96;
+      --text-ghost:#4c4c53;        /* 输入框悬停描边 / 「协议不支持」的空心格 */
+
+      /* 状态色：深色下用更亮的一档，否则深底上的绿/橙/红会发闷 */
+      --ok:#30d158;
+      --ok-dim:#3ddc6b;
+      --ok-bg:rgba(48,209,88,.16);
+      --warn:#ff9f0a;
+      --warn-dim:#ffb340;
+      --warn-bg:rgba(255,159,10,.16);
+      --err:#ff453a;
+      --err-dim:#ff6961;
+      --err-bg:rgba(255,69,58,.16);
+      --neutral:#98989d;
+      --neutral-bg:rgba(152,152,157,.16);
+
+      /* 状态描边与悬停光晕（光晕复用描边色，见 .mcell.*:hover） */
+      --accent-line:rgba(10,132,255,.40);
+      --ok-line:rgba(48,209,88,.30);
+      --warn-line:rgba(255,159,10,.30);
+      --err-line:rgba(255,69,58,.32);
+      --neutral-line:rgba(152,152,157,.26);
+
+      /* 描边：深色下必须用白（浅色下是黑），否则边界会「消失」 */
+      --border:rgba(255,255,255,.10);
+      --border-soft:rgba(255,255,255,.06);
+      --border-strong:rgba(255,255,255,.18);
+
+      /* 阴影：深底上的黑阴影要加重，卡片才浮得起来 */
+      --shadow-xs:0 1px 2px rgba(0,0,0,.4);
+      --shadow-sm:0 2px 8px rgba(0,0,0,.45);
+      --shadow:0 4px 24px rgba(0,0,0,.5);
+      --shadow-lg:0 10px 32px rgba(0,0,0,.55);
+      --shadow-xl:0 18px 60px rgba(0,0,0,.65);
+      /* --on-accent 保持白色（深色下按钮/选中框仍是蓝底白字） */
+    }
   }
 
   @media(max-width:768px){
-    .wrap{padding:0 15px 18px}
-    .nav-inner{padding:10px 15px}
-    .row{flex-direction:column;gap:0}
+    .wrap{padding:clamp(24px,5vw,32px) clamp(16px,3vw,20px) 64px}
+    header{text-align:left}
+    .row{grid-template-columns:1fr}
     .stat-grid{grid-template-columns:repeat(2,1fr)}
-    .page-head{padding-top:22px}
-    .panel{padding:18px 16px}
-  }
-  @media(max-width:700px){
-    .features-grid{grid-template-columns:1fr}
-  }
-  @media(max-width:620px){
-    .nav-sub,.nav-sep{display:none}
+    .proto-grid{grid-template-columns:1fr}
+    .rate-row .rn{width:100px}
+    .rate-row .rv{width:70px;font-size:var(--fs-sm)}
+    .kv{grid-template-columns:90px 1fr;gap:var(--space-xs) var(--space-sm)}
   }
   @media print{
-    body{background:#fff}
-    body::before,.top-nav,.page-head{display:none}
+    :root{color-scheme:light}      /* 打印固定走浅色，不被系统深色带跑 */
+    body{background:#ffffff}
     .panel{box-shadow:none;break-inside:avoid}
-    #panel-config,#featuresOverview,.actions,.link-btn{display:none !important}
+    #panel-config,.actions,.link-btn{display:none !important}
   }
-
-  /* ── 图标资产：icons8 ios 线性图标 → 矢量化 mask（尺寸与主色在此统一） ── */
-.ic-brand{width:18px;height:18px;color:var(--accent);--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M66.6%20239.8C65.8%20232.1%2062%20178.5%2062%20175.9C62%20174.2%2061.2%20174%2054%20174L45.9%20174%2046.2%20121.8C46.5%2062.4%2046.1%2065.3%2055.2%2057.6C61.5%2052.1%2066.7%2051%2085.5%2051L101.7%2051%20102.3%2045.8C103.9%2032.5%20107.5%2031%20138.6%2031L164%2031%20164%2043.5L164%2056%20183.8%2056C209.5%2056.1%20215%2058.4%20215%2069.7C215%2079.8%20209.4%2082%20184%2082L164%2082%20164%20110L164%20138%20184.3%20138C209.3%20138%20215%20140.4%20215%20151C215%20161.6%20209.4%20164%20184.3%20164L164%20164%20164%20176.5L164%20189%20138.9%20189C122.4%20189%20113.1%20188.6%20111.7%20187.9C107.6%20185.8%20104%20181.6%20102.9%20177.8C101.1%20170.9%2097.3%20172.4%2096.6%20180.2C95.8%20187.9%2092%20241.5%2092%20244.1C92%20245.9%2091.1%20246%2079.6%20246L67.2%20246%2066.6%20239.8ZM82.4%20231.8C82.7%20229.4%2083.7%20216.9%2084.5%20204C85.3%20191.1%2086.2%20179%2086.4%20177.2L86.9%20174%2079.3%20174L71.8%20174%2072.4%20179.2C72.7%20182.1%2073.7%20195.5%2074.6%20209C76.4%20237.2%2076.2%20236%2079.4%20236C81.6%20236%2081.9%20235.5%2082.4%20231.8ZM154%20110L154%2041%20134.7%2041C121%2041%20115.1%2041.3%20114.2%2042.2C112.5%2043.9%20112.5%20176.1%20114.2%20177.8C115.1%20178.7%20121%20179%20134.7%20179L154%20179%20154%20110ZM102%20112.4L102%2060.8%2084.8%2061.2C54.8%2061.7%2056.1%2059.2%2056%20119.2L56%20164%2079%20164L102%20164%20102%20112.4ZM204.1%20152.4C207%20148.8%20203%20148%20182.8%20148L164%20148%20164%20151L164%20154%20183.4%20154C200%20154%20202.9%20153.8%20204.1%20152.4ZM204%2070.5C206.5%2067.4%20204%2067%20183.9%2067L164%2067%20164%2069.5L164%2072%20183.4%2072C199.1%2072%20203%2071.7%20204%2070.5Z%22%2F%3E%3C%2Fsvg%3E")}
-.ic-globe{width:20px;height:20px;--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M110.5%20244.9C35.1%20234%20-10.8%20151.8%2019.4%2081.8C60.6%20-13.5%20195.4%20-13.5%20236.6%2081.8C272.8%20165.6%20201.4%20258%20110.5%20244.9ZM123%20209.9L123%20184.7%20112.2%20185.3C84%20186.8%2084%20186.8%2091.5%20202.7C98.6%20217.9%20106.7%20227.7%20115.9%20232.5C123.4%20236.4%20123%20237.8%20123%20209.9ZM140.1%20232.4C149.3%20227.8%20157.2%20218.2%20164.6%20202.6C171.9%20187.2%20171.5%20187%20144.8%20185.4L133%20184.7%20133%20209.8C133%20226.5%20133.3%20235%20134%20235C134.6%20235%20137.3%20233.8%20140.1%20232.4ZM92.4%20224.8C87.2%20217.7%2081.4%20206.6%2078%20197.2C76.8%20193.8%2075.6%20191%2075.5%20191C74.4%20191%2059.2%20196.4%2054.5%20198.4L48.7%20201%2051.1%20203.7C58.7%20211.9%2073.3%20221.7%2087%20227.7C97.2%20232.2%2097.7%20231.9%2092.4%20224.8ZM174.5%20225.1C184.5%20220.3%20197.5%20211.3%20203.9%20204.6L207.3%20201%20201.9%20198.7C197.6%20196.7%20181.5%20191%20180.5%20191C180.4%20191%20179.2%20193.8%20178%20197.2C174.6%20206.6%20168.8%20217.7%20163.5%20224.9C157.8%20232.7%20158.6%20232.7%20174.5%20225.1ZM64.8%20183.6C69.3%20182.1%2072.8%20180.5%2072.5%20180.1C71.4%20178.1%2067.8%20154.9%2067.2%20144.8L66.5%20133.5%2043.2%20133.2L19.9%20133%2020.6%20139.2C22.3%20155.1%2030.4%20177.1%2038.9%20188.7L41.9%20192.9%2049.2%20189.6C53.2%20187.8%2060.2%20185.1%2064.8%20183.6ZM223.3%20178.3C230%20165.4%20236%20144.8%20236%20134.2C236%20133.2%20231%20133%20212.8%20133.2L189.5%20133.5%20188.8%20144.8C188.2%20153.6%20185.5%20172.8%20183.7%20180.1C183.6%20180.6%20187.4%20182.3%20192.1%20184C196.9%20185.6%20203.6%20188.2%20207.1%20189.8L213.5%20192.8%20216.1%20189.9C217.5%20188.3%20220.7%20183.1%20223.3%20178.3ZM108.8%20175C115.3%20174.5%20121.1%20174%20121.8%20174C122.7%20174%20123%20169.2%20123%20153.5L123%20133%2099.8%20133L76.7%20133%2077.3%20143.2C78%20154%2080%20167.6%2081.9%20174.6L83%20178.8%2090.1%20177.4C94%20176.7%20102.4%20175.6%20108.8%20175ZM174.5%20172.8C176.3%20165.9%20179%20145.4%20179%20138.4L179%20133%20156%20133L133%20133%20133%20153.4L133%20173.7%20137.6%20174.4C140.2%20174.7%20144.4%20175%20146.9%20175.1C149.4%20175.1%20156.2%20175.9%20162%20176.9C174.4%20178.9%20172.8%20179.4%20174.5%20172.8ZM67.2%20111.2C67.8%20102.4%2070.3%2084.5%2072.3%2075.9C72.4%2075.3%2068.6%2073.6%2063.9%2072C59.2%2070.5%2052.3%2067.8%2048.6%2066.1L41.9%2063.1%2038.9%2067.3C30.4%2078.9%2022.3%20100.9%2020.6%20116.8L19.9%20123%2043.2%20122.8L66.5%20122.5%2067.2%20111.2ZM123%20102.5C123%2091.2%20122.7%2082%20122.2%2082C118%2081.9%2096.6%2079.6%2090.6%2078.6L83%2077.3%2081.9%2081.4C80%2088.4%2078%20102.1%2077.3%20112.8L76.7%20123%2099.8%20123L123%20123%20123%20102.5ZM178.7%20112.8C178%20102%20176%2088.4%20174.1%2081.4L173%2077.2%20169.2%2078C165.3%2078.9%20151%2080.6%20139.8%2081.6L133%2082.2%20133%20102.6L133%20123%20156.2%20123L179.3%20123%20178.7%20112.8ZM236%20121.8C235.9%20107.4%20226.5%2080.3%20216.9%2067L214.1%2063.1%20206.8%2066.4C202.8%2068.2%20195.9%2070.9%20191.4%2072.4L183.4%2075%20185.1%2083.6C187.4%2094.8%20189%20108%20189%20115.6C189%20118.9%20189.3%20122%20189.7%20122.3C191%20123.7%20236%20123.1%20236%20121.8ZM123%2045.9L123%2020.8%20120.4%2021.4C108.9%2024.3%2088.4%2050.9%2086.8%2065C86.4%2068.2%2097.9%2070.6%20115.2%2070.9L123%2071%20123%2045.9ZM162.3%2068.9C171.6%2067.4%20171.5%2068%20164.5%2053.3C156.2%2035.7%20142.3%2021%20134%2021C133.3%2021%20133%2029.5%20133%2046.1L133%2071.3%20143.8%2070.7C149.7%2070.4%20158%2069.6%20162.3%2068.9ZM78%2058.8C81.4%2049.4%2087.2%2038.3%2092.5%2031.1C97.2%2024.8%2097.2%2024.7%2094.3%2025.4C84.3%2027.8%2060.9%2042.2%2052.1%2051.4L48.6%2055%2053.6%2057.1C58.2%2059.2%2073.7%2064.8%2075.1%2064.9C75.5%2065%2076.8%2062.2%2078%2058.8ZM195.7%2059.8C201.4%2057.6%20206.2%2055.5%20206.5%2055C208%2052.5%20187%2036.8%20173.9%2030.6C158.6%2023.4%20157.8%2023.4%20163.5%2031.1C168.8%2038.3%20174.6%2049.4%20178%2058.7C180.7%2066.1%20179.7%2066%20195.7%2059.8Z%22%2F%3E%3C%2Fsvg%3E")}
-.ic-pulse{width:20px;height:20px;--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M127%20182.5C126.3%20181.6%20122.2%20161.8%20118%20138.4C113.7%20115.1%20110.1%2095.7%20109.8%2095.5C109.6%2095.3%20106.8%20108%20103.5%20123.8C96.9%20156.3%2096.9%20156.5%2094%20158C90%20160.1%2088.1%20157.4%2082%20141L76.3%20125.6%2074%20130C70%20138%2070.1%20138%2057.2%20138C46.5%20138%2045.6%20138.2%2042.8%20140.5C32.9%20148.9%2019.7%20135.1%2028.9%20125.9C32.9%20122%2044%20122.8%2044%20127C44%20127.6%2048.1%20128%2053.8%20128L63.5%20128%2068.5%20118.2C76.6%20102.5%2078.8%20103.2%2086.5%20123.9C89.3%20131.5%2090.5%20133.8%2091%20132.4C91.4%20131.3%2094.8%20115.7%2098.4%2097.5C105.1%2064.7%20106.3%2061%20110%2061C114.1%2061%20114.8%2063.7%20123.5%20111.4C128.1%20137.2%20132.2%20158.5%20132.4%20158.7C132.6%20158.9%20134.5%20154.6%20136.6%20149C150.8%20111.7%20152.3%20108.5%20155.6%20108.2C159.7%20107.8%20160%20108.2%20166.7%20126.3L172.6%20142.1%20177.1%20135.3L181.5%20128.5%20196.8%20128.2C205.5%20128.1%20212%20127.5%20212%20127C212%20122.8%20223.1%20122%20227.1%20125.9C236.3%20135.1%20223.1%20148.9%20213.2%20140.5C210.4%20138.2%20209.5%20138%20198.7%20138L187.2%20138%20181%20148C171.4%20163.5%20169.5%20163%20162%20142.6C159%20134.6%20156.3%20128.3%20156%20128.5C155.6%20128.7%20150.9%20140.5%20145.5%20154.7C134%20184.8%20131.7%20188.2%20127%20182.5Z%22%2F%3E%3C%2Fsvg%3E")}
-.ic-shield{width:20px;height:20px;--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M120.9%20251.2C59.5%20215.3%2021.3%20147%2016%2063.5C14.4%2038.7%2013.5%2041.6%2023.7%2039.1C50.3%2032.5%2065.3%2026.9%2092.5%2013.2C127.6%20-4.4%20128.2%20-4.4%20165%2013.9C189.6%2026.1%20205.2%2032.2%20226.2%2037.5L241%2041.3%20241%2044.9C240.6%20131.8%20198.8%20212.9%20134.6%20251.4C127.4%20255.7%20128.8%20255.8%20120.9%20251.2ZM136.1%20238.2C190.3%20202.8%20225.4%20136.5%20229.6%2061.3L230.3%2049.2%20225.9%2048C203.1%2042.1%20181.9%2034%20157.3%2021.7C128.2%207.1%20128.1%207.1%2099.7%2021.2C73.6%2034.1%2052.1%2042.4%2030.1%2048L25.7%2049.2%2026.4%2061.8C30.6%20138.3%2064.6%20203.4%20118.6%20237.9C128.2%20244.1%20127.1%20244.1%20136.1%20238.2Z%22%2F%3E%3C%2Fsvg%3E")}
-.ic-chart{width:20px;height:20px;--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M10%20171.5L10%2087%2046%2087L82%2087%2082%20171.5L82%20256%2046%20256L10%20256%2010%20171.5ZM92%20199.5L92%20143%20128%20143L164%20143%20164%20199.5L164%20256%20128%20256L92%20256%2092%20199.5ZM174.2%20138.2L174.5%2020.5%20210%2020.5L245.5%2020.5%20245.8%20138.2L246%20256%20210%20256L174%20256%20174.2%20138.2ZM71.8%20171.8L71.5%2097.5%2046%2097.5L20.5%2097.5%2020.2%20170.5C20.1%20210.7%2020.2%20244.1%2020.5%20244.8C20.8%20245.7%2027%20246%2046.5%20246L72%20246%2071.8%20171.8ZM153.8%20199.8L154%20154%20128%20154L102%20154%20102%20199.3C102%20224.3%20102.3%20245%20102.7%20245.4C103.1%20245.7%20114.6%20245.9%20128.4%20245.8L153.5%20245.5%20153.8%20199.8ZM235.8%20138.2L236%2031%20210%2031L184%2031%20184%20138.5L184%20246%20209.8%20245.8L235.5%20245.5%20235.8%20138.2Z%22%2F%3E%3C%2Fsvg%3E")}
-.ic-connected{width:17px;height:17px;--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M31%20240.5L27.6%20237%2051.8%20212.7C78.5%20186%2077.3%20187.7%2072.7%20183.2C68.2%20178.8%2070.1%20177.4%2043.3%20204.2L19%20228.4%2015.5%20225L12%20221.6%2036.7%20196.8L61.4%20172.1%2053.7%20164.1C34.7%20144.7%2036.1%20130.6%2059.2%20107.7L72.2%2094.9%2068.1%2090.5C62.8%2084.7%2063.4%2079%2069.2%2079C71.8%2079%20177%20184.7%20177%20187.4C177%20193.3%20171.2%20193.6%20165.4%20187.9L161.2%20183.8%20148.3%20196.7C125.4%20219.9%20111.4%20221.3%2091.9%20202.3L83.9%20194.6%2059.2%20219.3L34.4%20244%2031%20240.5ZM126.4%20202.5C128.1%20201.7%20135%20195.5%20141.8%20188.7L154%20176.5%20116.7%20139.2L79.4%20101.9%2066.3%20115.2C43.4%20138.5%2043.5%20138.8%2079.9%20175.3C111.3%20206.8%20114%20208.4%20126.4%20202.5ZM132%20123.5L78.5%2070%2080%2067.2C82.4%2063%2085.2%2063.3%2090.4%2068L94.9%2072.2%20107.7%2059.2C130.6%2036.1%20144.7%2034.7%20164.1%2053.7L172.1%2061.4%20196.8%2036.7L221.6%2012%20225%2015.5L228.4%2019%20204.2%2043.3C177.5%2070%20178.7%2068.3%20183.3%2072.8C187.8%2077.2%20185.9%2078.6%20212.7%2051.8L237%2027.6%20240.5%2031L244%2034.4%20219.3%2059.2L194.6%2083.9%20202.3%2091.9C221.3%20111.4%20219.9%20125.4%20196.7%20148.3L183.8%20161.2%20187.9%20165.4C193.5%20171.1%20193.3%20177%20187.5%20177C186.2%20177%20167.9%20159.4%20132%20123.5ZM204%20122C206.4%20111.2%20206.2%20110.9%20176.7%2081.2C149.8%2054.1%20148.1%2052.7%20141.7%2051.5C133.6%2050%20129.7%2052.2%20115.2%2066.4L101.9%2079.4%20139.2%20116.7L176.5%20154.1%20189.6%20140.8C201.9%20128.3%20202.8%20127.1%20204%20122Z%22%2F%3E%3C%2Fsvg%3E")}
-.ic-grid{width:17px;height:17px;--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M16.6%20222.8C14.2%20219.4%2014.2%2036.6%2016.6%2033.2L18.1%2031%20128%2031L237.9%2031%20239.4%2033.2C241.8%2036.6%20241.8%20219.4%20239.4%20222.8L237.9%20225%20128%20225L18.1%20225%2016.6%20222.8ZM87%20174L87%20133%2056.5%20133L26%20133%2026%20174L26%20215%2056.5%20215L87%20215%2087%20174ZM159%20174L159%20133%20128%20133L97%20133%2097%20174L97%20215%20128%20215L159%20215%20159%20174ZM230%20174L230%20133%20199.5%20133L169%20133%20169%20174L169%20215%20199.5%20215L230%20215%20230%20174ZM87%2082L87%2041%2056.5%2041L26%2041%2026%2082L26%20123%2056.5%20123L87%20123%2087%2082ZM159%2082L159%2041%20128%2041L97%2041%2097%2082L97%20123%20128%20123L159%20123%20159%2082ZM230%2082L230%2041%20199.5%2041L169%2041%20169%2082L169%20123%20199.5%20123L230%20123%20230%2082Z%22%2F%3E%3C%2Fsvg%3E")}
-.ic-document{width:17px;height:17px;--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M36%20128L36%2010%2095.8%2010L155.5%2010%20187.8%2042.3L220%2074.5%20220%20160.3L220%20246%20128%20246L36%20246%2036%20128ZM209.8%20158.8L210%2082%20179.3%2081.8L148.5%2081.5%20148.2%2050.7L148%2020%2097.2%2020.2L46.5%2020.5%2046.2%20127C46.1%20185.6%2046.2%20234.1%2046.5%20234.8C46.8%20235.8%2063.7%20236%20128.2%20235.8L209.5%20235.5%20209.8%20158.8ZM77%20179L77%20174%20128%20174L179%20174%20179%20179L179%20184%20128%20184L77%20184%2077%20179ZM77%20148.5L77%20143%20117.8%20143.2L158.5%20143.5%20158.5%20148.5L158.5%20153.5%20117.8%20153.8L77%20154%2077%20148.5ZM77%20118L77%20113%20128%20113L179%20113%20179%20118L179%20123%20128%20123L77%20123%2077%20118ZM202%2071.7C202%2071.6%20192.3%2061.8%20180.5%2050L159%2028.5%20159%2050.3L159%2072%20180.5%2072C192.3%2072%20202%2071.9%20202%2071.7Z%22%2F%3E%3C%2Fsvg%3E")}
-.ic-play{width:17px;height:17px;--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M51%20128L51%2026.9%2056.3%2029.9C90.4%2049.4%20221.5%20127.3%20221.5%20128C221.5%20128.7%2089.8%20206.9%2056.3%20226.1L51%20229.1%2051%20128ZM132.4%20169.5C170.7%20146.9%20202%20128.3%20202%20128C202%20127.5%2064%2045.9%2061.9%2045.2C61.4%2045%2061%2079.1%2061%20128C61%20176.9%2061.4%20211%2061.9%20210.8C62.4%20210.7%2094.1%20192.1%20132.4%20169.5Z%22%2F%3E%3C%2Fsvg%3E")}
-.ic-info{width:15px;height:15px;--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M114.1%20244.9C34.1%20235.6%20-13.5%20147.6%2022.6%2075.7C67%20-12.3%20192.4%20-10.7%20234.6%2078.4C273.7%20160.9%20205.2%20255.4%20114.1%20244.9ZM140.1%20234.6C220%20228.7%20263.1%20129.5%20214.3%2064.1C152.4%20-18.7%2020.9%2024.8%2020.9%20128C20.9%20187.9%2074.4%20240.3%20130.5%20235.3C132.2%20235.2%20136.5%20234.9%20140.1%20234.6ZM108%20189.5L108%20184%20113%20184L118%20184%20118%20151L118%20118%20113%20118L108%20118%20108%20113L108%20108%20123%20108L138%20108%20138%20146L138%20184%20143%20184L148%20184%20148%20189.5L148%20195%20128%20195L108%20195%20108%20189.5ZM121%2085.1C108.9%2078.8%20111%2060.5%20124.2%2056.9C133.8%2054.4%20143%2061.9%20143%2072.3C143%2083.3%20130.8%2090.4%20121%2085.1Z%22%2F%3E%3C%2Fsvg%3E")}
-.ic-ok{width:15px;height:15px;--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M70.9%20186.4C29.7%20149.1%2028.1%20147.4%2031.8%20143.8C35.2%20140.4%2036.2%20141.1%2074%20175.3C93.3%20192.8%20109.7%20207.3%20110.4%20207.6C111.3%20207.9%20129.4%20180.7%20164.1%20126.9C195%2079.1%20217.4%2045.3%20218.6%2044.8C222.1%2043.2%20225.3%2045.5%20224.8%2049.3C224.4%2052.4%20117.3%20219.6%20114.7%20221.2C111.9%20223%20108.3%20220.2%2070.9%20186.4Z%22%2F%3E%3C%2Fsvg%3E")}
-.ic-warn{width:15px;height:15px;--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M2.2%20239.4C-1.6%20236.8%20-1.5%20236.7%2061.6%20127.3C131.1%207%20124.4%2018%20128%2018C131.6%2018%20124.9%207%20194.4%20127.3C257.5%20236.8%20257.6%20236.8%20253.8%20239.4C250.4%20241.8%205.6%20241.8%202.2%20239.4ZM241%20229.4C241%20228.3%20128.6%2034%20128%2034C127.4%2034%2015%20228.3%2015%20229.4C15%20229.7%2065.8%20230%20128%20230C190.2%20230%20241%20229.7%20241%20229.4ZM120.2%20197.8L120.5%20189.5%20128%20189.5L135.5%20189.5%20135.8%20197.8L136.1%20206%20128%20206L119.9%20206%20120.2%20197.8ZM121.1%20173.6C120.3%20172.7%20120%20161.6%20120.2%20134.9L120.5%2097.5%20128%2097.5L135.5%2097.5%20135.8%20134.9C136.1%20177.3%20136.5%20175%20128%20175C124.4%20175%20121.8%20174.5%20121.1%20173.6Z%22%2F%3E%3C%2Fsvg%3E")}
-
-  /* ── 主题切换图标：仓库内置 SVG 资源，颜色跟随 currentColor ── */
-  .ic-t-sun,.ic-t-moon{width:17px;height:17px;-webkit-mask-image:var(--m);mask-image:var(--m);
-    -webkit-mask-position:center;mask-position:center;
-    -webkit-mask-repeat:no-repeat;mask-repeat:no-repeat;
-    -webkit-mask-size:contain;mask-size:contain}
-  .ic-t-sun{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M126%20232C125%20231%20123%20230%20122%20229C122%20229%20121%20228%20121%20227L120%20226%20120%20212L120%20198%20121%20197C122%20195%20123%20194%20125%20193C126%20192%20130%20192%20131%20193C133%20194%20134%20195%20135%20197L136%20198%20136%20212L136%20226%20135%20228C134%20230%20131%20232%20129%20232C128%20232%20127%20232%20126%20232ZM195%20204C194%20204%20193%20203%20192%20203C191%20203%20188%20199%20182%20193C173%20184%20172%20183%20172%20182C171%20180%20171%20178%20171%20176C172%20174%20174%20172%20176%20171C178%20171%20180%20171%20182%20172C183%20172%20184%20173%20193%20182C199%20188%20203%20192%20203%20192C204%20193%20204%20194%20204%20196C204%20198%20204%20199%20203%20199C201%20203%20198%20204%20195%20204ZM57%20203C54%20202%2052%20199%2052%20196C52%20192%2052%20192%2063%20182C72%20173%2073%20172%2074%20172C76%20171%2078%20171%2080%20171C82%20172%2084%20174%2085%20176C85%20178%2085%20180%2084%20182C84%20183%2083%20184%2074%20193C68%20199%2065%20203%2064%20203C62%20204%2059%20204%2057%20203ZM123%20180C110%20178%2097%20172%2089%20162C72%20142%2072%20114%2089%2094C100%2081%20117%2075%20133%2076C146%2078%20159%2084%20167%2094C184%20114%20184%20142%20167%20162C156%20175%20139%20181%20123%20180ZM135%20163C148%20161%20158%20152%20162%20139C164%20135%20164%20133%20164%20128C164%20123%20164%20121%20162%20117C159%20106%20150%2097%20139%2094C135%2092%20133%2092%20128%2092C124%2092%20123%2092%20121%2093C114%2094%20108%2097%20103%20103C97%20108%2094%20114%2093%20121C92%20124%2092%20132%2093%20135C95%20147%20103%20157%20115%20162C117%20162%20121%20163%20124%20164C126%20164%20132%20164%20135%20163ZM30%20136C29%20135%2027%20134%2026%20133C25%20132%2024%20130%2024%20128C24%20126%2024%20126%2025%20125C26%20123%2027%20122%2028%20121L30%20120%2044%20120L58%20120%2059%20121C61%20122%2062%20123%2063%20125C64%20126%2064%20126%2064%20128C64%20130%2064%20130%2063%20132C62%20133%2061%20134%2059%20135C58%20136%2058%20136%2044%20136C37%20136%2031%20136%2030%20136ZM198%20136C197%20135%20195%20134%20194%20133C193%20132%20192%20130%20192%20128C192%20126%20192%20126%20193%20125C194%20123%20195%20122%20196%20121L198%20120%20212%20120L226%20120%20227%20121C229%20122%20230%20123%20231%20125C232%20126%20232%20126%20232%20128C232%20130%20232%20130%20231%20132C230%20133%20229%20134%20227%20135C226%20136%20226%20136%20212%20136C205%20136%20199%20136%20198%20136ZM74%2084C73%2084%2072%2083%2063%2074C57%2068%2053%2064%2053%2064C52%2063%2052%2062%2052%2060C52%2058%2052%2057%2053%2057C54%2055%2055%2054%2057%2053C58%2052%2058%2052%2060%2052C64%2052%2064%2052%2074%2063C83%2072%2084%2073%2084%2074C85%2076%2085%2078%2085%2080C84%2082%2082%2084%2080%2085C78%2085%2076%2085%2074%2084ZM176%2085C174%2084%20172%2081%20171%2080C171%2078%20171%2076%20172%2074C172%2073%20173%2072%20182%2063C188%2057%20192%2053%20192%2053C193%2052%20194%2052%20196%2052C199%2052%20200%2053%20201%2054C204%2056%20205%2061%20203%2064C203%2065%20199%2068%20193%2074C184%2083%20183%2084%20182%2084C180%2085%20178%2085%20176%2085ZM126%2064C124%2063%20122%2062%20121%2059L120%2058%20120%2044L120%2030%20121%2029C122%2027%20123%2026%20124%2025C126%2024%20126%2024%20128%2024C130%2024%20130%2024%20131%2025C133%2026%20134%2027%20135%2029L136%2030%20136%2044L136%2058%20135%2059C134%2061%20133%2062%20132%2063C130%2064%20128%2064%20126%2064Z%22%2F%3E%3C%2Fsvg%3E")}
-  .ic-t-moon{--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M128%20216C95%20213%2067%20194%2052%20165C41%20143%2039%20116%2047%2092C48%2088%2049%2085%2051%2081C59%2066%2070%2054%2083%2045C93%2038%20104%2034%20115%2031C117%2031%20118%2031%20119%2031C121%2031%20123%2033%20124%2036C125%2038%20124%2040%20121%2044C118%2048%20117%2050%20115%2054C112%2062%20110%2069%20109%2079C108%2085%20108%2092%20108%2096C109%20104%20111%20111%20115%20118C121%20131%20130%20140%20142%20147C149%20151%20158%20153%20167%20155C172%20155%20182%20155%20186%20155C192%20154%20198%20152%20203%20150C205%20150%20208%20148%20214%20145C216%20144%20220%20144%20222%20146C223%20148%20224%20149%20224%20151C224%20153%20224%20153%20222%20157C214%20178%20198%20195%20177%20206C168%20211%20158%20214%20146%20215C142%20216%20132%20216%20128%20216ZM141%20202C164%20201%20184%20190%20198%20172C200%20170%20204%20165%20204%20164C204%20164%20203%20164%20203%20165C198%20166%20190%20168%20184%20168C180%20169%20171%20168%20167%20168C156%20166%20146%20163%20138%20158C134%20156%20129%20153%20125%20150C122%20147%20116%20141%20113%20138C98%20119%2092%2096%2096%2072C97%2066%2099%2059%20101%2052C102%2051%20103%2049%20103%2049C103%2049%20101%2050%2099%2051C77%2062%2062%2082%2057%20106C55%20112%2055%20115%2055%20122C55%20133%2056%20140%2060%20150C61%20154%2065%20161%2067%20165C83%20190%20112%20205%20141%20202Z%22%2F%3E%3C%2Fsvg%3E")}
-
-.ic-err{width:15px;height:15px;--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M114.1%20244.9C34.1%20235.6%20-13.5%20147.5%2022.6%2075.7C66.9%20-12.2%20192.4%20-10.7%20234.5%2078.3C273.7%20160.9%20205.3%20255.5%20114.1%20244.9ZM140.1%20234.6C220%20228.7%20263.1%20129.5%20214.3%2064.1C152.4%20-18.7%2020.9%2024.8%2020.9%20128C20.9%20187.9%2074.4%20240.3%20130.5%20235.3C132.2%20235.2%20136.5%20234.9%20140.1%20234.6ZM83.6%20172.4C80.2%20169%2081.7%20167%20101.2%20147.3L120.4%20128%20101.2%20108.7C81.7%2089%2080.2%2087%2083.6%2083.6C87%2080.2%2089%2081.7%20108.7%20101.2L128%20120.4%20147.3%20101.2C167%2081.7%20169%2080.2%20172.4%2083.6C175.8%2087%20174.3%2089%20154.8%20108.7L135.6%20128%20154.8%20147.3C174.3%20167%20175.8%20169%20172.4%20172.4C169%20175.8%20167%20174.3%20147.3%20154.8L128%20135.6%20108.7%20154.8C89%20174.3%2087%20175.8%2083.6%20172.4Z%22%2F%3E%3C%2Fsvg%3E")}
-.ic-check{width:10px;height:10px;--m:url("data:image/svg+xml,%3Csvg%20xmlns%3D%22http%3A%2F%2Fwww.w3.org%2F2000%2Fsvg%22%20viewBox%3D%220%200%20256%20256%22%3E%3Cpath%20fill%3D%22%23000%22%20d%3D%22M70.9%20186.4C29.7%20149.1%2028.1%20147.4%2031.8%20143.8C35.2%20140.4%2036.2%20141.1%2074%20175.3C93.3%20192.8%20109.7%20207.3%20110.4%20207.6C111.3%20207.9%20129.4%20180.7%20164.1%20126.9C195%2079.1%20217.4%2045.3%20218.6%2044.8C222.1%2043.2%20225.3%2045.5%20224.8%2049.3C224.4%2052.4%20117.3%20219.6%20114.7%20221.2C111.9%20223%20108.3%20220.2%2070.9%20186.4Z%22%2F%3E%3C%2Fsvg%3E")}
-.ic-info,.ic-ok,.ic-warn,.ic-err{margin-top:2px}
-
 </style>
 </head>
 <body>
-
-<!-- ── 顶部导航 ── -->
-<nav class="top-nav">
-  <div class="nav-inner">
-    <a class="nav-brand" href="#">
-      <span class="ic ic-brand" aria-hidden="true"></span>
-      <span class="nav-title">API Compat</span>
-      <span class="nav-sep nav-sub">/</span>
-      <span class="nav-sub">模型接口兼容性测试</span>
-    </a>
-    <!-- 太阳 / 月亮两张 mask 叠在同一格，靠 html[data-theme] 决定露哪张 -->
-    <button class="theme-btn" id="themeBtn" type="button" title="切换到深色">
-      <span class="ic ic-t-sun" aria-hidden="true"></span>
-      <span class="ic ic-t-moon" aria-hidden="true"></span>
-    </button>
-  </div>
-</nav>
-
 <div class="wrap">
 
-  <!-- ── 页头 ── -->
-  <header class="page-head">
-    <h1 class="page-title">模型接口兼容性测试</h1>
+  <header>
   </header>
 
   <!-- ============ 1. 配置 ============ -->
   <section class="panel" id="panel-config">
-    <div class="panel-head">
-      <h2 class="panel-title">连接配置</h2>
-      <span class="panel-note">共 10 种协议，按需勾选</span>
-    </div>
-    <div class="row">
-      <label class="fld">
-        <span>接口地址 (Base URL)</span>
-        <input type="text" id="baseUrl" class="mono" placeholder="https://api.example.com" autocomplete="off" spellcheck="false">
-      </label>
-      <label class="fld">
-        <span>API Key (密钥)</span>
-        <div class="key-wrap">
-          <input type="password" id="apiKey" class="mono" placeholder="sk-..." autocomplete="off" spellcheck="false">
-          <button class="key-toggle" id="keyToggle" type="button">显示</button>
-        </div>
-      </label>
-    </div>
+    <h2 class="panel-title"><span class="step">1</span>接口配置</h2>
+
+    <label class="fld">
+      <span>接口地址</span>
+      <input type="text" id="baseUrl" class="mono" placeholder="https://your-relay.com" autocomplete="off" spellcheck="false">
+      <div class="hint">填站点根地址即可（如 <code class="mono">https://e-flowcode.cc</code>），带不带 <code class="mono">/v1</code> 都行，各协议路径会自动补全。</div>
+    </label>
+
+    <label class="fld">
+      <span>API Key</span>
+      <div class="key-wrap">
+        <input type="password" id="apiKey" class="mono" placeholder="sk-..." autocomplete="off" spellcheck="false">
+        <button class="key-toggle" id="keyToggle" type="button">显示</button>
+      </div>
+      <div class="hint">Key 只保存在你的浏览器中，不会上传到任何服务器。</div>
+    </label>
 
     <div class="proto-head">
-      <span class="lbl">测试协议</span>
+      <span class="lbl">兼容模式（可多选，会按「模型 × 协议」交叉实测）</span>
       <span class="proto-tools">
-        <button class="link-btn" id="pMain" type="button">推荐</button>
+        <button class="link-btn" id="pMain" type="button">选主流三种</button>
         <button class="link-btn" id="pAll" type="button">全选</button>
         <button class="link-btn" id="pNone" type="button">清空</button>
       </span>
     </div>
     <div class="proto-grid" id="protoGrid"></div>
 
-    <label class="fld" id="customWrap" style="display:none;margin-top:12px">
-      <span>自定义端点</span>
-      <input type="text" id="customUrl" class="mono" placeholder="https://api.example.com/v1/chat/completions" autocomplete="off" spellcheck="false">
+    <label class="fld" id="customWrap" style="display:none;margin-top:14px">
+      <span>自定义协议地址（原样请求，不做路径补全）</span>
+      <input type="text" id="customUrl" class="mono" placeholder="https://your-relay.com/v1/chat/completions" autocomplete="off" spellcheck="false">
     </label>
 
     <details class="adv">
-      <summary>高级选项 (并发、超时、过滤与指定模型)</summary>
+      <summary>高级设置</summary>
       <div class="inner">
         <div class="row">
           <label class="fld">
             <span>并发数</span>
             <input type="number" id="concurrency" value="6" min="1" max="20">
+            <div class="hint">建议 5～8</div>
           </label>
           <label class="fld">
-            <span>超时 (秒)</span>
+            <span>单请求超时（秒）</span>
             <input type="number" id="timeout" value="30" min="5" max="180">
+            <div class="hint">慢站可调到 60</div>
           </label>
           <label class="fld">
-            <span>重试次数</span>
+            <span>失败重试次数</span>
             <input type="number" id="retries" value="1" min="0" max="3">
+            <div class="hint">仅对超时/网络错误重试</div>
           </label>
         </div>
-        <div class="row" style="margin-top:12px">
-          <label class="fld fld-narrow">
-            <span>每格采样次数</span>
-            <input type="number" id="samples" value="1" min="1" max="5">
-          </label>
-          <label class="fld">
-            <span>探测模式</span>
-            <select id="probeMode">
-              <option value="fast">快速 — 命中首个数据块即断开（省额度）</option>
-              <option value="meter">测速 — 继续收流以算输出速度（多耗额度）</option>
-            </select>
-          </label>
-        </div>
-        <div class="fld-note">
-          采样 &gt;1 时同一格会连打多次、延迟取中位，单次抖动不再污染结论（代价是成倍请求）。
-          「测速」档每格最多多收 64 个数据块，用来算真实的输出速度。
-        </div>
-        <div class="chk-group">
-          <label class="chk">
-            <input type="checkbox" id="rememberKey">
-            <span>记住 Key (仅留本地)</span>
-          </label>
-          <label class="chk">
-            <input type="checkbox" id="filterDeclared">
-            <span>仅测服务端声明的协议</span>
-          </label>
-          <label class="chk">
-            <input type="checkbox" id="manualMode">
-            <span>手动指定模型清单</span>
-          </label>
-        </div>
-        <label class="fld" id="manualWrap" style="display:none;margin-top:10px">
-          <span>模型列表 (每行一个)</span>
+        <label class="chk">
+          <input type="checkbox" id="rememberKey">
+          <span class="cbox">✓</span>
+          <span class="ctxt">记住 API Key</span>
+        </label>
+        <label class="chk">
+          <input type="checkbox" id="filterDeclared">
+          <span class="cbox">✓</span>
+          <span class="ctxt">只测服务端声明支持的协议</span>
+        </label>
+        <label class="chk">
+          <input type="checkbox" id="manualMode">
+          <span class="cbox">✓</span>
+          <span class="ctxt">手动指定模型清单</span>
+        </label>
+        <label class="fld" id="manualWrap" style="display:none">
+          <span>模型清单（每行一个）</span>
           <textarea id="manualModels" class="mono" placeholder="deepseek-v4.1-flash&#10;glm-5.3&#10;kimi-k2.5"></textarea>
         </label>
       </div>
     </details>
 
-    <button class="btn btn-primary" id="runBtn">
-      <span class="ic ic-play" aria-hidden="true"></span>
-      <span class="btn-label">一键开始全协议探测</span>
-    </button>
+    <button class="btn btn-primary" id="runBtn">开始测试</button>
   </section>
-
-  <!-- ── 能力说明：空态填充，开始测试后自动收起 ── -->
-  <div class="features-grid" id="featuresOverview">
-    <div class="feat-card">
-      <div class="feat-icon feat-blue"><span class="ic ic-globe" aria-hidden="true"></span></div>
-      <div class="feat-content">
-        <div class="feat-title">10 种协议一次过筛</div>
-        <div class="feat-desc">OpenAI Chat / Responses、Anthropic Messages、Gemini 原生与兼容层、百炼、Azure、Ollama、Cohere，逐条验证路由是否真的通。</div>
-      </div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon feat-emerald"><span class="ic ic-pulse" aria-hidden="true"></span></div>
-      <div class="feat-content">
-        <div class="feat-title">流式与非流式双测</div>
-        <div class="feat-desc">同时探测连通性、SSE 事件分块与 NDJSON，度量首块延迟 (TTFT)。流式命中首块即断开、不烧 token，所以只给首块延迟、不给总耗时；失败项可一键重测并保留重试记录。</div>
-      </div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon feat-purple"><span class="ic ic-shield" aria-hidden="true"></span></div>
-      <div class="feat-content">
-        <div class="feat-title">纯前端直连，零中转</div>
-        <div class="feat-desc">浏览器直接向目标服务发包，不经任何中间服务器；API Key 只留在本机浏览器，可随时不勾选「记住」。</div>
-      </div>
-    </div>
-    <div class="feat-card">
-      <div class="feat-icon feat-amber"><span class="ic ic-chart" aria-hidden="true"></span></div>
-      <div class="feat-content">
-        <div class="feat-title">矩阵与四种格式导出</div>
-        <div class="feat-desc">输出「模型 × 协议」实测矩阵，并标注「服务端声明与实际不符」的偏差项，支持导出 HTML / Markdown / JSON / CSV。</div>
-      </div>
-    </div>
-  </div>
 
   <!-- ============ 2. 连通性 ============ -->
   <section class="panel" id="panel-conn" style="display:none">
-    <h2 class="panel-title">
-      <span class="ic ic-connected" aria-hidden="true"></span>
-      连通性与模型清单
-    </h2>
+    <h2 class="panel-title"><span class="step">2</span>接口连通性与模型清单</h2>
     <div id="connResult"></div>
   </section>
 
   <!-- ============ 3. 矩阵 ============ -->
   <section class="panel" id="panel-models" style="display:none">
-    <div class="panel-head">
-      <h2 class="panel-title">
-        <span class="ic ic-grid" aria-hidden="true"></span>
-        实测兼容性矩阵
-      </h2>
-      <div class="legend" id="legend"></div>
-    </div>
+    <h2 class="panel-title"><span class="step">3</span>跨协议实测矩阵</h2>
     <div class="stat-grid" id="stats"></div>
     <div class="bar"><i id="progBar"></i></div>
     <div class="prog-text">
@@ -1251,6 +1154,7 @@
       <span id="progCount">0 / 0</span>
     </div>
     <div id="tableWrap" style="margin-top:14px"></div>
+    <div class="legend" id="legend"></div>
     <div class="actions" id="resultActions" style="display:none">
       <button class="btn btn-ghost" id="onlyOk">只看可用协议</button>
       <button class="btn btn-ghost" id="retestFail">重测失败项</button>
@@ -1259,26 +1163,18 @@
 
   <!-- ============ 4. 报告 ============ -->
   <section class="panel report" id="panel-report" style="display:none">
-    <div class="panel-head">
-      <h2 class="panel-title">
-        <span class="ic ic-document" aria-hidden="true"></span>
-        测试诊断报告
-      </h2>
-      <div class="actions" id="reportActions" style="display:none;margin-top:0;padding-top:0;border:none">
-        <button class="btn btn-ghost" id="expHtml">HTML</button>
-        <button class="btn btn-ghost" id="expMd">Markdown</button>
-        <button class="btn btn-ghost" id="expJson">JSON</button>
-        <button class="btn btn-ghost" id="expCsv">CSV</button>
-      </div>
-    </div>
+    <h2 class="panel-title"><span class="step">4</span>测试报告</h2>
     <div id="reportBody"></div>
+    <div class="actions" id="reportActions" style="display:none">
+      <button class="btn btn-ghost" id="expHtml">导出报告（HTML）</button>
+      <button class="btn btn-ghost" id="expMd">导出报告（Markdown）</button>
+      <button class="btn btn-ghost" id="expJson">导出原始数据（JSON）</button>
+      <button class="btn btn-ghost" id="expCsv">导出矩阵（CSV）</button>
+    </div>
   </section>
 
   <footer>
-    <p class="foot-disc">
-      本工具为纯前端项目，所有请求由你的浏览器直连目标服务，不经过任何中间服务器。为防止 API Key 泄漏，请务必<b>新建一个小额度 Key</b> 用于测试，测试完成后<b>立即删除</b>；因使用本工具导致的密钥泄漏、额度损失等后果，作者不承担任何责任。
-    </p>
-    <p class="foot-copy">© <span id="footYear">2026</span> API Compat · 模型接口兼容性测试</p>
+    纯前端实现 · 不经过任何中间服务器 · 你的 Key 只留在本机浏览器
   </footer>
 </div>
 
@@ -1287,7 +1183,7 @@
   <div class="box">
     <h4 id="modalTitle">明细</h4>
     <dl class="kv" id="modalBody"></dl>
-    <div class="actions" style="border:none;padding-top:14px;margin-top:4px">
+    <div class="actions bare">
       <button class="btn btn-ghost" id="modalClose">关闭</button>
     </div>
   </div>
@@ -1303,15 +1199,37 @@
   var LS_KEY = "mat.config.v2";
   var PROBE_INSTRUCTION = "Reply with OK.";
   var PROBE_MAX_TOKENS = 512;
-  var RUN_LABEL = "一键开始全协议探测";
-  var RUN_LABEL_BUSY = "全协议探测中…";
   var ANTHROPIC_VERSION = "2023-06-01";
   var AZURE_API_VERSION = "2024-02-01";
+
   /* 测速档的两个上限：收满这么多块、或首块之后再过这么久，就断开。
      两者都是为了让「输出速度」有个可比的采样窗口 —— 窗口太小会被首字后的
      停顿带偏，太大又白烧额度。 */
   var METER_MAX_CHUNKS = 64;
   var METER_MAX_MS = 6000;
+
+  /* 「每格采样次数」和「探测模式」不做成界面控件 —— 页面上不放这两项。
+     默认就是 1 次采样、快速档（零额外请求、零额外额度）；
+     要下更硬的结论时用地址栏参数临时打开：
+       ?samples=3        同一格连打 3 次，延迟取中位、状态取众数
+       ?meter=1          测速档：收满采样窗口再断开，算出真实吐字速度
+     两者都会成倍消耗请求与额度，所以不设为默认。 */
+  var probeSettings = (function () {
+    var q = {};
+    try {
+      String(location.search || "").replace(/^\?/, "").split("&").forEach(function (kv) {
+        if (!kv) return;
+        var i = kv.indexOf("=");
+        var k = i < 0 ? kv : kv.slice(0, i);
+        var v = i < 0 ? "" : kv.slice(i + 1);
+        try { q[decodeURIComponent(k)] = decodeURIComponent(v); } catch (e) { q[k] = v; }
+      });
+    } catch (e) { q = {}; }
+    return {
+      samples: Math.max(1, Math.min(5, Number(q.samples) || 1)),
+      metering: /^(1|true|yes|on)$/i.test(String(q.meter == null ? "" : q.meter))
+    };
+  })();
 
   var STATUS = {
     OK:          { key: "OK",          label: "可用",       cls: "ok",      rank: 0, ok: true  },
@@ -1571,7 +1489,6 @@
   var elCustomUrl = $("customUrl"), customWrap = $("customWrap");
   var protoGrid = $("protoGrid");
   var elConcurrency = $("concurrency"), elTimeout = $("timeout"), elRetries = $("retries");
-  var elSamples = $("samples"), elProbeMode = $("probeMode");
   var elRemember = $("rememberKey"), elManual = $("manualMode"), elManualWrap = $("manualWrap");
   var elFilterDeclared = $("filterDeclared");
   var elManualModels = $("manualModels"), elRunBtn = $("runBtn");
@@ -1581,7 +1498,6 @@
   var resultActions = $("resultActions");
   var panelReport = $("panel-report"), reportBody = $("reportBody"), reportActions = $("reportActions");
   var modal = $("modal"), modalTitle = $("modalTitle"), modalBody = $("modalBody");
-  var elThemeBtn = $("themeBtn");
 
   /* ==================================================================
      状态
@@ -1596,6 +1512,7 @@
     matrix: {},           // matrix[modelId][protoId] = result
     order: [],            // 模型顺序
     onlyOk: false,
+    probeSetup: null,     // 本轮用的是什么口径（采样几次、是否测速档）—— 报告里要写清
     startedAt: null,
     finishedAt: null
   };
@@ -1620,11 +1537,20 @@
   function normalizeBase(raw) {
     var u = String(raw || "").trim();
     if (!u) return null;
+    // 粘贴常带进空白（"https:// xxx"），先去干净
+    u = u.replace(/\s+/g, "");
+    // 允许带说明文字粘贴，如「接口地址：https://xxx」——取其中第一段 URL
+    if (!/^https?:\/\//i.test(u)) {
+      var hit = u.match(/https?:\/\/[^\s]+/i);
+      if (hit) u = hit[0]; else return null;
+    }
     u = u.replace(/[?#].*$/, "").replace(/\/+$/, "");
     // 剥掉用户可能粘贴的完整协议路径
     u = u.replace(/\/(openai\/deployments\/[^\/]+\/chat\/completions|compatible-mode\/v1\/chat\/completions|chat\/completions|completions|messages|responses|generateContent|streamGenerateContent|models)$/i, "");
     u = u.replace(/\/+$/, "");
     if (!/^https?:\/\//i.test(u)) return null;
+    // 修正重复协议头（https://https://host → https://host）
+    u = u.replace(/^(https?:\/\/)(?:https?:\/\/)+/i, "$1");
 
     var m = u.match(/^(https?:\/\/[^\/]+)(\/.*)?$/i);
     if (!m) return null;
@@ -1638,9 +1564,144 @@
       roots.push(origin + rest);
       if (!/\/v\d+([a-z]*)?$/i.test(rest)) roots.push(origin + "/v1");
     }
+    // 丢弃拼不成合法 URL 的候选，避免拿一个坏地址去请求后报「网络/CORS」
     var seen = {}, out = [];
-    roots.forEach(function (r) { if (!seen[r]) { seen[r] = 1; out.push(r); } });
-    return { origin: origin, roots: out, raw: String(raw).trim() };
+    roots.forEach(function (r) {
+      if (seen[r]) return;
+      var t = null;
+      try { t = new URL(r); } catch (e) { return; }
+      if (!t.hostname) return;
+      seen[r] = 1; out.push(r);
+    });
+    if (!out.length) return null;
+    return { origin: out[0].indexOf(origin) === 0 ? origin : out[0], roots: out, raw: String(raw).trim() };
+  }
+
+  /* ==================================================================
+     连接失败归因
+     浏览器的 fetch 抛 TypeError 时不会告诉你原因 —— 跨域被拦、混合内容被拦、
+     私有网络被拦、域名解析失败，四者表现完全一样。这里逐个排除，给出确定结论。
+     ================================================================== */
+  /* 宿主环境若用 CSP 掐掉外部请求，fetch 只会抛一个看不出原因的 TypeError。
+     浏览器会为每次拦截派发 securitypolicyviolation 事件，这里记下来当证据。 */
+  var cspBlocked = [];
+  document.addEventListener("securitypolicyviolation", function (e) {
+    cspBlocked.push({ directive: e.violatedDirective || "", uri: e.blockedURI || "" });
+  });
+
+  function hostKind(host) {
+    var h = String(host || "").toLowerCase().replace(/^\[|\]$/g, "");
+    if (!h) return "pub";
+    if (h === "localhost" || /\.(localhost|local)$/.test(h)) return "loop";
+    if (h === "::1") return "loop";
+    if (/^\d+\.\d+\.\d+\.\d+$/.test(h)) {
+      var p = h.split(".").map(Number);
+      if (p[0] === 127 || h === "0.0.0.0") return "loop";
+      if (p[0] === 10 || (p[0] === 192 && p[1] === 168) ||
+          (p[0] === 172 && p[1] >= 16 && p[1] <= 31) ||
+          (p[0] === 169 && p[1] === 254) ||
+          (p[0] === 100 && p[1] >= 64 && p[1] <= 127)) return "priv";
+      return "pub";
+    }
+    if (h.indexOf(":") >= 0) return /^(fc|fd|fe80)/.test(h) ? "priv" : "pub";
+    return "pub";
+  }
+
+  function pageIsLocal() {
+    if (location.protocol === "file:") return true;
+    return hostKind(location.hostname) !== "pub";
+  }
+
+  function tick() { return new Promise(function (r) { setTimeout(r, 0); }); }
+
+  /* securitypolicyviolation 是排队派发的：紧随 fetch 失败之后同步读取会读到空数组，
+     必须让出一轮宏任务再读。 */
+  function cspHit() {
+    for (var i = 0; i < cspBlocked.length; i++) {
+      if (!/img-src|font-src|style-src|media-src/.test(cspBlocked[i].directive)) return cspBlocked[i];
+    }
+    return null;
+  }
+
+  function cspResult(v) {
+    return {
+      title: "被宿主页面的内容安全策略（CSP）拦截",
+      detail: "浏览器留下了一条 CSP 拦截记录：<code>" + esc(v.directive) + "</code> 阻止了对外请求"
+            + (v.uri ? "（目标 <code>" + esc(v.uri) + "</code>）" : "")
+            + "。这不是地址问题，也不是跨域问题 —— 是<b>打开这个页面的容器</b>不允许页面访问外部网络。"
+            + "编辑器 / IDE 的内置预览面板通常会这样做，而同一份文件用系统浏览器打开就没有这条限制。",
+      fix: ["关掉内置预览面板，改用系统浏览器直接打开这个 HTML 文件（双击即可，地址栏以 <code>file://</code> 开头）",
+            "或改用在浏览器里打开的线上版本（线上没有这条限制）",
+            "换成系统浏览器后重新测一次，之前那条结论才是真实的"]
+    };
+  }
+
+  async function diagnoseConn(nb, firstUrl, timeoutMs) {
+    var t = null;
+    try { t = new URL(firstUrl); } catch (e) { t = null; }
+
+    await tick();
+    var csp = cspHit();
+    if (csp) return cspResult(csp);
+
+    if (t && location.protocol === "https:" && t.protocol === "http:") {
+      return {
+        title: "混合内容被浏览器拦截",
+        detail: "本页面是 HTTPS，而你填的是 HTTP 地址。浏览器禁止 HTTPS 页面发起 HTTP 请求，"
+              + "这类拦截的报错和跨域完全一样，所以看不出区别。",
+        fix: ["把地址改成 <code>https://</code> 开头（多数服务同时提供 https 入口）",
+              "或把本工具下载到本地打开（<code>file://</code>），本地页面不受这条限制"]
+      };
+    }
+
+    if (t && !pageIsLocal() && hostKind(t.hostname) !== "pub") {
+      return {
+        title: "私有网络访问被浏览器拦截",
+        detail: "本页面部署在公网（<code>" + esc(location.hostname) + "</code>），"
+              + "浏览器不允许公网页面直接请求本机或内网地址，拦截后同样只表现为「无法连接」。",
+        fix: ["把本工具下载到本地打开（<code>file://</code>）再测本机 / 内网服务",
+              "或让该服务通过公网域名和证书对外暴露"]
+      };
+    }
+
+    /* 可达性探针：no-cors 的普通 GET，不带鉴权头、不触发预检。
+       能拿到 opaque 响应就说明请求确实抵达了服务端。 */
+    var reached = false;
+    try {
+      var c = new AbortController();
+      var tm = setTimeout(function () { c.abort(); }, Math.min(timeoutMs, 8000));
+      await fetch(nb.origin + "/", { mode: "no-cors", method: "GET", cache: "no-store", signal: c.signal });
+      clearTimeout(tm);
+      reached = true;
+    } catch (e) { reached = false; }
+
+    await tick();
+    csp = cspHit();
+    if (csp) return cspResult(csp);
+
+    if (reached) {
+      return {
+        title: "服务可达，但它不放行跨域请求",
+        detail: "附加探测已成功抵达 <code>" + esc(nb.origin) + "</code>，说明域名解析、端口、TLS 都正常。"
+              + "问题出在跨域策略：服务端要么没有返回 <code>Access-Control-Allow-Origin</code>，"
+              + "要么不允许带 <code>Authorization</code> 头的预检请求。",
+        fix: ["确认这个地址指向的是 API 服务本身，而不是它的控制台、登录页或 CDN 缓存页",
+              "让服务端返回 <code>Access-Control-Allow-Origin: *</code>，并对 <code>OPTIONS</code> 预检放行",
+              "上述两条都做不到时，只能改走服务端代理"]
+      };
+    }
+
+    var unreachFix = ["检查域名拼写与端口号" + (t && t.port ? "（当前填的端口是 <code>" + esc(t.port) + "</code>）" : "（若服务不在 80/443，必须写端口号）"),
+                      "先在浏览器地址栏直接打开这个地址，确认能访问",
+                      "确认本机网络或代理没有阻断该域名"];
+    if (pageIsLocal() && location.protocol !== "file:") {
+      unreachFix.push("本页是从本机地址（<code>" + esc(location.host) + "</code>）打开的，若这是编辑器 / IDE 的内置预览面板，请改用系统浏览器 —— 内置预览常会拦截外部请求，此时线上地址反而可用");
+    }
+    return {
+      title: "地址根本连不上",
+      detail: "附加探测也没能抵达 <code>" + esc(nb.origin) + "</code>，属于域名解析、端口或网络层问题。",
+      fix: unreachFix
+    };
   }
 
   function authHeaders(p, key) {
@@ -1915,19 +1976,19 @@
         return { status: c3.st, firstTokenMs: null, totalMs: ms(), note: streamError };
       }
       if (firstValidMs !== null) {
-        var r = { status: STATUS.OK, firstTokenMs: firstValidMs, totalMs: ms(),
-                  note: metering ? "流式首块正常（测速档）" : "流式首块正常",
-                  sample: sample, mode: "流式" };
+        var rr = { status: STATUS.OK, firstTokenMs: firstValidMs, totalMs: ms(),
+                   note: metering ? "流式首块正常（测速档）" : "流式首块正常",
+                   sample: sample, mode: "流式" };
         if (metering) {
           var span = (lastChunkMs !== null && lastChunkMs > firstValidMs) ? (lastChunkMs - firstValidMs) : 0;
-          r.chunks = outChunks;
-          r.outputChars = outChars;
-          r.outputMs = span || null;
+          rr.chunks = outChunks;
+          rr.outputChars = outChars;
+          rr.outputMs = span || null;
           /* 只收到一块（span=0）就没得算。这里宁可不给速度，也不给一个看起来像
              「0 字/秒」的假值 —— 那会被读成「这个站不吐字」。 */
-          r.cps = (span > 0 && outChars > 0) ? Math.round(outChars / (span / 1000)) : null;
+          rr.cps = (span > 0 && outChars > 0) ? Math.round(outChars / (span / 1000)) : null;
         }
-        return r;
+        return rr;
       }
       if (sawJson) return { status: STATUS.WARN, firstTokenMs: null, totalMs: ms(), note: "返回了 JSON 但结构不符合该协议" };
       return { status: STATUS.WARN, firstTokenMs: null, totalMs: ms(), note: "流已结束但没有拿到有效数据块" };
@@ -2064,12 +2125,11 @@
     PROTOCOLS.forEach(function (p) {
       var on = !!state.selected[p.id];
       h += '<div class="proto' + (on ? " on" : "") + '" data-id="' + p.id + '">'
-         +   '<div class="p-top">'
-         +     '<span class="p-box">' + (on ? '<span class="ic ic-check"></span>' : "") + '</span>'
+         +   '<div class="p-top"><span class="p-box">' + (on ? "✓" : "") + '</span>'
          +     '<span class="p-name">' + esc(p.name) + '</span>'
-         +     '<span class="p-tag">' + esc(p.tag) + '</span>'
-         +   '</div>'
-         +   '<div class="p-path">' + esc(p.path).replace(/([\/:])/g, "$1<wbr>") + '</div>'
+         +     '<span class="p-tag">' + esc(p.tag) + '</span></div>'
+         +   '<div class="p-path">' + esc(p.path) + '</div>'
+         +   '<div class="p-desc">' + esc(p.desc) + '</div>'
          + '</div>';
     });
     protoGrid.innerHTML = h;
@@ -2091,7 +2151,7 @@
     if (!r) return '<span class="mcell plain">—</span>';
     var ms = r.firstTokenMs != null ? '<span class="ms">' + r.firstTokenMs + 'ms</span>' : '';
     /* 测速档的吐字速度。矩阵格子很窄，所以只放数字 + /s，口径写到悬停里 */
-    var cps = (r.cps != null) ? '<span class="cps">' + r.cps + '/s</span>' : '';
+    var cps = (r.cps != null) ? '<span class="ms cps">' + r.cps + '/s</span>' : '';
     /* 这一格是重试之后才通的：标个 ↻。首次失败的真实代价（往往是一整个超时）
        和退避等待都不在本格延迟里，全部写进悬停说明。 */
     var rt = r.retried ? '<span class="rt">↻</span>' : '';
@@ -2129,7 +2189,7 @@
         return protos.some(function (p) { var r = state.matrix[id] && state.matrix[id][p.id]; return r && r.status.ok; });
       });
     }
-    if (!models.length) { tableWrap.innerHTML = '<div class="hint" style="padding:16px 0">当前筛选下没有记录。</div>'; legendEl.innerHTML = ""; return; }
+    if (!models.length) { tableWrap.innerHTML = '<div class="hint blank">当前筛选下没有记录。</div>'; legendEl.innerHTML = ""; return; }
 
     var h = '<div class="matrix-scroll"><table class="matrix"><thead><tr>';
     h += '<th class="mh">模型</th><th>服务端声明</th>';
@@ -2162,9 +2222,10 @@
 
     // 图例
     var lg = '<span><i style="background:var(--ok)"></i>可用</span>'
-           + '<span><i style="background:var(--warn)"></i>降级/超时</span>'
+           + '<span><i style="background:var(--warn)"></i>降级/超时/限流</span>'
            + '<span><i style="background:var(--err)"></i>失败</span>'
-           + '<span><i style="background:var(--text-tertiary)"></i>不支持</span>';
+           + '<span><i style="background:var(--neutral)"></i>协议不支持</span>'
+           + '<span>点击单元格看明细 · 列宽不够可横向滚动</span>';
     legendEl.innerHTML = lg;
 
     Array.prototype.forEach.call(tableWrap.querySelectorAll(".mcell[data-m]"), function (el) {
@@ -2221,6 +2282,18 @@
     });
   }
 
+  /* 这轮是怎么测的：采样几次、是不是测速档。数字脱离口径就没法比较。
+     默认口径（1 次采样 + 快速档）下不展示 —— 报表面貌保持不变。 */
+  function setupLabel() {
+    var st = state.probeSetup;
+    if (!st) return "未记录";
+    return "每格采样 " + st.samples + " 次" + (st.samples > 1 ? "（延迟取中位）" : "")
+      + " · " + (st.metering
+          ? "测速档（收满 " + st.meterMaxChunks + " 块或 " + (st.meterMaxMs / 1000) + " 秒后断开）"
+          : "快速档（命中首个数据块即断开）")
+      + " · 并发 " + st.concurrency + " · 超时 " + (st.timeoutMs / 1000) + "s · 重试 " + st.retries + " 次";
+  }
+
   function renderStats() {
     var protos = state.protocols;
     var total = 0, ok = 0, lat = [], spd = [];
@@ -2237,7 +2310,6 @@
       });
     });
     lat.sort(function (a, b) { return a - b; });
-    spd.sort(function (a, b) { return a - b; });
     var median = lat.length ? lat[Math.floor(lat.length / 2)] : null;
     var fastest = lat.length ? lat[0] : null;
 
@@ -2340,43 +2412,45 @@
 
     h += '<h3>概览</h3>';
     h += '<table class="plain"><tbody>';
-    h += '<tr><td style="width:104px;color:var(--text-tertiary)">站点</td><td><code class="mono">' + esc(state.origin || "") + '</code></td></tr>';
-    h += '<tr><td style="color:var(--text-tertiary)">测试时间</td><td>' + esc(startStr) + '</td></tr>';
-    h += '<tr><td style="color:var(--text-tertiary)">模型 / 协议</td><td>' + ms.length + ' 个模型 × ' + ps.length + ' 种协议</td></tr>';
-    h += '<tr><td style="color:var(--text-tertiary)">可用组合</td><td><b>' + totalOk + ' / ' + totalCombos + '</b></td></tr>';
-    h += '<tr><td style="color:var(--text-tertiary)">清单来源</td><td><code class="mono">' + esc(state.listSource || "手动清单") + '</code></td></tr>';
-    h += '<tr><td style="color:var(--text-tertiary)">测量口径</td><td>' + esc(setupLabel()) + '</td></tr>';
+    h += '<tr><td class="lb">站点</td><td><code class="mono">' + esc(state.origin || "") + '</code></td></tr>';
+    h += '<tr><td class="lb">测试时间</td><td>' + esc(startStr) + '</td></tr>';
+    h += '<tr><td class="lb">模型 / 协议</td><td>' + ms.length + ' 个模型 × ' + ps.length + ' 种协议</td></tr>';
+    h += '<tr><td class="lb">可用组合</td><td><b>' + totalOk + ' / ' + totalCombos + '</b></td></tr>';
+    h += '<tr><td class="lb">清单来源</td><td><code class="mono">' + esc(state.listSource || "手动清单") + '</code></td></tr>';
+    if (state.probeSetup && (state.probeSetup.samples > 1 || state.probeSetup.metering)) {
+      h += '<tr><td class="lb">测量口径</td><td>' + esc(setupLabel()) + '</td></tr>';
+    }
     h += '</tbody></table>';
 
     // 各协议通过率
-    h += '<h3>协议通过率</h3><div class="rate-list">';
+    h += '<h3>各协议通过率</h3><div class="rate-list">';
     ps.forEach(function (x) {
       var pct = x.total ? Math.round((x.pass / x.total) * 100) : 0;
-      var color = pct === 100 ? "#16a34a" : (pct >= 50 ? "#d97706" : "#dc2626");
+      var color = pct === 100 ? "var(--ok)" : (pct >= 50 ? "var(--warn)" : "var(--err)");
       h += '<div class="rate-row">'
          +   '<span class="rn">' + esc(x.proto.name) + '</span>'
          +   '<span class="rb"><i style="width:' + pct + '%;background:' + color + '"></i></span>'
-         +   '<span class="rv">' + x.pass + '/' + x.total + ' (' + pct + '%)</span>'
+         +   '<span class="rv">' + x.pass + '/' + x.total + ' · ' + pct + '%</span>'
          + '</div>';
     });
     h += '</div>';
 
     // 结论
-    h += '<h3>结论分析</h3><ul>';
+    h += '<h3>结论</h3><ul>';
     var dead = ps.filter(function (x) { return x.pass === 0; });
     var live = ps.filter(function (x) { return x.pass === x.total && x.total > 0; });
     if (dead.length) {
-      h += '<li><b>完全不可用协议：</b>' + dead.map(function (x) {
+      h += '<li><b>在本站不可用的兼容模式：</b>' + dead.map(function (x) {
         var rs = Object.keys(x.reasons).map(function (k) { return k + "×" + x.reasons[k]; }).join("、");
         return '<code>' + esc(x.proto.id) + '</code>（' + esc(rs) + '）';
       }).join("；") + '</li>';
     }
     if (live.length) {
-      h += '<li><b>全量通过协议：</b>' + live.map(function (x) { return '<code>' + esc(x.proto.id) + '</code>'; }).join("、") + '</li>';
+      h += '<li><b>全部模型都通过的协议：</b>' + live.map(function (x) { return '<code>' + esc(x.proto.id) + '</code>'; }).join("、") + '</li>';
     }
     var partial = ps.filter(function (x) { return x.pass > 0 && x.pass < x.total; });
     if (partial.length) {
-      h += '<li><b>部分通过协议：</b>' + partial.map(function (x) {
+      h += '<li><b>部分模型才通过的协议（存在模型级差异）：</b>' + partial.map(function (x) {
         return '<code>' + esc(x.proto.id) + '</code>（' + x.pass + '/' + x.total + '）';
       }).join("、") + '</li>';
     }
@@ -2384,14 +2458,14 @@
     // 单协议孤儿模型
     var orphans = ms.filter(function (x) { return x.okProtos.length === 0; });
     if (orphans.length) {
-      h += '<li><b>完全不可用模型：</b>' + orphans.map(function (x) { return '<code>' + esc(x.id) + '</code>'; }).join("、") + '</li>';
+      h += '<li><b>所有选中协议下都不可用的模型：</b>' + orphans.map(function (x) { return '<code>' + esc(x.id) + '</code>'; }).join("、") + '</li>';
     }
 
-    // 声明与实际不符
+    // 声明与实际不符 —— 最有价值的发现，分两类呈现
     var declaredFails = ms.filter(function (x) { return x.declaredFail.length; });
     var extras = ms.filter(function (x) { return x.extraOk.length; });
     if (declaredFails.length) {
-      h += '<li><b>声明支持但实测不可用：</b><br>' + declaredFails.map(function (x) {
+      h += '<li><b>服务端声明支持、实测却不可用（需要关注）：</b><br>' + declaredFails.map(function (x) {
         return '<code>' + esc(x.id) + '</code>（声明 ' + esc((x.declared || []).join(",")) + '）→ ' + x.declaredFail.map(esc).join("；");
       }).join("<br>") + '</li>';
     }
@@ -2399,11 +2473,11 @@
       var exSample = extras.slice(0, 4).map(function (x) {
         return '<code>' + esc(x.id) + '</code> +' + x.extraOk.join("/");
       }).join("、");
-      h += '<li><b>未声明但实测可用：</b>共 ' + extras.length + ' 个模型（如 ' + exSample
-         + (extras.length > 4 ? ' 等' : '') + '），说明站点支持协议自动转接。</li>';
+      h += '<li><b>服务端未声明、实测却可用（可放宽映射）：</b>共 ' + extras.length + ' 个模型，例如 ' + exSample
+         + (extras.length > 4 ? ' 等' : '') + '。说明该站会把请求转成上游协议，声明清单偏保守。</li>';
     }
     if (!declaredFails.length && !extras.length) {
-      h += '<li>服务端声明与实测行为完全一致。</li>';
+      h += '<li>服务端声明的协议支持与实际行为一致，未发现偏差。</li>';
     }
 
     // 推荐
@@ -2412,14 +2486,14 @@
       return (a.median == null ? 1e9 : a.median) - (b.median == null ? 1e9 : b.median);
     })[0];
     if (best) {
-      h += '<li><b>推荐首选：</b><code>' + esc(best.proto.id) + '</code>（' + esc(best.proto.name) + '，通过 '
-         + best.pass + '/' + best.total + (best.median != null ? '，延迟 ' + best.median + 'ms' : '') + '）</li>';
+      h += '<li><b>推荐首选协议：</b><code>' + esc(best.proto.id) + '</code>（' + esc(best.proto.name) + '，通过 '
+         + best.pass + '/' + best.total + (best.median != null ? '，中位首字延迟 ' + best.median + 'ms' : '') + '）</li>';
     }
     h += '</ul>';
 
     // 模型明细
-    h += '<h3>模型明细</h3>';
-    h += '<table class="plain"><thead><tr><th>模型</th><th>声明</th><th>可用协议</th><th>首块延迟</th><th>失败协议</th></tr></thead><tbody>';
+    h += '<h3>逐模型明细</h3>';
+    h += '<table class="plain"><thead><tr><th>模型</th><th>服务端声明</th><th>可用协议</th><th>最快</th><th>失败协议</th></tr></thead><tbody>';
     ms.forEach(function (x) {
       var okTxt = x.okProtos.length ? x.okProtos.map(function (o) { return esc(o.p.id); }).join("、") : '<span class="note bad">无</span>';
       var badTxt = x.badProtos.length
@@ -2445,13 +2519,15 @@
       });
     });
     if (failRows.length) {
-      h += '<h3>失败记录 (' + failRows.length + ')</h3>';
+      h += '<h3>失败明细（' + failRows.length + ' 条）</h3>';
       h += '<table class="plain"><thead><tr><th>模型</th><th>协议</th><th>状态</th><th>原因</th></tr></thead><tbody>';
       failRows.forEach(function (f) {
         h += '<tr><td class="model-name">' + esc(f.model) + '</td><td class="note">' + esc(f.pid) + '</td>'
            + '<td>' + statusBadge(f.st) + '</td><td class="note">' + esc(f.note) + '</td></tr>';
       });
       h += '</tbody></table>';
+      h += '<div class="hint mid">提示：「超时」「限流」多为上游偶发，建议点上方「重测失败项」再下结论；'
+         + '「协议不支持」是稳定的路径级结论，重测意义不大。</div>';
     }
 
     reportBody.innerHTML = h;
@@ -2470,10 +2546,11 @@
     var timeoutMs = Math.max(5, Number(elTimeout.value) || 30) * 1000;
     var retries = Math.max(0, Number(elRetries.value) || 0);
     var concurrency = Math.max(1, Math.min(20, Number(elConcurrency.value) || 6));
-    var samples = Math.max(1, Math.min(5, Number(elSamples.value) || 1));
-    var metering = elProbeMode.value === "meter";
+    /* 采样与测速来自地址栏参数（页面上没有这两个控件），默认 1 次 / 快速档 */
+    var samples = probeSettings.samples;
+    var metering = probeSettings.metering;
 
-    if (!nb) { alert("请填写正确的接口地址（需以 http:// 或 https:// 开头）"); elBaseUrl.focus(); return; }
+    if (!nb) { alert("接口地址格式不正确。请填写完整地址，例如 https://api.example.com/v1（需以 http:// 或 https:// 开头）"); elBaseUrl.focus(); return; }
     if (!key) { alert("请先填写 API Key"); elApiKey.focus(); return; }
 
     var protos = PROTOCOLS.filter(function (p) { return state.selected[p.id]; });
@@ -2486,6 +2563,7 @@
 
     state.running = true;
     state.origin = nb.origin;
+    cspBlocked.length = 0;
     state.protocols = protos;
     state.probeSetup = {
       samples: samples,
@@ -2502,15 +2580,13 @@
     state.onlyOk = false;
     state.startedAt = new Date();
     elRunBtn.disabled = true;
-    elRunBtn.querySelector(".btn-label").textContent = RUN_LABEL_BUSY;
+    elRunBtn.textContent = "测试中…";
 
     panelConn.style.display = "";
     panelModels.style.display = "";
     panelReport.style.display = "none";
     resultActions.style.display = "none";
-    var featEl = $("featuresOverview");
-    if (featEl) featEl.style.display = "none";
-    renderConn('<div class="banner info"><span class="ic ic-info"></span><div>正在探测模型清单端点<span class="dots"></span></div></div>');
+    renderConn('<div class="banner info"><span class="ico">●</span><div>正在探测模型清单端点<span class="dots"></span></div></div>');
     statsEl.innerHTML = "";
     tableWrap.innerHTML = "";
     legendEl.innerHTML = "";
@@ -2524,7 +2600,7 @@
         manualList = elManualModels.value.split(/\r?\n/).map(function (s) { return s.trim(); }).filter(Boolean)
                      .map(function (s) { return { id: s, declared: null }; });
         if (!manualList.length) {
-          renderConn('<div class="banner err"><span class="ic ic-err"></span><div>已勾选手动模式，但清单为空。请每行填写一个模型名。</div></div>');
+          renderConn('<div class="banner err"><span class="ico">✕</span><div>已勾选手动模式，但清单为空。请每行填写一个模型名。</div></div>');
           finishRun(); return;
         }
       }
@@ -2535,16 +2611,22 @@
         var st = listRes.status;
         var extra = "";
         if (st.key === "NETWORK") {
-          extra = '<br><br>常见原因：<br>'
-                + '1. 该服务未开放跨域（CORS），浏览器无法直连 —— 需要服务端支持或改用代理；<br>'
-                + '2. 地址拼写有误，或网络不可达；<br>'
-                + '3. 地址需要包含端口号。';
+          var tried = (listRes.fails || []).map(function (f) { return f.url; });
+          var d = await diagnoseConn(nb, tried[0] || (nb.roots[0] + "/models"), timeoutMs);
+          extra = '<br><br><b>判定：' + d.title + '</b><br>' + d.detail
+                + '<br><br>建议：<br>'
+                + d.fix.map(function (s, i) { return (i + 1) + ". " + s; }).join("<br>")
+                + (tried.length
+                   ? '<div class="hint mid">已尝试：' + tried.slice(0, 3).map(function (u) {
+                       return '<code>' + esc(u) + '</code>';
+                     }).join("、") + (tried.length > 3 ? " 等 " + tried.length + " 个端点" : "") + '</div>'
+                   : '');
         } else if (st.key === "UNAUTH") {
           extra = '<br><br>接口可达，但 Key 被拒绝。请确认 Key 未过期、未被禁用。';
         } else {
           extra = '<br><br>未能从该站点拉到模型清单。可在高级设置里改用「手动指定模型清单」。';
         }
-        renderConn('<div class="banner err"><span class="ic ic-err"></span><div><b>未能获取模型清单（' + esc(st.label) + '）</b><br>'
+        renderConn('<div class="banner err"><span class="ico">✕</span><div><b>未能获取模型清单（' + esc(st.label) + '）</b><br>'
                  + esc(listRes.note) + extra + '</div></div>');
         finishRun(); return;
       }
@@ -2554,7 +2636,7 @@
       state.order = state.models.map(function (m) { return m.id; });
 
       var declaredCount = state.models.filter(function (m) { return m.declared && m.declared.length; }).length;
-      renderConn('<div class="banner ok"><span class="ic ic-ok"></span><div><b>连接成功，发现 ' + state.models.length + ' 个可见模型。</b>'
+      renderConn('<div class="banner ok"><span class="ico">✓</span><div><b>连接成功，发现 ' + state.models.length + ' 个可见模型。</b>'
                + '<br>清单来源：<code>' + esc(state.listSource) + '</code>'
                + (declaredCount ? '<br>其中 ' + declaredCount + ' 个模型带服务端协议声明（supported_endpoint_types）' : '')
                + '<br>即将按 ' + protos.length + ' 种协议交叉实测…</div></div>');
@@ -2571,7 +2653,7 @@
       });
 
       if (!tasks.length) {
-        renderConn('<div class="banner warn"><span class="ic ic-warn"></span><div>按「服务端声明」过滤后没有需要测试的组合。请取消该选项。</div></div>');
+        renderConn('<div class="banner warn"><span class="ico">!</span><div>按「服务端声明」过滤后没有需要测试的组合。请取消该选项。</div></div>');
         finishRun(); return;
       }
 
@@ -2616,7 +2698,7 @@
         });
       });
       var msg = '<div class="banner ' + (okCount === tasks.length ? "ok" : (okCount ? "warn" : "err")) + '">'
-              + '<span class="ic ic-' + (okCount === tasks.length ? "ok" : (okCount ? "warn" : "err")) + '"></span><div>'
+              + '<span class="ico">' + (okCount === tasks.length ? "✓" : (okCount ? "!" : "✕")) + '</span><div>'
               + '<b>实测完成：' + tasks.length + ' 个「模型 × 协议」组合中 ' + okCount + ' 个可用。</b>'
               + (retryCount
                   ? '<br>其中 <b>' + retryOnly + ' 个可用组合是重试之后才通过的</b>（矩阵里带 ↻ 标记），'
@@ -2641,7 +2723,7 @@
       state.finishedAt = new Date();
 
     } catch (e) {
-      renderConn('<div class="banner err"><span class="ic ic-err"></span><div>执行出错：' + esc(e && e.message ? e.message : String(e)) + '</div></div>');
+      renderConn('<div class="banner err"><span class="ico">✕</span><div>执行出错：' + esc(e && e.message ? e.message : String(e)) + '</div></div>');
     } finally {
       finishRun();
     }
@@ -2650,7 +2732,7 @@
   function finishRun() {
     state.running = false;
     elRunBtn.disabled = false;
-    elRunBtn.querySelector(".btn-label").textContent = RUN_LABEL;
+    elRunBtn.textContent = "开始测试";
   }
 
   /* ==================================================================
@@ -2672,8 +2754,8 @@
     var timeoutMs = Math.max(5, Number(elTimeout.value) || 30) * 1000;
     var retries = Math.max(0, Number(elRetries.value) || 0);
     var concurrency = Math.max(1, Math.min(20, Number(elConcurrency.value) || 6));
-    var samples = Math.max(1, Math.min(5, Number(elSamples.value) || 1));
-    var metering = elProbeMode.value === "meter";
+    var samples = probeSettings.samples;
+    var metering = probeSettings.metering;
 
     state.running = true;
     elRunBtn.disabled = true;
@@ -2721,35 +2803,20 @@
     return k.slice(0, 8) + "…" + k.slice(-4);
   }
 
-  /* 「这轮是怎么测的」写成一句话 —— 报告、Markdown、JSON 都用它，
-     口径才不会各写各的。数字脱离口径就没法跟别人的结果比。 */
-  function setupLabel() {
-    var s = state.probeSetup;
-    if (!s) return "未记录";
-    return "每格采样 " + s.samples + " 次" + (s.samples > 1 ? "（延迟取中位）" : "")
-      + " · " + (s.metering
-          ? "测速档（收满 " + s.meterMaxChunks + " 块或 " + (s.meterMaxMs / 1000) + " 秒后断开）"
-          : "快速档（命中首个数据块即断开）")
-      + " · 并发 " + s.concurrency + " · 超时 " + (s.timeoutMs / 1000) + "s · 重试 " + s.retries + " 次";
-  }
-
   function expCsv() {
     var protos = state.protocols;
-    var rows = [["模型", "服务端声明"].concat(protos.map(function (p) { return p.id; })).concat(["可用协议数", "需重试数", "最快延迟ms"])];
+    var rows = [["模型", "服务端声明"].concat(protos.map(function (p) { return p.id; })).concat(["可用协议数", "最快延迟ms"])];
     state.order.forEach(function (id) {
       var m = null;
       for (var i = 0; i < state.models.length; i++) if (state.models[i].id === id) m = state.models[i];
       var cells = [id, (m && m.declared ? m.declared.join("|") : "")];
-      var okN = 0, retriedN = 0, best = null;
+      var okN = 0, best = null;
       protos.forEach(function (p) {
         var r = state.matrix[id] && state.matrix[id][p.id];
-        /* ↻ = 这一格是重试之后才通的（降级信号，别当成一次就过） */
-        cells.push(r ? (r.status.label + (r.retried ? "↻" : "") + (r.firstTokenMs != null ? " " + r.firstTokenMs + "ms" : "")
-                              + (r.cps != null ? " " + r.cps + "字/秒" : "")) : "");
+        cells.push(r ? (r.status.label + (r.firstTokenMs != null ? " " + r.firstTokenMs + "ms" : "")) : "");
         if (r && r.status.ok) { okN++; if (r.firstTokenMs != null && (best == null || r.firstTokenMs < best)) best = r.firstTokenMs; }
-        if (r && r.retried) retriedN++;
       });
-      cells.push(okN, retriedN, best == null ? "" : best);
+      cells.push(okN, best == null ? "" : best);
       rows.push(cells);
     });
     var csv = rows.map(function (r) {
@@ -2798,8 +2865,7 @@
             cps: r.cps == null ? null : r.cps,
             outputChars: r.outputChars == null ? null : r.outputChars,
             outputMs: r.outputMs == null ? null : r.outputMs,
-            chunks: r.chunks == null ? null : r.chunks,
-            url: r.url, note: r.note, sample: r.sample || null
+            chunks: r.chunks == null ? null : r.chunks
           } : null;
         });
         return row;
@@ -2821,7 +2887,10 @@
     L.push("- **Key**：" + maskKey(elApiKey.value.trim()));
     L.push("- **测试时间**：" + (state.startedAt ? state.startedAt.toLocaleString("zh-CN") : ""));
     L.push("- **清单来源**：" + (state.listSource || "手动清单"));
-    L.push("- **测量口径**：" + setupLabel());
+    /* 默认口径（1 次采样 + 快速档）下不写这一行，报告与页面上看到的保持一致 */
+    if (state.probeSetup && (state.probeSetup.samples > 1 || state.probeSetup.metering)) {
+      L.push("- **测量口径**：" + setupLabel());
+    }
     L.push("- **规模**：" + ms.length + " 个模型 × " + ps.length + " 种协议");
     L.push("");
     L.push("## 各协议通过率");
@@ -2847,9 +2916,7 @@
       var cells = state.protocols.map(function (p) {
         var r = state.matrix[id] && state.matrix[id][p.id];
         if (!r) return "—";
-        var mark = r.retried ? " ↻" : "";
-        var spd = (r.cps != null) ? (" · " + r.cps + "字/秒") : "";
-        return r.status.ok ? ("✅ " + (r.firstTokenMs != null ? r.firstTokenMs + "ms" : "") + spd + mark) : ("❌ " + r.status.label + mark);
+        return r.status.ok ? (r.firstTokenMs != null ? r.firstTokenMs + "ms" : "可用") : (r.status.label);
       });
       L.push("| `" + id + "` | " + ((m && m.declared) ? m.declared.join(",") : "—") + " | " + cells.join(" | ") + " |");
     });
@@ -2858,7 +2925,7 @@
     L.push("");
     ps.forEach(function (x) {
       var pct = x.total ? Math.round((x.pass / x.total) * 100) : 0;
-      var mark = pct === 100 ? "✅ 全部通过" : (pct === 0 ? "❌ 完全不可用" : "⚠️ 部分可用");
+      var mark = pct === 100 ? "全部通过" : (pct === 0 ? "完全不可用" : "部分可用");
       L.push("- **" + x.proto.name + "**（`" + x.proto.id + "`）：" + mark
            + " —— " + x.pass + "/" + x.total
            + (Object.keys(x.reasons).length ? "（" + Object.keys(x.reasons).map(function (k) { return k + "×" + x.reasons[k]; }).join("、") + "）" : ""));
@@ -2909,31 +2976,52 @@
     var totalCombos = 0, totalOk = 0;
     ps.forEach(function (x) { totalCombos += x.total; totalOk += x.pass; });
 
-    var css = "body{font-family:-apple-system,BlinkMacSystemFont,'Segoe UI',Roboto,'Helvetica Neue',Arial,sans-serif;"
-            + "max-width:1020px;margin:40px auto;padding:0 24px;color:#0f172a;line-height:1.6;font-size:13px;background:#f8fafc}"
-            + "h1{font-size:20px;font-weight:700;margin:0 0 6px;letter-spacing:-.03em;color:#0f172a}"
-            + "h2{font-size:15px;font-weight:700;margin:28px 0 12px;padding-bottom:8px;border-bottom:1px solid #e2e8f0;letter-spacing:-.01em;color:#0f172a}"
-            + ".meta{color:#64748b;font-size:13px;margin-bottom:12px}"
-            + "table{border-collapse:collapse;width:100%;font-size:13px;margin:10px 0;background:#fff;border-radius:8px;overflow:hidden;box-shadow:0 1px 3px rgba(0,0,0,0.03)}"
-            + "th{background:#f8fafc;text-align:left;font-size:11px;font-weight:600;color:#94a3b8;padding:9px 12px;border:1px solid #e2e8f0;white-space:nowrap;text-transform:uppercase;letter-spacing:.03em}"
-            + "td{padding:9px 12px;border:1px solid #f1f5f9;vertical-align:top}"
-            + "code{font-family:ui-monospace,SFMono-Regular,Menlo,Consolas,monospace;font-size:11px;background:#f1f5f9;color:#0f172a;padding:2px 6px;border-radius:4px}"
-            + ".ok{color:#10b981;font-weight:600}.bad{color:#ef4444;font-weight:600}.warn{color:#f59e0b;font-weight:600}.na{color:#94a3b8}"
-            + ".bar{height:5px;background:#e2e8f0;border-radius:9999px;overflow:hidden;display:inline-block;width:160px;vertical-align:middle}"
-            + ".bar>i{display:block;height:100%;border-radius:9999px}"
-            + "ul{padding-left:20px}li{margin-bottom:6px;font-size:13px;color:#475569}"
-            + ".kpi{display:flex;gap:12px;margin:16px 0;flex-wrap:wrap}"
-            + ".kpi div{border:1px solid #e2e8f0;border-radius:10px;padding:12px 18px;background:#ffffff;box-shadow:0 1px 3px rgba(0,0,0,0.02)}"
-            + ".kpi b{display:block;font-size:20px;font-weight:700;letter-spacing:-.02em;color:#0f172a}"
-            + ".kpi span{font-size:11px;color:#94a3b8;font-weight:500}"
-            + "footer{margin-top:36px;padding-top:14px;border-top:1px solid #e2e8f0;color:#94a3b8;font-size:11px;line-height:1.7;text-align:center}";
+    /* 字号沿用主页面同一套阶梯：12 / 14 / 18 / 22 */
+    /* 这份报告是独立 HTML（不带主页面的 CSS），所以深色只能自己写一份；
+       color-scheme 让滚动条等浏览器自绘部分也跟着系统走。 */
+    var css = "html{font-size:14px;color-scheme:light dark}"
+            + "body{font-family:-apple-system,BlinkMacSystemFont,'PingFang SC','Microsoft YaHei',sans-serif;"
+            + "max-width:1080px;margin:40px auto;padding:0 24px;color:#1a1f29;line-height:1.6;font-size:14px}"
+            + "h1{font-size:22px;font-weight:600;margin:0 0 4px;letter-spacing:-.012em}"
+            + "h2{font-size:18px;font-weight:600;margin:28px 0 10px;padding-bottom:6px;border-bottom:2px solid #e4e7ec;letter-spacing:-.01em}"
+            + ".meta{color:#5c6675;font-size:14px;margin-bottom:6px}"
+            + "table{border-collapse:collapse;width:100%;font-size:14px;margin:8px 0}"
+            + "th{background:#fcfcfd;text-align:left;font-size:12px;color:#5c6675;font-weight:600;padding:8px 10px;border:1px solid #e4e7ec;white-space:nowrap}"
+            + "td{padding:8px 10px;border:1px solid #e4e7ec;vertical-align:top}"
+            + "code{font-family:ui-monospace,Menlo,Consolas,monospace;font-size:12px;background:#f1f3f7;padding:1px 5px;border-radius:4px}"
+            + ".ok{color:#15803d;font-weight:600}.bad{color:#b91c1c;font-weight:600}.warn{color:#b45309;font-weight:600}.na{color:#8b95a7}"
+            + ".bar{height:8px;background:#e4e7ec;border-radius:99px;overflow:hidden;display:inline-block;width:180px;vertical-align:middle}"
+            + ".bar>i{display:block;height:100%;border-radius:99px}"
+            + "ul{padding-left:20px}li{margin-bottom:5px;font-size:14px}"
+            + ".kpi{display:flex;gap:24px;margin:16px 0;flex-wrap:wrap}"
+            + ".kpi div{border:1px solid #e4e7ec;border-radius:10px;padding:10px 18px;background:#fcfcfd}"
+            + ".kpi b{display:block;font-size:18px;font-weight:700;letter-spacing:-.02em}"
+            + ".kpi span{font-size:12px;color:#8b95a7}"
+            + "footer{margin-top:32px;color:#8b95a7;font-size:12px;text-align:center}"
+            + "@media(prefers-color-scheme:dark){"
+            +   "html{background:#101013}"
+            +   "body{color:#e9e9ee}"
+            +   "h2{border-bottom-color:#2b2b31}"
+            +   ".meta{color:#a0a0aa}"
+            +   "th{background:#1c1c1f;color:#a0a0aa;border-color:#2b2b31}"
+            +   "td{border-color:#2b2b31}"
+            +   "code{background:#26262a}"
+            +   ".ok{color:#4ade80}.bad{color:#f87171}.warn{color:#fbbf24}.na{color:#8e8e96}"
+            +   ".bar{background:#2b2b31}"
+            +   ".kpi div{border-color:#2b2b31;background:#1c1c1f}"
+            +   ".kpi span{color:#8e8e96}"
+            +   "footer{color:#8e8e96}"
+            + "}";
 
     var h = "<!DOCTYPE html><html lang=\"zh-CN\"><head><meta charset=\"UTF-8\">";
     h += "<meta name=\"viewport\" content=\"width=device-width,initial-scale=1\">";
     h += "<title>模型接口兼容性测试报告</title><style>" + css + "</style></head><body>";
     h += "<h1>模型接口兼容性测试报告</h1>";
     h += "<div class=\"meta\">站点 <code>" + esc(state.origin || "") + "</code> · Key <code>" + esc(maskKey(elApiKey.value.trim()))
-       + "</code> · " + esc(state.startedAt ? state.startedAt.toLocaleString("zh-CN") : "") + "</div>";
+       + "</code> · " + esc(state.startedAt ? state.startedAt.toLocaleString("zh-CN") : "")
+       + (state.probeSetup && (state.probeSetup.samples > 1 || state.probeSetup.metering)
+          ? " · " + esc(setupLabel()) : "")
+       + "</div>";
 
     h += "<div class=\"kpi\">"
        + "<div><b>" + ms.length + "</b><span>模型</span></div>"
@@ -2948,7 +3036,7 @@
        + (withSpeed ? "<th>中位输出速度</th>" : "") + "</tr></thead><tbody>";
     ps.forEach(function (x) {
       var pct = x.total ? Math.round((x.pass / x.total) * 100) : 0;
-      var color = pct === 100 ? "#15803d" : (pct >= 50 ? "#b45309" : "#b91c1c");
+      var color = pct === 100 ? "#34c759" : (pct >= 50 ? "#ff9500" : "#ff3b30");
       h += "<tr><td><b>" + esc(x.proto.name) + "</b><br><code>" + esc(x.proto.id) + "</code></td>"
          + "<td><code>" + esc(x.proto.path) + "</code></td>"
          + "<td>" + x.pass + " / " + x.total + "</td>"
@@ -2972,11 +3060,10 @@
         var mark = r.retried ? " <span title=\"重试 " + (r.attempts - 1) + " 次后才通过；第 1 次为「"
           + esc(r.firstAttemptLabel || "失败") + "」耗时 " + (r.firstAttemptMs == null ? "—" : r.firstAttemptMs + "ms")
           + "\">↻</span>" : "";
-        if (r.status.ok) h += "<td class=\"ok\">✅ " + (r.firstTokenMs != null ? r.firstTokenMs + "ms" : "可用")
-          + (r.cps != null ? " · " + r.cps + "字/秒" : "") + mark + "</td>";
+        if (r.status.ok) h += "<td class=\"ok\">" + (r.firstTokenMs != null ? r.firstTokenMs + "ms" : "可用") + mark + "</td>";
         else {
           var cls = r.status.key === "UNSUPPORTED" ? "na" : (r.status.cls === "warn" ? "warn" : "bad");
-          h += "<td class=\"" + cls + "\">❌ " + esc(r.status.label) + mark + "</td>";
+          h += "<td class=\"" + cls + "\">" + esc(r.status.label) + mark + "</td>";
         }
       });
       h += "</tr>";
@@ -3025,8 +3112,7 @@
          + failRows.join("") + "</tbody></table>";
     }
 
-    h += "<footer>由「模型接口兼容性测试」生成 · 本工具为纯前端项目，报告数据全部在本机生成，未上传任何服务器<br>"
-       + "本报告中的 <code>Key</code> 已做掩码处理。请使用小额度 Key 测试并即时删除，因使用本工具导致的密钥泄漏、额度损失等后果，作者不承担任何责任。</footer></body></html>";
+    h += "<footer>由「模型接口兼容性测试」生成 · Key 仅用于本地请求，未上传任何服务器</footer></body></html>";
     download("model-compat-report-" + stamp() + ".html", h, "text/html;charset=utf-8");
   }
 
@@ -3038,7 +3124,6 @@
       var cfg = {
         baseUrl: elBaseUrl.value.trim(),
         concurrency: elConcurrency.value, timeout: elTimeout.value, retries: elRetries.value,
-        samples: elSamples.value, probeMode: elProbeMode.value,
         remember: elRemember.checked, filterDeclared: elFilterDeclared.checked,
         selected: state.selected, customUrl: elCustomUrl.value.trim()
       };
@@ -3056,8 +3141,6 @@
       if (cfg.concurrency) elConcurrency.value = cfg.concurrency;
       if (cfg.timeout) elTimeout.value = cfg.timeout;
       if (cfg.retries != null) elRetries.value = cfg.retries;
-      if (cfg.samples != null) elSamples.value = cfg.samples;
-      if (cfg.probeMode === "meter") elProbeMode.value = "meter";
       if (cfg.filterDeclared) elFilterDeclared.checked = true;
       if (cfg.customUrl) elCustomUrl.value = cfg.customUrl;
       if (cfg.selected) state.selected = cfg.selected;
@@ -3067,55 +3150,6 @@
       }
     } catch (e) { /* ignore */ }
   }
-
-  /* ==================================================================
-     主题：auto（跟随系统）/ 浅色 / 深色
-     data-theme 的初值由 <head> 里那段同步脚本落定（放到这儿就晚了、会闪一屏白），
-     这里只负责「点一下换下一档」，并把 title / 地址栏染色补齐。
-     ================================================================== */
-  /* ── 深浅主题 ──
-     按钮是浅↔深两态开关（太阳 / 月亮），选择落 localStorage。
-     没手动选过（首次访问）＝ 跟随系统，此时系统换主题会跟着换；
-     一旦点过就以用户的选择为准，不再被系统覆盖。 */
-  var THEME_KEY = "apicompat.theme";
-  var themeMq = window.matchMedia ? window.matchMedia("(prefers-color-scheme: dark)") : null;
-
-  function savedTheme() {
-    // 隐私模式下 localStorage 会抛异常，一律当作「没存过」
-    try {
-      var v = localStorage.getItem(THEME_KEY);
-      return (v === "light" || v === "dark") ? v : null;
-    } catch (e) { return null; }
-  }
-
-  function applyTheme(dark) {
-    var root = document.documentElement;
-    root.setAttribute("data-theme", dark ? "dark" : "light");
-    /* 地址栏染色跟着走 —— 否则深色页面顶上挂一条浅色地址栏，比不做还难看 */
-    var tc = document.querySelector('meta[name="theme-color"]');
-    if (tc) tc.setAttribute("content", dark ? "#0d1117" : "#f7f9fc");
-    if (elThemeBtn) {
-      var t = dark ? "切换到浅色" : "切换到深色";
-      elThemeBtn.title = t;
-      elThemeBtn.setAttribute("aria-label", t);
-    }
-  }
-
-  elThemeBtn.addEventListener("click", function () {
-    var dark = document.documentElement.getAttribute("data-theme") === "dark";
-    // 隐私模式下 localStorage 会抛异常，不能因此让按钮点不动
-    try { localStorage.setItem(THEME_KEY, dark ? "light" : "dark"); } catch (e) { /* ignore */ }
-    applyTheme(!dark);
-  });
-
-  /* 只有「没手动选过」时才跟随系统；点过按钮就以用户的选择为准 */
-  if (themeMq && themeMq.addEventListener) {
-    themeMq.addEventListener("change", function () {
-      if (!savedTheme()) applyTheme(themeMq.matches);
-    });
-  }
-
-  applyTheme(document.documentElement.getAttribute("data-theme") === "dark");
 
   /* ==================================================================
      事件绑定
@@ -3168,13 +3202,13 @@
   renderProtoGrid();
   customWrap.style.display = state.selected["custom"] ? "" : "none";
 
-  /* 版权行的年份跟随当前时间，避免日后过期 */
-  var elFootYear = document.getElementById("footYear");
-  if (elFootYear) elFootYear.textContent = String(new Date().getFullYear());
-
   /* 暴露给自动化测试 */
   window.__MAT__ = {
     normalizeBase: normalizeBase,
+    hostKind: hostKind,
+    pageIsLocal: pageIsLocal,
+    cspBlocked: cspBlocked,
+    diagnoseConn: diagnoseConn,
     classifyHttp: classifyHttp,
     extractErrorMessage: extractErrorMessage,
     parseModelList: parseModelList,
@@ -3183,7 +3217,14 @@
     PROTOCOLS: PROTOCOLS,
     state: state,
     buildMarkdown: buildMarkdown,
-    exportPayload: exportPayload
+    exportPayload: exportPayload,
+    /* 采样 / 测速：页面上没有开关，自测里直接改这个对象 */
+    probeSettings: probeSettings,
+    probeSampled: probeSampled,
+    probeWithRetry: probeWithRetry,
+    cellOf: cellOf,
+    medianOf: medianOf,
+    setupLabel: setupLabel
   };
 })();
 </script>
