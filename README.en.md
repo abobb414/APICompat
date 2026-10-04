@@ -655,3 +655,5 @@ This project is a **pure front-end** tool: every request goes from your browser 
 
 To prevent API key leakage, please **do create a fresh, low-quota key** for testing, and **delete it immediately** when you're done;
 the author accepts no responsibility for leaked keys, lost quota or any other consequences of using this tool.
+
+The icon is free artwork from [icons8](https://icons8.com); its licence requires attribution.
