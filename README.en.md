@@ -509,9 +509,18 @@ bash tests/run.sh
 python3 tests/mock.py 8788 &
 node tests/smoke.mjs
 
-# or run it against the live site (only checks the hero and rendering, sends no probe requests)
+# or run it against the live site: pointing BASE off-machine switches to "live mode",
+# which runs only the 17 assertions that don't need an upstream
+# (hero + theme splitting + file:// double-click) and sends no probe requests
 BASE=https://apicompat.abobb.site node tests/smoke.mjs
 ```
+
+**Two modes**: BASE on this machine (the default `127.0.0.1:8788`) runs everything; pointing it anywhere else
+switches to live mode. There's no fake relay out there, so a full run would fire 160 doomed real requests at the
+live site — proving nothing and polluting their logs. Hence live mode runs only the "page itself" sections.
+One trap worth noting: the live site sits behind Cloudflare, whose edge injects an analytics script from
+`static.cloudflareinsights.com`; when it can't be reached locally the browser logs a "Failed to load resource" —
+so **the criterion is which origin the error came from**, and only same-origin errors count against the page.
 
 Coverage falls into these buckets: hero rendering and the protocol-card four-piece set, list fetching, matrix dimensions and stats consistency,
 the cell-detail popup and its timing scope, **retry cost made visible**, the "only usable protocols" filter,
@@ -520,7 +529,8 @@ and double-click opening over `file://` — plus two assertions that guard what 
 (the theme toggle, the sampling/metering controls). Things deliberately removed get their absence pinned as an
 assertion, so nobody quietly adds them back later.
 
-**56 assertions in total; against `tests/mock.py` it's 56 passed / 0 failed.**
+**56 assertions in total; against `tests/mock.py` it's 56 passed / 0 failed,
+and against the live site it's 17 passed / 0 failed (live mode runs only the sections that need no upstream).**
 
 ```
 PASS  page loads with no console errors

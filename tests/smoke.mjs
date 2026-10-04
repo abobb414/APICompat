@@ -6,7 +6,10 @@
  *   # 或一把梭：bash tests/run.sh
  *
  * 需要 Playwright（`npm i -D playwright && npx playwright install chromium`）。
- * 通过 BASE 环境变量可指到别的地址，例如 BASE=https://apicompat.abobb.site。
+ *
+ * BASE 指到本机（默认 127.0.0.1:8788）跑全量；
+ * BASE 指到别的地址（例如 https://apicompat.abobb.site）进「线上模式」，
+ * 只跑不依赖上游的那几段：首屏 + 主题按系统分流 + file:// 直开。
  */
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
@@ -15,6 +18,12 @@ import path from 'node:path';
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.dirname(HERE);
 const BASE = process.env.BASE || 'http://127.0.0.1:8788';
+
+/* BASE 指到本机之外（例如 BASE=https://apicompat.abobb.site）时进「线上模式」：
+   线上没有 tests/mock.py，跑整轮只会往真站点甩 160 条注定 404 的真请求，
+   既验不出东西也给人家添日志。所以线上只跑「页面自己」的断言 ——
+   首屏、主题按系统分流、file:// 直开，这些都不需要上游。 */
+const LIVE = !/^https?:\/\/(127\.0\.0\.1|localhost|\[::1\])(:\d+)?(\/|$)/.test(BASE);
 
 let pass = 0;
 const failures = [];
@@ -26,7 +35,16 @@ function check(name, ok, detail) {
 const browser = await chromium.launch();
 const page = await browser.newPage({ viewport: { width: 1440, height: 1000 } });
 const consoleErrors = [];
-page.on('console', m => { if (m.type() === 'error') consoleErrors.push(m.text()); });
+/* 只记「这个页面自己的」报错，判据收在报错来自哪个源上。
+   线上站点前面有 Cloudflare，边缘会往 HTML 里注入一段 static.cloudflareinsights.com
+   的分析脚本；本地连不上它时浏览器会报一条「Failed to load resource」——
+   那不是这个页面的错，不该让「无控制台报错」这条挂掉。 */
+page.on('console', m => {
+  if (m.type() !== 'error') return;
+  const src = (m.location() && m.location().url) || '';
+  if (src && !src.startsWith(BASE)) return;
+  consoleErrors.push(m.text());
+});
 page.on('pageerror', e => consoleErrors.push('pageerror: ' + e.message));
 
 // ---- 1. 首屏 ----
@@ -59,6 +77,12 @@ check('页脚是纯前端说明', /纯前端实现/.test(hero.foot) && /只留�
 // 免得日后有人顺手又把它们加回页面上
 check('页面上没有主题切换按钮', !hero.hasThemeBtn);
 check('页面上没有采样次数与探测模式控件', !hero.hasSamplingUi);
+
+if (LIVE) {
+  await runThemeChecks(browser);
+  await runFileOpenCheck(browser);
+  await finish();
+}
 
 // ---- 2. 跑一轮（接 mock）----
 page.on('dialog', d => { consoleErrors.push('dialog: ' + d.message()); d.dismiss(); });
@@ -251,52 +275,56 @@ for (const w of [390, 768, 1024]) {
 // 好处是根本不存在「先亮一屏再变暗」：没有 JS 参与，也就没有首屏闪烁，
 // 连旧版 <head> 里那段同步脚本都不需要了。
 // 这里用两套 colorScheme 各开一个页面，验证「跟随系统」确实跟着系统走。
-const schemeCases = [
-  { scheme: 'light', bg: 'rgb(245, 245, 247)', dark: false },
-  { scheme: 'dark',  bg: 'rgb(16, 16, 19)',    dark: true  },
-];
-for (const c of schemeCases) {
-  const p = await browser.newPage({ viewport: { width: 1440, height: 1000 }, colorScheme: c.scheme });
-  await p.goto(BASE, { waitUntil: 'load' });
-  await p.waitForTimeout(300);
-  const r = await p.evaluate(() => {
-    const body = getComputedStyle(document.body);
-    /* 深色下还亮着的「面」＝漏改的硬编码色。逐个量真正参与渲染的元素，
-       而不是只看 body —— 白块通常出现在卡片、表头、输入框这些内层。 */
-    const sel = '.panel,.proto,.stat,.key-toggle,.link-btn,.btn-ghost,.modal .box,' +
-                'table.matrix thead th,.matrix-scroll';
-    const whites = [];
-    document.querySelectorAll(sel).forEach(el => {
-      const bg = getComputedStyle(el).backgroundColor;
-      const m = bg.match(/^rgb\((\d+), (\d+), (\d+)\)$/);
-      if (m && +m[1] > 235 && +m[2] > 235 && +m[3] > 235) whites.push(el.className + ' → ' + bg);
+// 写成一个函数是为了线上模式也能复用 —— 这段不依赖上游。
+async function runThemeChecks(browser) {
+  const schemeCases = [
+    { scheme: 'light', bg: 'rgb(245, 245, 247)', dark: false },
+    { scheme: 'dark',  bg: 'rgb(16, 16, 19)',    dark: true  },
+  ];
+  for (const c of schemeCases) {
+    const p = await browser.newPage({ viewport: { width: 1440, height: 1000 }, colorScheme: c.scheme });
+    await p.goto(BASE, { waitUntil: 'load' });
+    await p.waitForTimeout(300);
+    const r = await p.evaluate(() => {
+      const body = getComputedStyle(document.body);
+      /* 深色下还亮着的「面」＝漏改的硬编码色。逐个量真正参与渲染的元素，
+         而不是只看 body —— 白块通常出现在卡片、表头、输入框这些内层。 */
+      const sel = '.panel,.proto,.stat,.key-toggle,.link-btn,.btn-ghost,.modal .box,' +
+                  'table.matrix thead th,.matrix-scroll';
+      const whites = [];
+      document.querySelectorAll(sel).forEach(el => {
+        const bg = getComputedStyle(el).backgroundColor;
+        const m = bg.match(/^rgb\((\d+), (\d+), (\d+)\)$/);
+        if (m && +m[1] > 235 && +m[2] > 235 && +m[3] > 235) whites.push(el.className + ' → ' + bg);
+      });
+      const metas = [...document.querySelectorAll('meta[name="theme-color"]')];
+      return {
+        bg: body.backgroundColor, fg: body.color, whites,
+        metas: metas.length,
+        media: metas.map(m => (m.getAttribute('media') || '').replace(/\s+/g, '')),
+        // 首屏不该有任何 JS 在改主题 —— data-theme / data-theme-mode 这类属性一个都不该有
+        attrs: [...document.documentElement.attributes].map(a => a.name)
+          .filter(n => n.indexOf('data-') === 0),
+      };
     });
-    const metas = [...document.querySelectorAll('meta[name="theme-color"]')];
-    return {
-      bg: body.backgroundColor, fg: body.color, whites,
-      metas: metas.length,
-      media: metas.map(m => (m.getAttribute('media') || '').replace(/\s+/g, '')),
-      // 首屏不该有任何 JS 在改主题 —— data-theme / data-theme-mode 这类属性一个都不该有
-      attrs: [...document.documentElement.attributes].map(a => a.name)
-        .filter(n => n.indexOf('data-') === 0),
-    };
-  });
-  const tag = c.dark ? '深色' : '浅色';
-  check(`系统${tag}时页面底色跟着走`, r.bg === c.bg, r.bg);
-  check(`系统${tag}时正文对比正确`,
-    c.dark ? +((r.fg.match(/\d+/) || [0])[0]) > 180 : +((r.fg.match(/\d+/) || [255])[0]) < 120, r.fg);
-  check(`系统${tag}时没有 JS 落定的主题属性`, r.attrs.length === 0, r.attrs.join(','));
-  // 白底扫描只在深色下有判据：浅色本来就是白底，扫不出东西
-  if (c.dark) {
-    check('深色下没有残留白底元素', r.whites.length === 0, r.whites.slice(0, 3).join(' | '));
+    const tag = c.dark ? '深色' : '浅色';
+    check(`系统${tag}时页面底色跟着走`, r.bg === c.bg, r.bg);
+    check(`系统${tag}时正文对比正确`,
+      c.dark ? +((r.fg.match(/\d+/) || [0])[0]) > 180 : +((r.fg.match(/\d+/) || [255])[0]) < 120, r.fg);
+    check(`系统${tag}时没有 JS 落定的主题属性`, r.attrs.length === 0, r.attrs.join(','));
+    // 白底扫描只在深色下有判据：浅色本来就是白底，扫不出东西
+    if (c.dark) {
+      check('深色下没有残留白底元素', r.whites.length === 0, r.whites.slice(0, 3).join(' | '));
+    }
+    check(`${tag}下有两条按系统分流 theme-color 的 meta`,
+      r.metas === 2
+        && r.media.some(x => x.includes('prefers-color-scheme:light'))
+        && r.media.some(x => x.includes('prefers-color-scheme:dark')),
+      JSON.stringify(r.media));
+    await p.close();
   }
-  check(`${tag}下有两条按系统分流 theme-color 的 meta`,
-    r.metas === 2
-      && r.media.some(x => x.includes('prefers-color-scheme:light'))
-      && r.media.some(x => x.includes('prefers-color-scheme:dark')),
-    JSON.stringify(r.media));
-  await p.close();
 }
+await runThemeChecks(browser);
 
 // ---- 9. 采样次数与测速档 ----
 // 压到单协议 × 全部模型的 16 格，并把两件事分两轮跑，各自只花几秒
@@ -404,7 +432,8 @@ check('JSON 导出带上了测量口径与新指标',
 await setProbe({ samples: 1, metering: false });
 
 // ---- 10. file:// 直开 ----
-{
+// 读的是本仓库里那份 index.html，同样不依赖上游，线上模式也复用。
+async function runFileOpenCheck(browser) {
   const p = await browser.newPage();
   const ferr = [];
   p.on('pageerror', e => ferr.push(e.message));
@@ -414,10 +443,14 @@ await setProbe({ samples: 1, metering: false });
   check('file:// 双击直开可用（协议卡与脚本都在）', n === 10 && ferr.length === 0, `卡片 ${n}，错误 ${ferr.length}`);
   await p.close();
 }
+await runFileOpenCheck(browser);
 
-await browser.close();
-console.log('\n' + '='.repeat(52));
-console.log(`  ${pass} passed, ${failures.length} failed`);
-if (failures.length) { console.log('  失败项: ' + failures.join(', ')); }
-console.log('='.repeat(52));
-process.exit(failures.length ? 1 : 0);
+async function finish() {
+  await browser.close();
+  console.log('\n' + '='.repeat(52));
+  console.log(`  ${pass} passed, ${failures.length} failed`);
+  if (failures.length) { console.log('  失败项: ' + failures.join(', ')); }
+  console.log('='.repeat(52));
+  process.exit(failures.length ? 1 : 0);
+}
+await finish();

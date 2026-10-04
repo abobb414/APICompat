@@ -496,9 +496,17 @@ bash tests/run.sh
 python3 tests/mock.py 8788 &
 node tests/smoke.mjs
 
-# 也可以对着线上跑（只验证首屏与渲染，不会发探测请求）
+# 也可以对着线上跑：BASE 指到本机之外会自动进「线上模式」，
+# 只跑不依赖上游的那 17 条（首屏 + 主题分流 + file:// 直开），不发任何探测请求
 BASE=https://apicompat.abobb.site node tests/smoke.mjs
 ```
+
+**两种模式**：BASE 是本机（默认 `127.0.0.1:8788`）就跑全量；指到别的地址就进线上模式。
+线上没有那个假中转站，跑全量只会往真站点甩 160 条注定 404 的真请求 —— 既验不出东西也给人家添日志，
+所以线上模式只跑「页面自己」的那几段。顺带一个坑：线上站点前面站着 Cloudflare，
+边缘会往 HTML 里注入一段 `static.cloudflareinsights.com` 的分析脚本，
+本地连不上它时浏览器会报一条「Failed to load resource」——
+**判据收在报错来自哪个源上**，只有同源的报错才算这个页面的错。
 
 覆盖的是这几类：首屏渲染与协议卡四件套、拉清单、矩阵尺寸与统计自洽、
 单格明细弹窗与计时口径、**重试代价可见**、只看可用协议筛选、四种导出非空、
@@ -506,7 +514,8 @@ BASE=https://apicompat.abobb.site node tests/smoke.mjs
 以及两项**「不许出现在界面上」**的断言（主题按钮、采样与测速控件）——
 刻意删掉的东西，把「它不在了」钉成断言，免得日后有人顺手加回来。
 
-**共 56 条断言，对着 `tests/mock.py` 跑是 56 passed / 0 failed。**
+**共 56 条断言，对着 `tests/mock.py` 跑是 56 passed / 0 failed；
+对着线上跑是 17 passed / 0 failed（线上模式只跑不依赖上游的那几段）。**
 
 ```
 PASS  页面载入无控制台报错
