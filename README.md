@@ -39,8 +39,8 @@
       <br><sub><b>配置面板</b> · 填地址 + Key，勾要测的协议。10 张卡各自标着打的是哪个端点</sub>
     </td>
     <td width="50%" valign="top">
-      <img src="docs/screenshots/matrix.jpg" alt="结果矩阵">
-      <br><sub><b>结果矩阵</b> · 模型 × 协议逐格出状态与首块延迟；「服务端声明」列标出声明与实测不符的模型</sub>
+      <img src="docs/screenshots/matrix.jpg" alt="跨协议实测矩阵">
+      <br><sub><b>实测矩阵</b> · 顶上统计条报总数与中位延迟，每格出状态与首块延迟；「服务端声明」列标出声明与实测不符的模型</sub>
     </td>
   </tr>
 </table>

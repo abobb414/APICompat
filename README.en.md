@@ -39,8 +39,8 @@ giving a status and a first-chunk latency per cell, and finally exports a diagno
       <br><sub><b>Config panel</b> · enter the base URL + key, tick the protocols to test. Each of the 10 cards labels the endpoint it hits</sub>
     </td>
     <td width="50%" valign="top">
-      <img src="docs/screenshots/matrix.jpg" alt="Result matrix">
-      <br><sub><b>Result matrix</b> · model × protocol, a status and first-chunk latency per cell; the "server-declared" column flags models where the declaration doesn't match the measurement</sub>
+      <img src="docs/screenshots/matrix.jpg" alt="Cross-protocol measurement matrix">
+      <br><sub><b>Measurement matrix</b> · the summary bar reports totals and the median latency, each cell carries a status and first-chunk latency, and the "server-declared" column flags declarations that don't match the measurement</sub>
     </td>
   </tr>
 </table>
