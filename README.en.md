@@ -18,7 +18,7 @@ giving a status and a first-chunk latency per cell, and finally exports a diagno
 [![Protocols](https://img.shields.io/badge/protocols-10-8b5cf6?style=flat-square)](#protocol-matrix)
 [![States](https://img.shields.io/badge/states-11_attributions-f59e0b?style=flat-square)](#the-eleven-states)
 [![Theme](https://img.shields.io/badge/theme-follows_OS_%C2%B7_no_toggle-334155?style=flat-square)](#light-and-dark-follows-the-os-no-toggle)
-[![Single File](https://img.shields.io/badge/single_file-134_KB_%C2%B7_3236_lines-64748b?style=flat-square)](#project-structure)
+[![Single File](https://img.shields.io/badge/single_file-147_KB_%C2%B7_3288_lines-64748b?style=flat-square)](#project-structure)
 
 [Live Demo](https://apicompat.abobb.site) · [Preview](#preview) · [Protocol Matrix](#protocol-matrix) · [Test Flow](#test-flow) · [Quick Start](#quick-start) · [Engineering Notes](#engineering-notes-the-pitfalls)
 
@@ -36,7 +36,7 @@ giving a status and a first-chunk latency per cell, and finally exports a diagno
   <tr>
     <td width="50%" valign="top">
       <img src="docs/screenshots/hero.jpg" alt="Config panel">
-      <br><sub><b>Config panel</b> · enter the base URL + key, tick the protocols to test. Each of the 10 cards labels the endpoint it hits</sub>
+      <br><sub><b>Config panel</b> · the brand lockup sits top-left; enter the base URL + key and tick the protocols to test. Each of the 10 cards labels the endpoint it hits</sub>
     </td>
     <td width="50%" valign="top">
       <img src="docs/screenshots/matrix.jpg" alt="Cross-protocol measurement matrix">
@@ -60,6 +60,7 @@ giving a status and a first-chunk latency per cell, and finally exports a diagno
   - [Sampling and Metering: the Capability Is There, the Controls Are Not](#sampling-and-metering-the-capability-is-there-the-controls-are-not)
   - [Timing Scope and Retries: Two Numbers That Have to Be Stated Plainly](#timing-scope-and-retries-two-numbers-that-have-to-be-stated-plainly)
   - [Light and Dark: Follows the OS, No Toggle](#light-and-dark-follows-the-os-no-toggle)
+  - [The Top-Left Brand Lockup: One Ruler Shared with the Weather Page](#the-top-left-brand-lockup-one-ruler-shared-with-the-weather-page)
   - [Declared ≠ Observed](#declared--observed)
   - [Base URL Normalization: Whatever You Paste Works](#base-url-normalization-whatever-you-paste-works)
   - [Four Export Formats](#four-export-formats)
@@ -332,6 +333,38 @@ A few things that aren't obvious:
 - **Exported reports follow as well.** The HTML report is a standalone file that doesn't carry the main stylesheet,
   so it writes its own dark overrides — it has to follow the **recipient's** OS, not the one you exported on.
 
+### The Top-Left Brand Lockup: One Ruler Shared with the Weather Page
+
+The top-left corner carries an "icon + two lines of text" brand mark (`APICompat` / `compatibility test`)
+that shares **one layout** with the top bars of [weather.abobb.com](https://weather.abobb.com) and the start page —
+put the three side by side and the icon sits at the same distance from the screen's left edge,
+with the same sizes and leading on both lines:
+
+| Measure | Value |
+|---|---|
+| Top inset | `27px` (to the top of the two text line boxes) |
+| Left edge | `clamp(22px, 5vw, 76px)`, tracking the viewport width |
+| Gap between icon and text | `10px` |
+| First line | Manrope `700` `14px` / line-height `1.1` / tracking `.02em` |
+| Second line | DM Mono `400` `10px` / line-height `1.3` / `4px` below the first / tracking `.04em` / lowercase |
+
+Three things that aren't obvious:
+
+- **The fonts are inlined subsets, not a CDN.** The weather page pulls Manrope and DM Mono from Google Fonts,
+  but this page promises "no external resource requests" — so both families are **subset down to just the
+  dozen-odd glyphs the lockup uses** (under 2 KB of woff2 together) and tucked into `@font-face` as `data:` URIs.
+  The glyphs match the weather page point for point while not a single byte leaves the machine.
+  🔴 The price: **changing the copy means re-subsetting**, or the new characters fall back to a system font and
+  the glyphs stop matching the weather page. The "brand fonts are inlined subsets" assertion exists to catch that.
+- **The icon's ink aligns to the text's ink, not to the boxes.** The artwork (that icons8 glyph) fills only
+  **75%** of its canvas — 12.5% of headroom above and below — so a plain `align-items:center` would let it
+  poke out at both ends. The fix is to solve for the box: `box height = the two text lines' ink height / 0.75
+  = 28.5125 / 0.75 ≈ 38.017px`, plus `margin-top: -1.674px` to cancel the 12.5% inside the box. The icon's ink
+  then starts exactly at the first line's ink top and ends exactly at the second line's ink bottom —
+  **measured deviation under 0.01px** (how it's measured lives in the two brand assertions inside `tests/smoke.mjs`).
+- **The icon is a `mask` fed by `currentColor`, no hard-coded color.** It turns white by itself in dark mode —
+  no second copy of the artwork, and no chance of "a dark icon on a dark ground" slipping through.
+
 ### Declared ≠ Observed
 
 This is the most interesting column in the tool. The server's `supported_endpoint_types` is the declaration,
@@ -419,26 +452,27 @@ vercel deploy --prod
 
 ```
 .
-├── index.html              # all styles and logic, no external requests, 134 KB / 3236 lines
+├── index.html              # all styles and logic, no external requests, 147 KB / 3288 lines
 ├── robots.txt
 ├── docs/
 │   ├── images/             # README header logo
 │   └── screenshots/        # config panel and the result matrix
 └── tests/
     ├── mock.py             # fake relay: 16 models × 10 protocols, Python standard library only
-    ├── smoke.mjs           # end-to-end assertions (Playwright, 58 of them)
+    ├── smoke.mjs           # end-to-end assertions (Playwright, 64 of them)
     └── run.sh              # start mock → run assertions → done
 ```
 
 **Having only one `index.html`** is deliberate: hand it to a colleague, drop it on a USB stick, attach it to an email — no directory to carry along.
 The price is that the file can't afford to grow fat — no icon font, no icon bitmaps, no standalone favicon file.
 Every graphic on the page (status pills, colour bars, checkboxes, the step dots) is drawn in CSS.
-The one inlined binary is the favicon: 16 and 32 px, folded into `data:` URIs inside the `<head>`
-**precisely so it does not become a `favicon.ico`** — as a separate file the browser fetches it on every page load,
-and a `file://` double-click may not get it at all.
+The inlined binaries are exactly three: the two favicon sizes, the top-left brand icon, and the two font subsets
+behind the brand lockup (about 12.5 KB together). **Shipping them as separate files would be the lazy way out, and that is exactly what this page refuses to do** —
+a `favicon.ico` costs one extra request per load and isn't guaranteed to resolve over `file://`; fonts off a CDN would
+outright break the "no external resource requests" promise.
 So dropping the previous version's "trace a bitmap to vectors, then inline it as a mask" icon set took the file from
-158 KB down to 131 KB, and the two favicon sizes bring it back to 134 KB (about 3.7 KB net) — while this version has
-**more** capability than the last one (sampling and metering, just kept off the UI).
+158 KB down to 131 KB; the favicon added about 3.7 KB, the brand lockup another 12.5 KB, landing at 147 KB —
+while this version has **more** capability than the one before it (sampling and metering, just kept off the UI).
 
 ## Implementation Notes
 
@@ -482,8 +516,8 @@ python3 tests/mock.py 8788 &
 node tests/smoke.mjs
 
 # or run it against the live site: pointing BASE off-machine switches to "live mode",
-# which runs only the 17 assertions that don't need an upstream
-# (hero + theme splitting + file:// double-click) and sends no probe requests
+# which runs only the 25 assertions that don't need an upstream
+# (hero + brand lockup + theme splitting + file:// double-click) and sends no probe requests
 BASE=https://apicompat.abobb.site node tests/smoke.mjs
 ```
 
@@ -499,12 +533,15 @@ the cell-detail popup and its timing scope, **retry cost made visible**, the "on
 the four exports being non-empty, no horizontal overflow at the 390 / 768 / 1024 breakpoints,
 and double-click opening over `file://` — plus two assertions that guard what must **not** be on the page
 (the theme toggle, the sampling/metering controls). Things deliberately removed get their absence pinned as an
-assertion, so nobody quietly adds them back later. Then two more that watch a **promise** instead of a feature:
-that the favicon really is a **decodable** PNG data URI, and that the page issues no external resource request at all —
-the latter being exactly the sentence above, which nobody would otherwise be checking.
+assertion, so nobody quietly adds them back later. Then four more that watch a **promise** instead of a feature:
+that the favicon really is a **decodable** PNG data URI, that the page issues no external resource request at all
+(exactly the sentence above, which nobody would otherwise be checking), that the brand lockup's fonts really are the
+inlined subsets (falling back to a system font would desync the glyphs from the weather page), and that the
+**brand icon's ink lines up with the two text lines' ink**, top and bottom, within 0.5 px — the last being the
+easiest thing to break silently, since nudging any single size, line-height or gap throws it off.
 
-**58 assertions in total; against `tests/mock.py` it's 58 passed / 0 failed,
-and against the live site it's 19 passed / 0 failed (live mode runs only the sections that need no upstream).**
+**64 assertions in total; against `tests/mock.py` it's 64 passed / 0 failed,
+and against the live site it's 25 passed / 0 failed (live mode runs only the sections that need no upstream).**
 
 ```
 PASS  page loads with no console errors
@@ -516,6 +553,10 @@ PASS  there is no theme toggle button on the page
 PASS  there are no sample-count or probe-mode controls on the page
 PASS  the favicon is two inline PNG data URIs (16 / 32) and both decode
 PASS  the page issues no external resource request (the icon is inline too)
+PASS  the top-left brand lockup renders "APICompat / compatibility test"
+PASS  the brand fonts are the inlined Manrope + DM Mono subsets (no system fallback)
+PASS  the brand bar sits 27px from the top, left edge follows the clamp (same layout as the weather page)
+PASS  brand icon ink lines up with the two text lines' ink (within 0.5px)
 PASS  full-protocol probe finishes
 PASS  model list fetched (16 visible models)
 PASS  matrix row count = model count
@@ -545,10 +586,12 @@ PASS  no horizontal overflow at 1024px
 PASS  the page background follows the OS in light mode
 PASS  body text contrast is right in light mode
 PASS  no JS-settled theme attribute when the OS is light
+PASS  the brand icon ink follows the theme in light mode
 PASS  two system-split theme-color metas in light mode
 PASS  the page background follows the OS in dark mode
 PASS  body text contrast is right in dark mode
 PASS  no JS-settled theme attribute when the OS is dark
+PASS  the brand icon ink follows the theme in dark mode
 PASS  no bright-background elements are left in dark mode
 PASS  two system-split theme-color metas in dark mode
 PASS  ?samples=4&meter=1 is parsed into the internal setup
@@ -567,7 +610,7 @@ PASS  the JSON export carries the measurement setup and the new metrics
 PASS  file:// double-click works (protocol cards and scripts are both there)
 
 ====================================================
-  58 passed, 0 failed
+  64 passed, 0 failed
 ====================================================
 ```
 

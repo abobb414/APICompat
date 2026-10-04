@@ -63,7 +63,14 @@ page.on('request', r => {
 await page.goto(BASE, { waitUntil: 'load', timeout: 60000 });
 await page.waitForTimeout(400);
 
-const hero = await page.evaluate(async () => {
+/* 左上角品牌标识的墨迹对齐：图标素材（icons8 那张）的墨迹只占画布 75%，
+   上下各留 12.5%，所以「图标墨迹」= 盒子顶 + 12.5% × 盒高 → 盒子顶 + 87.5% × 盒高。
+   这条断言盯的是它跟两行文字墨迹的上/下沿是否压平 —— 只比盒子位置是看不出来的。 */
+const BRAND_ICON_INK_TOP = 0.125;
+const BRAND_ICON_INK_BOTTOM = 0.875;
+
+const hero = await page.evaluate(async (INK) => {
+  const INK_TOP = INK.top, INK_BOTTOM = INK.bottom;
   const cards = [...document.querySelectorAll('#protoGrid .proto')];
   /* favicon：既看 link 本身是 data URI，也真的解码一次 ——
      光看 href 前缀只证明「写进去了」，解不开的 base64 照样能骗过那种检查。 */
@@ -77,6 +84,40 @@ const hero = await page.evaluate(async () => {
     im.onerror = () => res(info);
     im.src = href;
   })));
+  /* 品牌区：文字墨迹靠 Canvas 度量推基线（不能用 parseFloat(lineHeight)，
+     line-height 写成 1.1 时它算出来是 15.4px 的绝对行盒高，但也可能是 normal → NaN）。 */
+  const inkOf = (el, sample) => {
+    const cs = getComputedStyle(el), r = el.getBoundingClientRect();
+    const ctx = document.createElement('canvas').getContext('2d');
+    ctx.font = cs.fontStyle + ' ' + cs.fontWeight + ' ' + cs.fontSize + ' ' + cs.fontFamily;
+    const m = ctx.measureText(sample);
+    const half = (r.height - (m.fontBoundingBoxAscent + m.fontBoundingBoxDescent)) / 2;
+    const base = half + m.fontBoundingBoxAscent;
+    return { top: r.top + base - m.actualBoundingBoxAscent,
+             bottom: r.top + base + m.actualBoundingBoxDescent };
+  };
+  const bar = document.querySelector('.brand-bar');
+  const logo = document.querySelector('.brand-logo');
+  const nameEl = document.querySelector('.brand-name');
+  const subEl = document.querySelector('.brand-sub');
+  let brand = null;
+  if (bar && logo && nameEl && subEl) {
+    const lr = logo.getBoundingClientRect();
+    const n = inkOf(nameEl, nameEl.textContent), s = inkOf(subEl, subEl.textContent);
+    brand = {
+      text: (nameEl.textContent + ' / ' + subEl.textContent).trim(),
+      barTop: bar.getBoundingClientRect().top,
+      padTop: getComputedStyle(bar).paddingTop,
+      padLeft: getComputedStyle(bar).paddingLeft,
+      logoW: lr.width, logoH: lr.height,
+      dTop: (lr.top + INK_TOP * lr.height) - n.top,
+      dBottom: (lr.top + INK_BOTTOM * lr.height) - s.bottom,
+      // 子集字体真的落地了吗（false 就说明掉回系统字体了，字形会跟 weather 页不一样）
+      fonts: [document.fonts.check('700 14px Manrope'),
+              document.fonts.check('400 10px "DM Mono"')],
+      logoLeft: lr.left,
+    };
+  }
   return {
     cards: cards.length,
     on: cards.filter(e => e.classList.contains('on')).map(e => e.dataset.id),
@@ -90,8 +131,9 @@ const hero = await page.evaluate(async () => {
     hasThemeBtn: !!document.getElementById('themeBtn'),
     hasSamplingUi: !!document.getElementById('samples') || !!document.getElementById('probeMode'),
     icons,
+    brand,
   };
-});
+}, { top: BRAND_ICON_INK_TOP, bottom: BRAND_ICON_INK_BOTTOM });
 check('页面载入无控制台报错', consoleErrors.length === 0, consoleErrors.slice(0, 3).join(' | '));
 check('渲染 10 张协议卡', hero.cards === 10, `实际 ${hero.cards}`);
 check('默认只勾选 3 个主协议', hero.on.length === 3 && hero.on.includes('openai') && hero.on.includes('anthropic'),
@@ -112,6 +154,22 @@ check('favicon 内联为两条 PNG data URI（16 / 32），且都能解码',
   JSON.stringify(icons.map(x => `${x.sizes}→${x.w}px`)));
 check('页面不发任何外部资源请求（图标也是内联的）',
   externalReqs.length === 0, externalReqs.slice(0, 3).join(' | '));
+
+/* 品牌区四条：文案齐、字体真的落地（子集没生效就掉回系统字体）、
+   顶部留空 27px + 左缘跟随 clamp、以及图标墨迹与两行文字墨迹的上下沿压平。
+   最后一条是这次改动最容易悄悄退化的地方 —— 动一下字号/行高/间隙就会错开。 */
+const bd = hero.brand;
+check('左上角品牌区渲染出「APICompat / compatibility test」',
+  !!bd && bd.text === 'APICompat / compatibility test', bd ? bd.text : '未找到 .brand-bar');
+check('品牌字体是内联子集的 Manrope + DM Mono（没掉回系统字体）',
+  !!bd && bd.fonts.every(Boolean), bd ? JSON.stringify(bd.fonts) : '—');
+check('品牌区顶部留空 27px、左缘跟随 clamp（与 weather 页同一套版式）',
+  !!bd && bd.padTop === '27px' && parseFloat(bd.padLeft) >= 22 && parseFloat(bd.padLeft) <= 76
+  && Math.abs(bd.logoLeft - parseFloat(bd.padLeft)) < 0.5,
+  bd ? `pad ${bd.padTop} / ${bd.padLeft}，图标左缘 ${bd.logoLeft.toFixed(2)}` : '—');
+check('图标墨迹与两行文字的墨迹上下沿对齐（偏差 < 0.5px）',
+  !!bd && Math.abs(bd.dTop) < 0.5 && Math.abs(bd.dBottom) < 0.5,
+  bd ? `上沿差 ${bd.dTop.toFixed(3)}px / 下沿差 ${bd.dBottom.toFixed(3)}px` : '—');
 
 if (LIVE) {
   await runThemeChecks(browser);
@@ -333,8 +391,12 @@ async function runThemeChecks(browser) {
         if (m && +m[1] > 235 && +m[2] > 235 && +m[3] > 235) whites.push(el.className + ' → ' + bg);
       });
       const metas = [...document.querySelectorAll('meta[name="theme-color"]')];
+      /* 品牌图标走 mask + currentColor，颜色应当跟着主题走 ——
+         这里是 `background:currentColor` 把墨色铺进 mask 的，所以量 backgroundColor。 */
+      const lg = document.querySelector('.brand-logo');
+      const logoBg = lg ? getComputedStyle(lg).backgroundColor : '';
       return {
-        bg: body.backgroundColor, fg: body.color, whites,
+        bg: body.backgroundColor, fg: body.color, whites, logoBg,
         metas: metas.length,
         media: metas.map(m => (m.getAttribute('media') || '').replace(/\s+/g, '')),
         // 首屏不该有任何 JS 在改主题 —— data-theme / data-theme-mode 这类属性一个都不该有
@@ -347,6 +409,10 @@ async function runThemeChecks(browser) {
     check(`系统${tag}时正文对比正确`,
       c.dark ? +((r.fg.match(/\d+/) || [0])[0]) > 180 : +((r.fg.match(/\d+/) || [255])[0]) < 120, r.fg);
     check(`系统${tag}时没有 JS 落定的主题属性`, r.attrs.length === 0, r.attrs.join(','));
+    // 品牌图标是 mask + currentColor，不该写死颜色 —— 深色下它必须跟着变浅
+    check(`系统${tag}时品牌图标墨色跟着主题走`,
+      c.dark ? +((r.logoBg.match(/\d+/) || [0])[0]) > 180 : +((r.logoBg.match(/\d+/) || [255])[0]) < 120,
+      r.logoBg || '未找到 .brand-logo');
     // 白底扫描只在深色下有判据：浅色本来就是白底，扫不出东西
     if (c.dark) {
       check('深色下没有残留白底元素', r.whites.length === 0, r.whites.slice(0, 3).join(' | '));
