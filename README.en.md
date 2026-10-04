@@ -2,10 +2,7 @@
 
 <div align="center">
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./docs/images/logo-white.png" />
-  <img src="./docs/images/logo.png" alt="APICompat" width="124" />
-</picture>
+<img src="./docs/images/logo.png" alt="APICompat" width="124" />
 
 # APICompat
 
@@ -21,7 +18,7 @@ giving a status and a first-chunk latency per cell, and finally exports a diagno
 [![Protocols](https://img.shields.io/badge/protocols-10-8b5cf6?style=flat-square)](#protocol-matrix)
 [![States](https://img.shields.io/badge/states-11_attributions-f59e0b?style=flat-square)](#the-eleven-states)
 [![Theme](https://img.shields.io/badge/theme-follows_OS_%C2%B7_no_toggle-334155?style=flat-square)](#light-and-dark-follows-the-os-no-toggle)
-[![Single File](https://img.shields.io/badge/single_file-131_KB_%C2%B7_3233_lines-64748b?style=flat-square)](#project-structure)
+[![Single File](https://img.shields.io/badge/single_file-134_KB_%C2%B7_3236_lines-64748b?style=flat-square)](#project-structure)
 
 [Live Demo](https://apicompat.abobb.site) · [Preview](#preview) · [Protocol Matrix](#protocol-matrix) · [Test Flow](#test-flow) · [Quick Start](#quick-start) · [Engineering Notes](#engineering-notes-the-pitfalls)
 
@@ -31,9 +28,9 @@ giving a status and a first-chunk latency per cell, and finally exports a diagno
 
 ## Preview
 
-> Screenshots come from the live version. **The result matrix and report shots were staged against a local `tests/mock.py`** —
+> Screenshots come from the live version. **The result matrix shot was staged against a local `tests/mock.py`** —
 > 16 models, 10 protocols, 160 combinations, with real requests and real timing,
-> only the upstream swapped for a fake relay, so no real quota got burned just for screenshots. The hero and mobile shots are the live site as-is.
+> only the upstream swapped for a fake relay, so no real quota got burned just for screenshots. The config panel shot is the live site as-is.
 
 <table>
   <tr>
@@ -46,35 +43,7 @@ giving a status and a first-chunk latency per cell, and finally exports a diagno
       <br><sub><b>Result matrix</b> · model × protocol, a status and first-chunk latency per cell; the "server-declared" column flags models where the declaration doesn't match the measurement</sub>
     </td>
   </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <img src="docs/screenshots/detail.jpg" alt="Cell detail">
-      <br><sub><b>Cell detail</b> · click any cell to see the actual request URL, the response mode, the first-chunk latency, and whether that cell needed a retry</sub>
-    </td>
-    <td width="50%" valign="top">
-      <img src="docs/screenshots/report.jpg" alt="Diagnostic report">
-      <br><sub><b>Diagnostic report</b> · protocol pass rate, fully unusable / fully passing, declared vs. observed mismatches, recommended picks</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <img src="docs/screenshots/dark-config.jpg" alt="Config panel under the OS dark theme">
-      <br><sub><b>Dark</b> · switch the OS to dark and this is what you get — there is no toggle on the page. Colors all run through one set of CSS variables, so nothing is left bright</sub>
-    </td>
-    <td width="50%" valign="top">
-      <img src="docs/screenshots/dark-matrix.jpg" alt="Matrix under the OS dark theme">
-      <br><sub><b>Matrix, dark</b> · dark is not light inverted: base color, accent and the text on accent chips are all separately chosen values</sub>
-    </td>
-  </tr>
 </table>
-
-<div align="center">
-
-<img src="docs/screenshots/mobile.jpg" width="34%" alt="Mobile">
-
-<br><sub><b>Mobile</b> · collapses to a single column at 390px; the matrix scrolls sideways with the model column frozen</sub>
-
-</div>
 
 ---
 
@@ -450,23 +419,26 @@ vercel deploy --prod
 
 ```
 .
-├── index.html              # all styles and logic, no external requests, 131 KB / 3233 lines
+├── index.html              # all styles and logic, no external requests, 134 KB / 3236 lines
 ├── robots.txt
 ├── docs/
-│   ├── images/             # README header logos
-│   └── screenshots/        # config, matrix, detail, report, mobile, dark
+│   ├── images/             # README header logo
+│   └── screenshots/        # config panel and the result matrix
 └── tests/
     ├── mock.py             # fake relay: 16 models × 10 protocols, Python standard library only
-    ├── smoke.mjs           # end-to-end assertions (Playwright, 56 of them)
+    ├── smoke.mjs           # end-to-end assertions (Playwright, 58 of them)
     └── run.sh              # start mock → run assertions → done
 ```
 
 **Having only one `index.html`** is deliberate: hand it to a colleague, drop it on a USB stick, attach it to an email — no directory to carry along.
-The price is that the file can't afford to grow fat — no icon font, no icon bitmaps, no favicon file, not a single
-`data:` inlined asset. Every graphic on the page (status pills, colour bars, checkboxes, the step dots) is drawn in CSS.
+The price is that the file can't afford to grow fat — no icon font, no icon bitmaps, no standalone favicon file.
+Every graphic on the page (status pills, colour bars, checkboxes, the step dots) is drawn in CSS.
+The one inlined binary is the favicon: 16 and 32 px, folded into `data:` URIs inside the `<head>`
+**precisely so it does not become a `favicon.ico`** — as a separate file the browser fetches it on every page load,
+and a `file://` double-click may not get it at all.
 So dropping the previous version's "trace a bitmap to vectors, then inline it as a mask" icon set took the file from
-158 KB down to 131 KB — while this version has **more** capability than the last one (sampling and metering,
-just kept off the UI).
+158 KB down to 131 KB, and the two favicon sizes bring it back to 134 KB (about 3.7 KB net) — while this version has
+**more** capability than the last one (sampling and metering, just kept off the UI).
 
 ## Implementation Notes
 
@@ -527,10 +499,12 @@ the cell-detail popup and its timing scope, **retry cost made visible**, the "on
 the four exports being non-empty, no horizontal overflow at the 390 / 768 / 1024 breakpoints,
 and double-click opening over `file://` — plus two assertions that guard what must **not** be on the page
 (the theme toggle, the sampling/metering controls). Things deliberately removed get their absence pinned as an
-assertion, so nobody quietly adds them back later.
+assertion, so nobody quietly adds them back later. Then two more that watch a **promise** instead of a feature:
+that the favicon really is a **decodable** PNG data URI, and that the page issues no external resource request at all —
+the latter being exactly the sentence above, which nobody would otherwise be checking.
 
-**56 assertions in total; against `tests/mock.py` it's 56 passed / 0 failed,
-and against the live site it's 17 passed / 0 failed (live mode runs only the sections that need no upstream).**
+**58 assertions in total; against `tests/mock.py` it's 58 passed / 0 failed,
+and against the live site it's 19 passed / 0 failed (live mode runs only the sections that need no upstream).**
 
 ```
 PASS  page loads with no console errors
@@ -540,6 +514,8 @@ PASS  every protocol card carries name / tag / path / scenario note
 PASS  footer is the pure-front-end notice
 PASS  there is no theme toggle button on the page
 PASS  there are no sample-count or probe-mode controls on the page
+PASS  the favicon is two inline PNG data URIs (16 / 32) and both decode
+PASS  the page issues no external resource request (the icon is inline too)
 PASS  full-protocol probe finishes
 PASS  model list fetched (16 visible models)
 PASS  matrix row count = model count
@@ -591,7 +567,7 @@ PASS  the JSON export carries the measurement setup and the new metrics
 PASS  file:// double-click works (protocol cards and scripts are both there)
 
 ====================================================
-  56 passed, 0 failed
+  58 passed, 0 failed
 ====================================================
 ```
 

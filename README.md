@@ -2,10 +2,7 @@
 
 <div align="center">
 
-<picture>
-  <source media="(prefers-color-scheme: dark)" srcset="./docs/images/logo-white.png" />
-  <img src="./docs/images/logo.png" alt="APICompat" width="124" />
-</picture>
+<img src="./docs/images/logo.png" alt="APICompat" width="124" />
 
 # APICompat
 
@@ -21,7 +18,7 @@
 [![Protocols](https://img.shields.io/badge/protocols-10-8b5cf6?style=flat-square)](#协议矩阵)
 [![States](https://img.shields.io/badge/states-11_种归因-f59e0b?style=flat-square)](#十一种状态)
 [![Theme](https://img.shields.io/badge/theme-跟随系统_·_无开关-334155?style=flat-square)](#深浅主题跟随系统不设开关)
-[![Single File](https://img.shields.io/badge/single_file-131_KB_·_3233_行-64748b?style=flat-square)](#项目结构)
+[![Single File](https://img.shields.io/badge/single_file-134_KB_·_3236_行-64748b?style=flat-square)](#项目结构)
 
 [在线体验](https://apicompat.abobb.site) · [预览](#预览) · [协议矩阵](#协议矩阵) · [实测流程](#实测流程) · [快速开始](#快速开始) · [工程笔记](#工程笔记那些踩过的坑)
 
@@ -31,9 +28,9 @@
 
 ## 预览
 
-> 截图取自线上运行版本。**结果矩阵与报告那几张是在本地 `tests/mock.py` 上取的景** ——
+> 截图取自线上运行版本。**结果矩阵那张是在本地 `tests/mock.py` 上取的景** ——
 > 16 个模型、10 种协议、160 个组合，跑的是真实请求与真实计时，
-> 只是上游换成了假中转站，免得为了截图去烧真实额度。首屏与移动端是线上原样。
+> 只是上游换成了假中转站，免得为了截图去烧真实额度。配置面板是线上原样。
 
 <table>
   <tr>
@@ -46,35 +43,7 @@
       <br><sub><b>结果矩阵</b> · 模型 × 协议逐格出状态与首块延迟；「服务端声明」列标出声明与实测不符的模型</sub>
     </td>
   </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <img src="docs/screenshots/detail.jpg" alt="单格明细">
-      <br><sub><b>单格明细</b> · 点任意一格看到实际请求地址、响应方式、首块延迟，以及这一格是否需要重试</sub>
-    </td>
-    <td width="50%" valign="top">
-      <img src="docs/screenshots/report.jpg" alt="诊断报告">
-      <br><sub><b>诊断报告</b> · 协议通过率、完全不可用 / 全量通过、声明与实测不符、推荐首选</sub>
-    </td>
-  </tr>
-  <tr>
-    <td width="50%" valign="top">
-      <img src="docs/screenshots/dark-config.jpg" alt="深色下的配置面板">
-      <br><sub><b>深色</b> · 把系统切成深色就是这个样子，页面里没有切换按钮 —— 配色全走一套 CSS 变量，深色下不剩白块</sub>
-    </td>
-    <td width="50%" valign="top">
-      <img src="docs/screenshots/dark-matrix.jpg" alt="深色下的矩阵">
-      <br><sub><b>深色下的矩阵</b> · 深色不是把浅色反过来：底色、强调色、亮蓝底上的字都是另配的一套值</sub>
-    </td>
-  </tr>
 </table>
-
-<div align="center">
-
-<img src="docs/screenshots/mobile.jpg" width="34%" alt="移动端">
-
-<br><sub><b>移动端</b> · 390px 下一列铺开；矩阵横向可滚，模型列冻结</sub>
-
-</div>
 
 ---
 
@@ -439,21 +408,25 @@ vercel deploy --prod
 
 ```
 .
-├── index.html              # 全部样式与逻辑，不发任何外部请求，131 KB / 3233 行
+├── index.html              # 全部样式与逻辑，不发任何外部请求，134 KB / 3236 行
 ├── robots.txt
 ├── docs/
 │   ├── images/             # README 抬头 logo
-│   └── screenshots/        # 配置面板、矩阵、明细、报告、移动端、深色
+│   └── screenshots/        # 配置面板与结果矩阵
 └── tests/
     ├── mock.py             # 假中转站：16 个模型 × 10 种协议，只用 Python 标准库
-    ├── smoke.mjs           # 端到端断言（Playwright，53 条）
+    ├── smoke.mjs           # 端到端断言（Playwright，58 条）
     └── run.sh              # 起 mock → 跑断言 → 收工
 ```
 
 **只有一个 `index.html`** 这件事是刻意的：拷贝给同事、丢进 U 盘、发邮件附件都不用带目录。
-代价是文件不能贪大 —— 没有图标字体、没有图标位图、没有 favicon 文件、没有一个 `data:` 内联资源，
+代价是文件不能贪大 —— 没有图标字体、没有图标位图、没有独立的 favicon 文件，
 页面上所有图形（状态胶囊、配色条、勾选框、步骤圆点）都是 CSS 画的。
+唯一的内联二进制是 favicon：16 / 32 两档缩成 `data:` URI 塞在 `<head>` 里，
+**就是为了不放成 `favicon.ico`** —— 放成独立文件，每开一次页面浏览器就多一次请求，
+双击 `file://` 打开时还不一定取得到。
 所以砍掉旧版那套「位图描矢量再当蒙版内联」的图标之后，文件从 158 KB 降到 131 KB，
+加上这两档图标回到 134 KB（净增约 3.7 KB），
 而这一版还比上一版**多**了采样与测速两项能力（只是不占界面）。
 
 ## 实现要点
@@ -511,11 +484,13 @@ BASE=https://apicompat.abobb.site node tests/smoke.mjs
 覆盖的是这几类：首屏渲染与协议卡四件套、拉清单、矩阵尺寸与统计自洽、
 单格明细弹窗与计时口径、**重试代价可见**、只看可用协议筛选、四种导出非空、
 390 / 768 / 1024 三个断点无横向溢出、`file://` 双击直开，
-以及两项**「不许出现在界面上」**的断言（主题按钮、采样与测速控件）——
-刻意删掉的东西，把「它不在了」钉成断言，免得日后有人顺手加回来。
+两项**「不许出现在界面上」**的断言（主题按钮、采样与测速控件）——
+刻意删掉的东西，把「它不在了」钉成断言，免得日后有人顺手加回来 ——
+以及两条**「承诺也得有人看着」**的断言：favicon 是**能解码**的 PNG data URI、
+页面一个外部资源请求都不发（后者就是上面那句「不发任何外部资源请求」，不验等于没人背书）。
 
-**共 56 条断言，对着 `tests/mock.py` 跑是 56 passed / 0 failed；
-对着线上跑是 17 passed / 0 failed（线上模式只跑不依赖上游的那几段）。**
+**共 58 条断言，对着 `tests/mock.py` 跑是 58 passed / 0 failed；
+对着线上跑是 19 passed / 0 failed（线上模式只跑不依赖上游的那几段）。**
 
 ```
 PASS  页面载入无控制台报错
@@ -525,6 +500,8 @@ PASS  每张协议卡都带名字 / 标签 / 路径 / 场景说明
 PASS  页脚是纯前端说明
 PASS  页面上没有主题切换按钮
 PASS  页面上没有采样次数与探测模式控件
+PASS  favicon 内联为两条 PNG data URI（16 / 32），且都能解码
+PASS  页面不发任何外部资源请求（图标也是内联的）
 PASS  全协议探测跑完
 PASS  拿到模型清单（16 个可见模型）
 PASS  矩阵行数 = 模型数
@@ -576,7 +553,7 @@ PASS  JSON 导出带上了测量口径与新指标
 PASS  file:// 双击直开可用（协议卡与脚本都在）
 
 ====================================================
-  56 passed, 0 failed
+  58 passed, 0 failed
 ====================================================
 ```
 

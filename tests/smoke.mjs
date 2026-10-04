@@ -47,12 +47,36 @@ page.on('console', m => {
 });
 page.on('pageerror', e => consoleErrors.push('pageerror: ' + e.message));
 
+/* 「页面不发任何外部资源请求」是 README 里写下的承诺，这里把它变成断言：
+   凡是 URL 既不以 BASE 开头、又不是 data: / blob: 的，都算外部请求。
+   favicon 内联成 data URI 正是为了守住这条 —— 放成 favicon.ico 就会多一次请求。
+   线上站点前面有 Cloudflare，边缘注入的分析脚本要排除，它不属于页面自己的资源。 */
+const externalReqs = [];
+page.on('request', r => {
+  const u = r.url();
+  if (u.startsWith(BASE) || u.startsWith('data:') || u.startsWith('blob:')) return;
+  if (/cloudflareinsights\.com|cloudflare\.com/.test(u)) return;
+  externalReqs.push(u);
+});
+
 // ---- 1. 首屏 ----
 await page.goto(BASE, { waitUntil: 'load', timeout: 60000 });
 await page.waitForTimeout(400);
 
-const hero = await page.evaluate(() => {
+const hero = await page.evaluate(async () => {
   const cards = [...document.querySelectorAll('#protoGrid .proto')];
+  /* favicon：既看 link 本身是 data URI，也真的解码一次 ——
+     光看 href 前缀只证明「写进去了」，解不开的 base64 照样能骗过那种检查。 */
+  const iconLinks = [...document.querySelectorAll('link[rel~="icon"]')];
+  const icons = await Promise.all(iconLinks.map(l => new Promise(res => {
+    const href = l.getAttribute('href') || '';
+    const info = { sizes: l.getAttribute('sizes'), type: l.getAttribute('type'),
+                   data: href.startsWith('data:image/png;base64,'), w: 0 };
+    const im = new Image();
+    im.onload = () => { info.w = im.naturalWidth; res(info); };
+    im.onerror = () => res(info);
+    im.src = href;
+  })));
   return {
     cards: cards.length,
     on: cards.filter(e => e.classList.contains('on')).map(e => e.dataset.id),
@@ -65,6 +89,7 @@ const hero = await page.evaluate(() => {
       && (c.querySelector('.p-desc')?.textContent || '').trim().length > 8).length,
     hasThemeBtn: !!document.getElementById('themeBtn'),
     hasSamplingUi: !!document.getElementById('samples') || !!document.getElementById('probeMode'),
+    icons,
   };
 });
 check('页面载入无控制台报错', consoleErrors.length === 0, consoleErrors.slice(0, 3).join(' | '));
@@ -77,6 +102,16 @@ check('页脚是纯前端说明', /纯前端实现/.test(hero.foot) && /只留�
 // 免得日后有人顺手又把它们加回页面上
 check('页面上没有主题切换按钮', !hero.hasThemeBtn);
 check('页面上没有采样次数与探测模式控件', !hero.hasSamplingUi);
+
+const icons = hero.icons || [];
+check('favicon 内联为两条 PNG data URI（16 / 32），且都能解码',
+  icons.length === 2
+  && icons.every(x => x.data && x.type === 'image/png')
+  && icons.map(x => x.sizes).sort().join(',') === '16x16,32x32'
+  && icons.every(x => x.w === parseInt(x.sizes, 10)),
+  JSON.stringify(icons.map(x => `${x.sizes}→${x.w}px`)));
+check('页面不发任何外部资源请求（图标也是内联的）',
+  externalReqs.length === 0, externalReqs.slice(0, 3).join(' | '));
 
 if (LIVE) {
   await runThemeChecks(browser);
