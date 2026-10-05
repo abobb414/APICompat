@@ -2,7 +2,10 @@
 
 <div align="center">
 
-<img src="./docs/images/logo.png" alt="APICompat" width="124" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/images/logo-dark.png">
+  <img src="./docs/images/logo.png" alt="APICompat" width="124" />
+</picture>
 
 # APICompat
 
@@ -321,6 +324,14 @@ flowchart LR
   （滚动条、数字输入的上下箭头、`<select>` 下拉、表单自动填充的底色）不跟着走。
 - **导出报告也得跟**。HTML 报告是独立文件、不带主页面样式，所以它自己写了一份深色覆盖 ——
   报告发出去之后要跟着**收件人**的系统走，而不是跟着你导出时的系统。
+- **README 里那张 logo 也得管两态。** 页面内的品牌图标走 `mask` + `currentColor` 能自己变色，
+  但 README 里的图片拿不到任何 CSS —— 深色模式下，图标中占 **46%** 的深墨
+  在 `#0d1117` 上的对比度只有 **1.13**（白底上是 16.8），等于隐形，只剩一块浮着的青色。
+  解法是 `<picture>` + `prefers-color-scheme:dark` 指向一张**只把黑墨反色、蓝色不动**的深色版：
+  黑 → `#e6edf3`（对深底 16.0），蓝逐字节原样，几何一个像素没动。
+  生成脚本在 `brand-logo-work/build_logo_dark.py`（带「蓝像素改动数必须为 0」的断言）。
+  🔴 它读的是**浏览器上报的色彩偏好**，不是 GitHub 的外观设置 ——
+  读者把 GitHub 主题钉成与系统相反的时候，图会跟页面串开。
 
 ### 左上角品牌区：与 weather 页共用一把尺子
 
@@ -442,7 +453,7 @@ vercel deploy --prod
 ├── index.html              # 全部样式与逻辑，不发任何外部请求，147 KB / 3288 行
 ├── robots.txt
 ├── docs/
-│   ├── images/             # README 抬头 logo
+│   ├── images/             # README 抬头 logo（浅 / 深两态）
 │   └── screenshots/        # 配置面板与结果矩阵
 └── tests/
     ├── mock.py             # 假中转站：16 个模型 × 10 种协议，只用 Python 标准库

@@ -2,7 +2,10 @@
 
 <div align="center">
 
-<img src="./docs/images/logo.png" alt="APICompat" width="124" />
+<picture>
+  <source media="(prefers-color-scheme: dark)" srcset="./docs/images/logo-dark.png">
+  <img src="./docs/images/logo.png" alt="APICompat" width="124" />
+</picture>
 
 # APICompat
 
@@ -332,6 +335,15 @@ A few things that aren't obvious:
   (scrollbars, number-input spinners, the `<select>` dropdown, autofill backgrounds) won't follow.
 - **Exported reports follow as well.** The HTML report is a standalone file that doesn't carry the main stylesheet,
   so it writes its own dark overrides — it has to follow the **recipient's** OS, not the one you exported on.
+- **The logo in the README needs two states of its own.** The brand icon inside the page is a `mask` fed by
+  `currentColor`, so it recolors itself — but an image in a README gets no CSS at all. In dark mode the dark ink,
+  which accounts for **46%** of the artwork, sits at a contrast ratio of **1.13** against `#0d1117` (16.8 on white):
+  effectively invisible, leaving a cyan blob floating on the page. The fix is `<picture>` +
+  `prefers-color-scheme:dark` pointing at a twin artwork in which **only the black ink is inverted and the blue is
+  left untouched**: ink → `#e6edf3` (16.0 on the dark ground), blue byte-for-byte identical, geometry unmoved.
+  The generator is `brand-logo-work/build_logo_dark.py`, and it asserts that the number of altered blue pixels is 0.
+  🔴 The media query reads the **browser's reported color preference**, not GitHub's appearance setting — a reader who
+  pins GitHub's theme opposite to their system gets the mismatched image.
 
 ### The Top-Left Brand Lockup: One Ruler Shared with the Weather Page
 
@@ -455,7 +467,7 @@ vercel deploy --prod
 ├── index.html              # all styles and logic, no external requests, 147 KB / 3288 lines
 ├── robots.txt
 ├── docs/
-│   ├── images/             # README header logo
+│   ├── images/             # README header logo (light / dark)
 │   └── screenshots/        # config panel and the result matrix
 └── tests/
     ├── mock.py             # fake relay: 16 models × 10 protocols, Python standard library only

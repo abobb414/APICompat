@@ -3,6 +3,20 @@
 格式参考 [Keep a Changelog](https://keepachangelog.com/zh-CN/1.1.0/)，
 版本号遵循 [语义化版本](https://semver.org/lang/zh-CN/)。
 
+## [2.2.1] - 2026-10-05
+
+### 修复
+
+- **README 抬头的 logo 在 GitHub 深色模式下近乎隐形。** 图标里占 **46%** 的深墨
+  对深色底 `#0d1117` 的对比度只有 **1.13**（对白底是 16.8），外框与文档顶栏整片糊进背景，
+  只剩一块浮着的青色。现在用 `<picture>` + `prefers-color-scheme:dark` 指向
+  `docs/images/logo-dark.png`：**只把黑墨反色**（→ `#e6edf3`，对深底 16.0），
+  **蓝色逐字节不动**，几何一个像素没改；浅色模式仍显示原来那张。
+  深色版由 `brand-logo-work/build_logo_dark.py` 从浅色版派生（带「蓝像素改动数必须为 0」的断言），
+  改了源图重跑即可。中英双语 README 同步，各补一条工程笔记。
+  🔴 该媒体查询读的是**浏览器上报的色彩偏好**，不是 GitHub 的外观设置 ——
+  读者把 GitHub 主题钉成与系统相反时会串图，已知且接受。
+
 ## [2.2.0] - 2026-10-04
 
 页面左上角有了品牌标识，与 weather / start 两站共用一把尺子。
