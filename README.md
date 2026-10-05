@@ -21,7 +21,7 @@
 [![Protocols](https://img.shields.io/badge/protocols-10-8b5cf6?style=flat-square)](#协议矩阵)
 [![States](https://img.shields.io/badge/states-11_种归因-f59e0b?style=flat-square)](#十一种状态)
 [![Theme](https://img.shields.io/badge/theme-跟随系统_·_无开关-334155?style=flat-square)](#深浅主题跟随系统不设开关)
-[![Single File](https://img.shields.io/badge/single_file-147_KB_·_3288_行-64748b?style=flat-square)](#项目结构)
+[![Single File](https://img.shields.io/badge/single_file-147_KB_·_3287_行-64748b?style=flat-square)](#项目结构)
 
 [在线体验](https://apicompat.abobb.site) · [预览](#预览) · [协议矩阵](#协议矩阵) · [实测流程](#实测流程) · [快速开始](#快速开始) · [工程笔记](#工程笔记那些踩过的坑)
 
@@ -385,7 +385,7 @@ flowchart LR
 | `https://api.example.com/v1` | 就在 `/v1` 下拼 |
 | `https://api.example.com/v1/chat/completions` | 剥掉尾部协议路径，退回 origin |
 | `https://api.example.com/v1beta/models` | 同上，`/models` 会被剥掉 |
-| `https://xxx.com/openai/deployments/gpt-4/chat/completions` | 剥到 origin，Azure 那条自己拼回去 |
+| `https://api.example.com/openai/deployments/gpt-4/chat/completions` | 剥到 origin，Azure 那条自己拼回去 |
 | `https://api.example.com/#/` | 先去掉 `#` 之后的部分 |
 
 ### 四种导出
@@ -450,7 +450,7 @@ vercel deploy --prod
 
 ```
 .
-├── index.html              # 全部样式与逻辑，不发任何外部请求，147 KB / 3288 行
+├── index.html              # 全部样式与逻辑，不发任何外部请求，147 KB / 3287 行
 ├── robots.txt
 ├── docs/
 │   ├── images/             # README 抬头 logo（浅 / 深两态）

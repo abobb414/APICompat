@@ -14,6 +14,7 @@
 import { chromium } from 'playwright';
 import { fileURLToPath } from 'node:url';
 import path from 'node:path';
+import fs from 'node:fs';
 
 const HERE = path.dirname(fileURLToPath(import.meta.url));
 const ROOT = path.dirname(HERE);
@@ -154,6 +155,36 @@ check('favicon 内联为两条 PNG data URI（16 / 32），且都能解码',
   JSON.stringify(icons.map(x => `${x.sizes}→${x.w}px`)));
 check('页面不发任何外部资源请求（图标也是内联的）',
   externalReqs.length === 0, externalReqs.slice(0, 3).join(' | '));
+
+/* 示范域名只许用保留域（RFC 2606 / 6761：example.com / .test / .invalid / localhost）。
+   早先「接口地址」的提示里写的是一个真实中转站的域名 —— 读者照着敲，等于把测试流量
+   灌进人家的日志，也容易被误读成「本站推荐 / 与本项目有关联」。这条断言把「只许假域名」
+   钉死，免得日后又顺手填一个真实站点进去。
+   实现上两处要绕：
+   · 扫源码前先剥掉 <style> 与注释 —— 里面讲版式的段落会提到本站几个兄弟站点，
+     那不是给用户看的示范域名；
+   · 匹配时排除前一个字符是 `.` 的串，否则 CSS 里的 `.proto.on`、`.mcell.ok` 会被当成域名。 */
+const DOMAIN_TLD = '(?:com|net|org|cc|io|dev|site|xyz|top|app|cn|co|ai|me|info|online|tech|cloud|ltd|link|live|pro|space|store|website|run)';
+const DOMAIN_RE = new RegExp('(?<![\\w.-])(?:[a-z0-9-]+\\.)+' + DOMAIN_TLD + '(?![a-z0-9-])', 'gi');
+const RESERVED_DOMAIN = /(?:^|\.)(?:example\.(?:com|net|org)|example|test|invalid|localhost)$/;
+const pickDomains = (s) => [...new Set((String(s).match(DOMAIN_RE) || []).map(d => d.toLowerCase()))];
+const isReserved = (d) => RESERVED_DOMAIN.test(d) || d === 'www.w3.org';
+
+const rawSrc = fs.readFileSync(path.join(ROOT, 'index.html'), 'utf8');
+const srcDomains = pickDomains(rawSrc.replace(/<style[\s\S]*?<\/style>/gi, '').replace(/<!--[\s\S]*?-->/g, ''));
+const pageText = await page.evaluate(() => {
+  const parts = [document.body.innerText];
+  document.querySelectorAll('[placeholder],[title],[aria-label]').forEach(e => parts.push(
+    e.getAttribute('placeholder') || '', e.getAttribute('title') || '', e.getAttribute('aria-label') || ''));
+  return parts.join('\n');
+});
+const pageDomains = pickDomains(pageText);
+check('示范域名只用保留域（源码里不点名真实第三方站点）',
+  srcDomains.every(isReserved),
+  '真实域名: ' + srcDomains.filter(d => !isReserved(d)).join(', ') || `仅 ${srcDomains.join(', ')}`);
+check('示范域名只用保留域（渲染后页面同样，含 placeholder）',
+  pageDomains.every(isReserved),
+  '出现: ' + pageDomains.join(', '));
 
 /* 品牌区四条：文案齐、字体真的落地（子集没生效就掉回系统字体）、
    顶部留空 27px + 左缘跟随 clamp、以及图标墨迹与两行文字墨迹的上下沿压平。

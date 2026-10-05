@@ -21,7 +21,7 @@ giving a status and a first-chunk latency per cell, and finally exports a diagno
 [![Protocols](https://img.shields.io/badge/protocols-10-8b5cf6?style=flat-square)](#protocol-matrix)
 [![States](https://img.shields.io/badge/states-11_attributions-f59e0b?style=flat-square)](#the-eleven-states)
 [![Theme](https://img.shields.io/badge/theme-follows_OS_%C2%B7_no_toggle-334155?style=flat-square)](#light-and-dark-follows-the-os-no-toggle)
-[![Single File](https://img.shields.io/badge/single_file-147_KB_%C2%B7_3288_lines-64748b?style=flat-square)](#project-structure)
+[![Single File](https://img.shields.io/badge/single_file-147_KB_%C2%B7_3287_lines-64748b?style=flat-square)](#project-structure)
 
 [Live Demo](https://apicompat.abobb.site) · [Preview](#preview) · [Protocol Matrix](#protocol-matrix) · [Test Flow](#test-flow) · [Quick Start](#quick-start) · [Engineering Notes](#engineering-notes-the-pitfalls)
 
@@ -399,7 +399,7 @@ When you copy a URL out of some docs, the clipboard can hold just about any shap
 | `https://api.example.com/v1` | joins under `/v1` |
 | `https://api.example.com/v1/chat/completions` | strips the trailing protocol path and falls back to the origin |
 | `https://api.example.com/v1beta/models` | same as above; `/models` gets stripped |
-| `https://xxx.com/openai/deployments/gpt-4/chat/completions` | stripped to the origin; the Azure row builds its own path back up |
+| `https://api.example.com/openai/deployments/gpt-4/chat/completions` | stripped to the origin; the Azure row builds its own path back up |
 | `https://api.example.com/#/` | drops everything after `#` first |
 
 ### Four Export Formats
@@ -464,7 +464,7 @@ vercel deploy --prod
 
 ```
 .
-├── index.html              # all styles and logic, no external requests, 147 KB / 3288 lines
+├── index.html              # all styles and logic, no external requests, 147 KB / 3287 lines
 ├── robots.txt
 ├── docs/
 │   ├── images/             # README header logo (light / dark)
